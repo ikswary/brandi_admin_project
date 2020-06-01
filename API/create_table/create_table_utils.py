@@ -27,7 +27,7 @@ def import_aquery_to_list(file):
     aquery_string = aquery_string.replace('-- roles Table Create SQL', '')
     aquery_string = aquery_string.replace('\n', '')
     aquery_string = ' '.join(aquery_string.split())
-    aquery_string = aquery_string.replace('`on_create` DATETIME', '`on_create` DATETIME DEFAULT CURRENT_TIMESTAMP ')
+    aquery_string = aquery_string.replace('`created_at` DATETIME', '`on_create` DATETIME DEFAULT CURRENT_TIMESTAMP ')
     aquery_string = aquery_string.replace('`startdate` DATETIME', '`startdate` DATETIME DEFAULT CURRENT_TIMESTAMP ')
     aquery_string = aquery_string.replace('`enddate` DATETIME', '`enddate` DATETIME DEFAULT 99991231235959')
     aquery_string = aquery_string.replace('`is_deleted` TINYINT', '`is_deleted` TINYINT DEFAULT 0 ')
