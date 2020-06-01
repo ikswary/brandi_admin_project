@@ -1,4 +1,12 @@
-from create_table.create_table_utils import init_database, import_aquery_to_list
+import os
+import sys
+
+ROOT_DIR = os.path.dirname(os.path.abspath("API"))
+BASE_DIR=os.path.dirname(os.path.abspath(__file__))
+sys.path.extend([ROOT_DIR])
+os.chdir(BASE_DIR)
+
+from create_table_utils import init_database, import_aquery_to_list
 from connections import get_db_connector
 
 db = get_db_connector()
@@ -15,4 +23,4 @@ for query in TABLE_QUERIES:
 db.commit()
 cursor.close()
 db.close()
-print('MIGRATION COMPLETE')
+print('COMPLETE')

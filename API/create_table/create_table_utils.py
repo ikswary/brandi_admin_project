@@ -1,3 +1,9 @@
+import os
+import sys
+
+BASE_DIR = os.path.dirname(os.path.abspath("API"))
+sys.path.extend([BASE_DIR])
+
 from my_settings import MYSQL_CONFIGS
 
 DB_NAME = MYSQL_CONFIGS['database']
