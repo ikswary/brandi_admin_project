@@ -1,4 +1,9 @@
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+
 from my_settings import MYSQL_CONFIGS
+
 
 DB_NAME = MYSQL_CONFIGS['database']
 
