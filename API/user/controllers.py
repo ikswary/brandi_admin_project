@@ -1,4 +1,3 @@
-import json
 import os
 import sys
 
@@ -10,7 +9,7 @@ from flask import Blueprint, request, jsonify
 from connections import get_db_connector, DataError
 from .models import sign_up_model, is_account_exists
 
-user_app = Blueprint('user_app', __name__, url_prefix='/user')
+user_app = Blueprint('user_app', __name__)
 
 
 @user_app.route('mock-up', methods=['POST'])
