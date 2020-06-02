@@ -1,5 +1,5 @@
 import pymysql
-from pymysql.err import DataError
+from pymysql.err import DataError, ProgrammingError
 
 from my_settings import MYSQL_CONFIGS
 
