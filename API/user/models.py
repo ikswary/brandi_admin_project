@@ -1,3 +1,9 @@
+import os
+import sys
+
+BASE_DIR = os.path.dirname(os.path.abspath("API"))
+sys.path.extend([BASE_DIR])
+
 from connections import get_cursor, get_dict_cursor, DataError
 
 SELLER_ROLE_ID = 2
@@ -6,7 +12,7 @@ SELLER_ROLE_ID = 2
 def is_account_exists(db, account):
     with get_dict_cursor(db) as cursor:
         cursor.execute("""
-        SELECT COUNT(*) count FROM users 
+        SELECT COUNT(*) count FROM users
         WHERE account = %s
         """, account)
 
@@ -16,7 +22,7 @@ def is_account_exists(db, account):
 def get_account_id(db, account):
     with get_dict_cursor(db) as cursor:
         cursor.execute("""
-        SELECT id FROM users 
+        SELECT id FROM users
         WHERE account = %s
         """, account)
 
@@ -27,7 +33,7 @@ def sign_up_model(db, data):
     try:
         with get_cursor(db) as cursor:
             insert_user_query = """
-                INSERT INTO users(role_id, account) 
+                INSERT INTO users(role_id, account)
                 VALUES(%s, %s)
                 """
             cursor.execute(insert_user_query, (SELLER_ROLE_ID, data['account']))
@@ -38,11 +44,11 @@ def sign_up_model(db, data):
                 user_id,
                 modifier_id,
                 password,
-                seller_name, 
-                seller_name_eng, 
-                cs_number, 
+                seller_name,
+                seller_name_eng,
+                cs_number,
                 seller_attribute_id, site_url
-                ) 
+                )
                 VALUES(%s, %s, %s, %s, %s, %s, %s, %s)
                 """
             cursor.execute(insert_user_detail_query,

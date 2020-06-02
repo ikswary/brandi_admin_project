@@ -1,9 +1,14 @@
 import json
+import os
+import sys
+
+BASE_DIR = os.path.dirname(os.path.abspath("API"))
+sys.path.extend([BASE_DIR])
 
 from flask import Blueprint, request, jsonify
 
 from connections import get_db_connector, DataError
-from user.models import sign_up_model, is_account_exists
+from .models import sign_up_model, is_account_exists
 
 user_app = Blueprint('user_app', __name__, url_prefix='/user')
 
