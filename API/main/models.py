@@ -5,8 +5,9 @@ def sidebar_list(db, role_id):
     try:
         cursor = db.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
-                SELECT id,name FROM sidebar WHERE role_id = %s
-                        """, role_id)
+        SELECT id,name FROM sidebar 
+        WHERE role_id = %s
+        """, role_id)
         result = cursor.fetchall()
     finally:
         cursor.close()
