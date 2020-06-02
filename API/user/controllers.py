@@ -30,20 +30,19 @@ def test_sign_up():
             data[key] = request.json[key]
 
         if is_account_exists(db, data['account']):
-            return {'message': 'ACCOUNT_DUPLICATED'}, 409
+            return jsonify({'message': 'ACCOUNT_DUPLICATED'}), 409
 
         sign_up_model(db, data)
         db.commit()
 
-        return json.dumps({'message': 'SIGN_IN_COMPLETE'}), 200
+        return jsonify({'message': 'SIGN_IN_COMPLETE'}), 200
 
     except DataError:
-        return {'message': 'DATA_ERROR'}, 400
+        return jsonify({'message': 'DATA_ERROR'}), 400
     except KeyError:
-        return {'message': 'KEY_ERROR'}, 400
+        return jsonify({'message': 'KEY_ERROR'}), 400
     except AttributeError:
-        return {'message': 'DATABASE_INIT_ERROR'}, 404
+        return jsonify({'message': 'DATABASE_INIT_ERROR'}), 404
     finally:
         if db:
             db.close()
-        # 리스트형, 등록, 수정 예시 SET
