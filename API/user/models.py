@@ -1,17 +1,17 @@
 import os
 import sys
 
+import pymysql
+
 BASE_DIR = os.path.dirname(os.path.abspath("API"))
 sys.path.extend([BASE_DIR])
-
-from connections import get_cursor, get_dict_cursor, DataError
 
 SELLER_ROLE_ID = 2
 
 
 def is_account_exists(db, account):
     try:
-        cursor = get_dict_cursor(db)
+        cursor = db.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
         SELECT COUNT(*) count FROM users
         WHERE account = %s
@@ -20,12 +20,13 @@ def is_account_exists(db, account):
         return cursor.fetchone()['count']
 
     finally:
-        cursor.close()
+        if cursor:
+            cursor.close()
 
 
 def get_account_id(db, account):
     try:
-        cursor = get_dict_cursor(db)
+        cursor = db.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
         SELECT id FROM users
         WHERE account = %s
@@ -34,13 +35,13 @@ def get_account_id(db, account):
         return cursor.fetchone()['id']
 
     finally:
-        cursor.close()
+        if cursor:
+            cursor.close()
 
 
 def sign_up(db, data):
     try:
-        cursor = get_cursor(db)
-
+        cursor = db.cursor()
         insert_user_query = """
             INSERT INTO users(role_id, account)
             VALUES(%s, %s)
@@ -71,8 +72,8 @@ def sign_up(db, data):
                         data['site_url'])
                        )
 
-    except DataError:
-        raise DataError
+    except pymysql.err.DataError:
+        raise pymysql.err.DataError
     finally:
         if cursor:
             cursor.close()

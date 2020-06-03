@@ -6,6 +6,7 @@ sys.path.extend([BASE_DIR])
 
 from connections import get_dict_cursor
 
+
 def sidebar_list(db, role_id):
     try:
         cursor = get_dict_cursor(db)
@@ -18,6 +19,7 @@ def sidebar_list(db, role_id):
 
     finally:
         cursor.close()
+
 
 def sidebar_detail_list(db, sidebar_id):
     try:

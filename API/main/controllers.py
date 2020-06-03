@@ -4,7 +4,7 @@ import sys
 BASE_DIR = os.path.dirname(os.path.abspath("API"))
 sys.path.extend([BASE_DIR])
 
-from connections import get_db_connector, ProgrammingError
+from connections import get_db_connector
 
 from flask import Blueprint, request, jsonify
 from .models import sidebar_list, sidebar_detail_list
@@ -32,7 +32,7 @@ def category():
             "id": side_list.get('id'),
             "name": side_list.get('name'),
             "detail_data": [{"id": detail.get('id'),
-                            "name": detail.get('name')}
+                             "name": detail.get('name')}
                             for detail in sidebar_detail_list(db, side_list.get('id'))]
         } for side_list in data]
 
