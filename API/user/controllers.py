@@ -4,9 +4,10 @@ import sys
 BASE_DIR = os.path.dirname(os.path.abspath("API"))
 sys.path.extend([BASE_DIR])
 
+import pymysql
 from flask import Blueprint, request, jsonify
 
-from connections import get_db_connector, DataError
+from connections import get_db_connector
 from .models import sign_up, is_account_exists
 
 user_app = Blueprint('user_app', __name__)
@@ -27,34 +28,42 @@ def test_sign_up():
 
     Returns:
         {message: STATUS_MESSAGE}, http status code
+
+    Exceptions:
+        InternalError: DATABASE가 존재하지 않을 때 발생
+        OperationalError: DATABASE 접속이 인가되지 않았을 때 발생
+        DataError: 컬럼 타입과 매칭되지 않는 값이 DB에 전달되었을 때 발생
+        KeyError: 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
     """
     try:
         db = get_db_connector()
-        if db:
-            db.begin()
-            required_keys = ('account', 'password', 'seller_name', 'seller_name_eng',
-                             'cs_number', 'seller_attribute_id', 'site_url')
-            data = {}
-            for key in required_keys:
-                data[key] = request.json[key]
+        if db is None:
+            return jsonify(message="DATABASE_INIT_ERROR"), 500
 
-            if is_account_exists(db, data['account']):
-                return jsonify(message="ACCOUNT_DUPLICATED"), 409
+        db.begin()
+        required_keys = ('account', 'password', 'seller_name', 'seller_name_eng',
+                         'cs_number', 'seller_attribute_id', 'site_url')
+        data = {}
+        for key in required_keys:
+            data[key] = request.json[key]
 
-            sign_up(db, data)
-            db.commit()
+        if is_account_exists(db, data['account']):
+            return jsonify(message="ACCOUNT_DUPLICATED"), 409
 
-            return jsonify(message="SIGN_IN_COMPLETE"), 200
+        sign_up(db, data)
+        db.commit()
 
-        return jsonify(message="DATABASE_INIT_ERROR"), 404
+        return jsonify(message="SIGN_IN_COMPLETE"), 200
 
-    except DataError:
+    except pymysql.err.InternalError:
+        return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
+    except pymysql.err.OperationalError:
+        return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
+    except pymysql.err.DataError:
         db.rollback()
         return jsonify(message="DATA_ERROR"), 400
     except KeyError:
         return jsonify(message="KEY_ERROR"), 400
-    except AttributeError:
-        return jsonify(message="DATABASE_INIT_ERROR"), 404
     finally:
         if db:
             db.close()
