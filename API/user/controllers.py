@@ -35,6 +35,7 @@ def test_sign_up():
         DataError: 컬럼 타입과 매칭되지 않는 값이 DB에 전달되었을 때 발생
         KeyError: 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
     """
+    db = None
     try:
         db = get_db_connector()
         if db is None:
@@ -64,6 +65,8 @@ def test_sign_up():
         return jsonify(message="DATA_ERROR"), 400
     except KeyError:
         return jsonify(message="KEY_ERROR"), 400
+    except Exception as e:
+        return jsonify(message=f"{e}"), 500
     finally:
         if db:
             db.close()
