@@ -4,10 +4,12 @@ import sys
 BASE_DIR = os.path.dirname(os.path.abspath("API"))
 sys.path.extend([BASE_DIR])
 
+import pymysql
+
 from connections import get_db_connector
 
 from flask import Blueprint, request, jsonify
-from .models import sidebar_list, sidebar_detail_list
+from .models import sidebar_list, sidebar_detail_list, role
 
 main_app = Blueprint("main_app", __name__)
 
@@ -22,9 +24,17 @@ def category():
     Returns:
         {data : sidebar_list}, http status code
     """
+
+    db = None
     try:
         db = get_db_connector()
-        role_id = request.headers.get('role_id')
+        if db is None:
+            return jsonify(message="DATABASE_INIT_ERROR"), 500
+
+        role_id = request.headers['role_id']
+
+        if role(db, role_id) is None:
+            return jsonify(message="DATA_DOES_NOT_EXIST"), 404
 
         data = sidebar_list(db, role_id)
 
@@ -38,11 +48,17 @@ def category():
 
         return jsonify(data=sidebar), 200
 
-    except ProgrammingError:
-        return jsonify(message="MISSING_AUTHORIZATION_TOKEN"), 400
+    except pymysql.err.OperationalError:
+        return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
 
-    except AttributeError:
-        return jsonify(message="DATABASE_INIT_ERROR"), 404
+    except pymysql.err.InternalError:
+        return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
+
+    except KeyError:
+        return jsonify(message="KEY_ERROR"), 400
+
+    except Exception as e:
+        return jsonify(message={e}), 500
 
     finally:
         if db:
