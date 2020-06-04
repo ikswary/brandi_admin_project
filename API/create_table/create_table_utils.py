@@ -33,6 +33,7 @@ def import_aquery_to_list(file):
     aquery_string = aquery_string.replace('`is_deleted` TINYINT', '`is_deleted` TINYINT DEFAULT 0 ')
     aquery_string = aquery_string.replace('`on_sale` TINYINT', '`on_sale` TINYINT DEFAULT 1 ')
     aquery_string = aquery_string.replace('`on_list` TINYINT', '`on_list` TINYINT DEFAULT 1 ')
+    aquery_string = aquery_string.replace('`list_order` INT', '`list_order` INT DEFAULT 1 ')
     aquery_string = aquery_string.replace(');',')ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;')
 
     return aquery_string.split(';')[:-1]
