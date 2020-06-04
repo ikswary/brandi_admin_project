@@ -20,7 +20,7 @@ user_app = Blueprint('user_app', __name__)
 
 
 @user_app.route('sign-up', methods=['POST'])
-def sign_up_controller():
+def sign_up():
     """회원가입 예시 API
 
     Args:
@@ -38,6 +38,8 @@ def sign_up_controller():
     Exceptions:
         InternalError: DATABASE가 존재하지 않을 때 발생
         OperationalError: DATABASE 접속이 인가되지 않았을 때 발생
+        ProgramingError: SQL syntax가 잘못되었을 때 발생
+        IntegrityError: Key의 무결성을 해쳤을 때 발생
         DataError: 컬럼 타입과 매칭되지 않는 값이 DB에 전달되었을 때 발생
         KeyError: 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
     """
@@ -111,3 +113,7 @@ def sign_up_controller():
     finally:
         if db:
             db.close()
+
+
+@user_app.route('sign-up', methods=['POST'])
+def sign_up():
