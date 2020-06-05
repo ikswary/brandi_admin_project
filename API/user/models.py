@@ -12,10 +12,11 @@ SELLER_ROLE_ID = 2
 def is_account_exists(db, account):
     try:
         with db.cursor(pymysql.cursors.DictCursor) as cursor:
-            cursor.execute("""
+            query = """
             SELECT COUNT(*) count FROM users
             WHERE account = %s
-            """, account)
+            """
+            cursor.execute(query, account)
 
             return cursor.fetchone()['count']
     except Exception as e:
@@ -25,11 +26,11 @@ def is_account_exists(db, account):
 def insert_users(db, account):
     try:
         with db.cursor() as cursor:
-            insert_user_query = """
+            query = """
             INSERT INTO users(role_id, account)
             VALUES(%s, %s)
             """
-            cursor.execute(insert_user_query, (SELLER_ROLE_ID, account))
+            cursor.execute(query, (SELLER_ROLE_ID, account))
 
             return cursor.lastrowid
     except Exception as e:
@@ -39,7 +40,7 @@ def insert_users(db, account):
 def insert_user_details(db, **args):
     try:
         with db.cursor() as cursor:
-            insert_user_detail_query = """
+            query = """
             INSERT INTO seller_details(
             user_id,
             modifier_id,
@@ -60,7 +61,7 @@ def insert_user_details(db, **args):
              %(site_url)s
              )
             """
-            cursor.execute(insert_user_detail_query, args)
+            cursor.execute(query, args)
 
             return cursor.lastrowid
     except Exception as e:
@@ -70,10 +71,10 @@ def insert_user_details(db, **args):
 def insert_managers(db, phone):
     try:
         with db.cursor() as cursor:
-            insert_manager_query = """
+            query = """
             INSERT INTO managers(phone) VALUES(%s)
             """
-            cursor.execute(insert_manager_query, phone)
+            cursor.execute(query, phone)
 
             return cursor.lastrowid
     except Exception as e:
@@ -83,10 +84,27 @@ def insert_managers(db, phone):
 def insert_user_managers(db, **args):
     try:
         with db.cursor() as cursor:
-            insert_user_manager_query = """
+            query = """
             INSERT INTO user_managers(user_detail_id, manager_id)
             VALUES(%(user_detail_id)s, %(manager_id)s)
             """
-            cursor.execute(insert_user_manager_query, args)
+            cursor.execute(query, args)
+    except Exception as e:
+        raise e
+
+
+def get_id_password_from_account(db, account):
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            query = """
+            SELECT details.password from users 
+            join seller_details as details 
+            on details.user_id = users.id where account = %s
+            """
+            cursor.execute(query, account)
+            result = cursor.fetchone()
+            result['user_id'] = cursor.lastrowid
+            return result
+
     except Exception as e:
         raise e
