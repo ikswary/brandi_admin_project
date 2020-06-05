@@ -5,16 +5,18 @@ sys.path.extend([BASE_DIR])
 
 import pymysql
 
-from connections import get_db_connector
-
 from flask import Blueprint, request, jsonify
-from .models import sidebar_list, sidebar_detail_list, role
+
+from connections import get_db_connector
+from decorator import login_required
+from models.main_models import sidebar_list, sidebar_detail_list, role
 
 main_app = Blueprint("main_app", __name__)
 
 
 @main_app.route('/category', methods=['GET'])
-def category():
+@login_required
+def category(**kwargs):
     """사이드바 예시 API
 
     Args:
@@ -37,7 +39,7 @@ def category():
         db = get_db_connector()
         if db is None:
             return jsonify(message="DATABASE_INIT_ERROR"), 500
-        role_id = request.headers['role_id']
+        role_id = kwargs['role_id']
 
         if role(db, role_id) is None:
             return jsonify(message="DATA_DOES_NOT_EXIST"), 404

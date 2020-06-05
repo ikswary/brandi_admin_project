@@ -2,8 +2,8 @@ from flask import Flask
 from flask_cors import CORS
 
 from custom_encoder import JsonCustomEncoder
-from user.controllers import user_app
-from main.controllers import main_app
+from controllers.user_controllers import user_app
+from controllers.main_controllers import main_app
 
 def create_app():
     app = Flask(__name__)
