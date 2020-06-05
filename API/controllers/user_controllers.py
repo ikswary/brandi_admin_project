@@ -11,8 +11,8 @@ from flask import Blueprint, request, jsonify
 
 from my_settings import SERCRET, HASH_ALGORITHM
 from connections import get_db_connector
-from .decorator import login_required
-from .models import (
+from decorator import login_required
+from models.user_models import (
     is_account_exists,
     insert_users,
     insert_user_details,
