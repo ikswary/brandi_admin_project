@@ -46,12 +46,12 @@ def insert_user_details(db, **args):
             site_url
             )
             VALUES(%(user_id)s,
-             %(user_id)s, 
-             %(password)s, 
-             %(seller_name)s, 
-             %(seller_name_eng)s, 
-             %(cs_phone)s, 
-             %(seller_attribute_id)s, 
+             %(user_id)s,
+             %(password)s,
+             %(seller_name)s,
+             %(seller_name_eng)s,
+             %(cs_phone)s,
+             %(seller_attribute_id)s,
              %(site_url)s
              )
             """
@@ -92,8 +92,8 @@ def get_id_role_password_from_account(db, account):
         with db.cursor(pymysql.cursors.DictCursor) as cursor:
             query = """
             SELECT users.id, users.role_id, details.password FROM users
-            JOIN seller_details AS details 
-            ON details.user_id = users.id 
+            JOIN seller_details AS details
+            ON details.user_id = users.id
             WHERE users.account = %s AND users.is_deleted = 0
             """
             cursor.execute(query, account)
