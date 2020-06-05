@@ -172,27 +172,27 @@ def sign_in():
         )
         return jsonify(message="SIGN_IN_COMPLETE", token=token), 200
 
-    # except pymysql.err.InternalError:
-    #     db.rollback()
-    #     return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
-    # except pymysql.err.OperationalError:
-    #     db.rollback()
-    #     return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
-    # except pymysql.err.ProgrammingError:
-    #     db.rollback()
-    #     return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
-    # except pymysql.err.IntegrityError:
-    #     db.rollback()
-    #     return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
-    # except pymysql.err.DataError:
-    #     db.rollback()
-    #     return jsonify(message="DATA_ERROR"), 400
-    # except KeyError:
-    #     db.rollback()
-    #     return jsonify(message="KEY_ERROR"), 400
-    # except Exception as e:
-    #     db.rollback()
-    #     return jsonify(message=f"{e}"), 500
+    except pymysql.err.InternalError:
+        db.rollback()
+        return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
+    except pymysql.err.OperationalError:
+        db.rollback()
+        return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
+    except pymysql.err.ProgrammingError:
+        db.rollback()
+        return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
+    except pymysql.err.IntegrityError:
+        db.rollback()
+        return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
+    except pymysql.err.DataError:
+        db.rollback()
+        return jsonify(message="DATA_ERROR"), 400
+    except KeyError:
+        db.rollback()
+        return jsonify(message="KEY_ERROR"), 400
+    except Exception as e:
+        db.rollback()
+        return jsonify(message=f"{e}"), 500
     finally:
         if db:
             db.close()
@@ -200,5 +200,5 @@ def sign_in():
 
 @user_app.route('deco', methods=['GET'])
 @login_required
-def deco():
-    return 'OK', 200
+def deco(**kwargs):
+    return jsonify(kwargs), 200
