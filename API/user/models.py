@@ -1,10 +1,4 @@
-import os
-import sys
-
 import pymysql
-
-BASE_DIR = os.path.dirname(os.path.abspath("API"))
-sys.path.extend([BASE_DIR])
 
 SELLER_ROLE_ID = 2
 
@@ -14,7 +8,7 @@ def is_account_exists(db, account):
         with db.cursor(pymysql.cursors.DictCursor) as cursor:
             query = """
             SELECT COUNT(*) count FROM users
-            WHERE account = %s
+            WHERE account = %s AND is_deleted = 0
             """
             cursor.execute(query, account)
 
@@ -93,17 +87,17 @@ def insert_user_managers(db, **args):
         raise e
 
 
-def get_id_password_from_account(db, account):
+def get_id_role_password_from_account(db, account):
     try:
         with db.cursor(pymysql.cursors.DictCursor) as cursor:
             query = """
-            SELECT details.password from users 
-            join seller_details as details 
-            on details.user_id = users.id where account = %s
+            SELECT users.id, users.role_id, details.password FROM users
+            JOIN seller_details AS details 
+            ON details.user_id = users.id 
+            WHERE users.account = %s AND users.is_deleted = 0
             """
             cursor.execute(query, account)
             result = cursor.fetchone()
-            result['user_id'] = cursor.lastrowid
             return result
 
     except Exception as e:
