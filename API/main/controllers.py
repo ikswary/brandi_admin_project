@@ -1,5 +1,4 @@
-import os
-import sys
+import os, sys
 
 BASE_DIR = os.path.dirname(os.path.abspath("API"))
 sys.path.extend([BASE_DIR])
@@ -23,6 +22,14 @@ def category():
 
     Returns:
         {data : sidebar_list}, http status code
+
+    Exceptions:
+        InternalError: DATABASE가 존재하지 않을 때 발생
+        OperationalError: DATABASE 접속이 인가되지 않았을 때 발생
+        ProgramingError: SQL syntax가 잘못되었을 때 발생
+        IntegrityError: Key의 무결성을 해쳤을 때 발생
+        DataError: 컬럼 타입과 매칭되지 않는 값이 DB에 전달되었을 때 발생
+        KeyError: 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
     """
 
     db = None
@@ -30,7 +37,6 @@ def category():
         db = get_db_connector()
         if db is None:
             return jsonify(message="DATABASE_INIT_ERROR"), 500
-
         role_id = request.headers['role_id']
 
         if role(db, role_id) is None:
@@ -48,18 +54,20 @@ def category():
 
         return jsonify(data=sidebar), 200
 
+    except pymysql.err.InternalError:
+         return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
     except pymysql.err.OperationalError:
         return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
-
-    except pymysql.err.InternalError:
-        return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
-
+    except pymysql.err.ProgrammingError:
+        return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
+    except pymysql.err.IntegrityError:
+        return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
+    except pymysql.err.DataError:
+        return jsonify(message="DATA_ERROR"), 400
     except KeyError:
         return jsonify(message="KEY_ERROR"), 400
-
     except Exception as e:
-        return jsonify(message={e}), 500
-
+        return jsonify(message=f"{e}"), 500
     finally:
         if db:
             db.close()
