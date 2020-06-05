@@ -8,7 +8,7 @@ import pymysql
 from connections import get_db_connector
 
 from flask import Blueprint, request, jsonify
-from .models import sidebar_list, sidebar_detail_list, role
+from models.main_models import sidebar_list, sidebar_detail_list, role
 
 main_app = Blueprint("main_app", __name__)
 
