@@ -5,15 +5,19 @@ sys.path.extend([BASE_DIR])
 
 import pymysql
 import bcrypt
+import jwt
+from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify
 
+from my_settings import SERCRET, HASH_ALGORITHM
 from connections import get_db_connector
 from .models import (
     is_account_exists,
     insert_users,
     insert_user_details,
     insert_managers,
-    insert_user_managers
+    insert_user_managers,
+    get_id_password_from_account
 )
 
 user_app = Blueprint('user_app', __name__)
@@ -117,7 +121,7 @@ def sign_up():
 
 @user_app.route('sign-in', methods=['POST'])
 def sign_in():
-    """로그 API
+    """로그인 API
 
         Args:
             account: 계정명,
@@ -138,3 +142,55 @@ def sign_in():
             DataError: 컬럼 타입과 매칭되지 않는 값이 DB에 전달되었을 때 발생
             KeyError: 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
         """
+    required_keys = ('account', 'password')
+
+    db = None
+    try:
+        db = get_db_connector()
+        if db is None:
+            return jsonify(message="DATABASE_INIT_ERROR"), 500
+        data = {}
+        for key in required_keys:
+            data[key] = request.json[key]
+
+        if not is_account_exists(db, data['account']):
+            return jsonify(message="ACCOUNT_DOES_NOT_EXIST"), 404
+
+        result = get_id_password_from_account(db, data['account'])
+        if not bcrypt.checkpw(data['password'].encode('utf-8'), result['password'].encode('utf-8')):
+            return jsonify(message="PASSWORD_MISMATCH"), 403
+
+        token = jwt.encode(
+            {
+                'user_id': result['user_id'],
+                'exp': datetime.utcnow() + timedelta(hours=1)
+            },
+            SERCRET,
+            HASH_ALGORITHM
+        )
+        return jsonify(message="SIGN_IN_COMPLETE", token=token), 200
+
+    except pymysql.err.InternalError:
+        db.rollback()
+        return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
+    except pymysql.err.OperationalError:
+        db.rollback()
+        return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
+    except pymysql.err.ProgrammingError:
+        db.rollback()
+        return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
+    except pymysql.err.IntegrityError:
+        db.rollback()
+        return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
+    except pymysql.err.DataError:
+        db.rollback()
+        return jsonify(message="DATA_ERROR"), 400
+    except KeyError:
+        db.rollback()
+        return jsonify(message="KEY_ERROR"), 400
+    except Exception as e:
+        db.rollback()
+        return jsonify(message=f"{e}"), 500
+    finally:
+        if db:
+            db.close()
