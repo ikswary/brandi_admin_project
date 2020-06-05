@@ -4,7 +4,7 @@ from connections import get_db_connector
 
 csv_list = [
     'actions', 'attribute_group', 'color_filters', 'colors', 'countries', 'first_categories',
-    'roles', 'second_categories', 'seller_attributes', 'seller_statuses', 'sidebar',
+    'roles', 'second_categories', 'seller_attributes', 'statuses', 'sidebar',
     'sidebar_detail', 'sizes', 'status_actions', 'style_filters'
 ]
 
