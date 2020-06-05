@@ -5,6 +5,7 @@ from custom_encoder import JsonCustomEncoder
 from controllers.user_controllers import user_app
 from controllers.main_controllers import main_app
 
+
 def create_app():
     app = Flask(__name__)
     CORS(app)
