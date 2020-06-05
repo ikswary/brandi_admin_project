@@ -11,13 +11,14 @@ from flask import Blueprint, request, jsonify
 
 from my_settings import SERCRET, HASH_ALGORITHM
 from connections import get_db_connector
+from .decorator import login_required
 from .models import (
     is_account_exists,
     insert_users,
     insert_user_details,
     insert_managers,
     insert_user_managers,
-    get_id_password_from_account
+    get_id_role_password_from_account,
 )
 
 user_app = Blueprint('user_app', __name__)
@@ -156,13 +157,14 @@ def sign_in():
         if not is_account_exists(db, data['account']):
             return jsonify(message="ACCOUNT_DOES_NOT_EXIST"), 404
 
-        result = get_id_password_from_account(db, data['account'])
+        result = get_id_role_password_from_account(db, data['account'])
         if not bcrypt.checkpw(data['password'].encode('utf-8'), result['password'].encode('utf-8')):
             return jsonify(message="PASSWORD_MISMATCH"), 403
 
         token = jwt.encode(
             {
-                'user_id': result['user_id'],
+                'role_id': result['role_id'],
+                'user_id': result['id'],
                 'exp': datetime.utcnow() + timedelta(hours=1)
             },
             SERCRET,
@@ -170,27 +172,33 @@ def sign_in():
         )
         return jsonify(message="SIGN_IN_COMPLETE", token=token), 200
 
-    except pymysql.err.InternalError:
-        db.rollback()
-        return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
-    except pymysql.err.OperationalError:
-        db.rollback()
-        return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
-    except pymysql.err.ProgrammingError:
-        db.rollback()
-        return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
-    except pymysql.err.IntegrityError:
-        db.rollback()
-        return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
-    except pymysql.err.DataError:
-        db.rollback()
-        return jsonify(message="DATA_ERROR"), 400
-    except KeyError:
-        db.rollback()
-        return jsonify(message="KEY_ERROR"), 400
-    except Exception as e:
-        db.rollback()
-        return jsonify(message=f"{e}"), 500
+    # except pymysql.err.InternalError:
+    #     db.rollback()
+    #     return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
+    # except pymysql.err.OperationalError:
+    #     db.rollback()
+    #     return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
+    # except pymysql.err.ProgrammingError:
+    #     db.rollback()
+    #     return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
+    # except pymysql.err.IntegrityError:
+    #     db.rollback()
+    #     return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
+    # except pymysql.err.DataError:
+    #     db.rollback()
+    #     return jsonify(message="DATA_ERROR"), 400
+    # except KeyError:
+    #     db.rollback()
+    #     return jsonify(message="KEY_ERROR"), 400
+    # except Exception as e:
+    #     db.rollback()
+    #     return jsonify(message=f"{e}"), 500
     finally:
         if db:
             db.close()
+
+
+@user_app.route('deco', methods=['GET'])
+@login_required
+def deco():
+    return 'OK', 200
