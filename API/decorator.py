@@ -7,7 +7,7 @@ from my_settings import SERCRET, HASH_ALGORITHM
 
 def login_required(func):
     @wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper():
         """로그인 데코레이터
 
             Args:+
