@@ -29,7 +29,7 @@ user_app = Blueprint('user_app', __name__)
 class UserController(MethodView):
     MASTER_ROLE_ID = 1
     SELLER_ROLE_ID = 2
-    BASIC_STATUS_ID = 2
+    BASIC_STATUS_ID = 1
 
     def post(self):
         """회원가입 API
