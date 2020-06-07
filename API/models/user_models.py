@@ -145,3 +145,98 @@ def get_user_status_history(db, user_id):
     except Exception as e:
         raise e
 
+
+def get_user_current_detail_id(db, user_id):
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            query = """
+            SELECT id FROM seller_details
+            WHERE enddate = 99991231235959 AND user_id = %s
+            """
+            cursor.execute(query, user_id)
+            if cursor.rowcount:
+                return cursor.fetchone()['id']
+
+            return None
+
+    except Exception as e:
+        raise e
+
+
+def get_detail(db, detail_id):
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            query = """
+            SELECT seller_attribute_id,
+            seller_name,
+            seller_name_eng,
+            cs_phone,
+            site_url,
+            profile_image,
+            introduction_short,
+            introduction_detail,
+            background_image,
+            zip_code,
+            address,
+            address_detail,
+            weekday_start_time,
+            weekday_end_time,
+            weekend_start_time,
+            weekend_end_time,
+            bank,
+            bank_account_name,
+            bank_account_number,
+            height,
+            top_size,
+            bottom_size,
+            foot_size,
+            feed
+            FROM seller_details
+            WHERE id = %s
+            """
+            cursor.execute(query, detail_id)
+            if cursor.rowcount:
+                return cursor.fetchone()
+
+            return None
+
+    except Exception as e:
+        raise e
+
+
+def get_attribute(db, seller_attributes_id):
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            query = """
+            SELECT id, name FROM seller_attributes
+            WHERE attribute_group_id = (SELECT attribute_group_id 
+            FROM brandi_admin.seller_attributes 
+            WHERE id = %s)
+            """
+            cursor.execute(query, seller_attributes_id)
+            if cursor.rowcount:
+                return cursor.fetchall()
+
+            return None
+
+    except Exception as e:
+        raise e
+
+
+def get_managers(db, detail_id):
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            query = """
+            SELECT managers.name, managers.phone, managers.email 
+            FROM user_managers AS um
+            JOIN managers ON um.manager_id = managers.id
+            WHERE um.user_detail_id = %s AND um.is_deleted = 0
+            """
+            cursor.execute(query, detail_id)
+            if cursor.rowcount:
+                return cursor.fetchall()
+
+            return None
+
+    except Exception as e:
+        raise e
