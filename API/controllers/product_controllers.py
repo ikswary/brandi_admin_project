@@ -25,6 +25,9 @@ from models.product_models import (
 product_app = Blueprint("product_app", __name__)
 
 
+MASTER_ROLE_ID = 1
+SELLER_ROLE_ID = 2
+
 @product_app.route('/seller', methods=['GET'])
 @login_required
 def seller(**kwargs):
@@ -51,7 +54,7 @@ def seller(**kwargs):
             return jsonify(message="DATABASE_INIT_ERROR"), 500
         role_id = kwargs['role_id']
 
-        if role_id == 1:
+        if role_id == MASTER_ROLE_ID:
             seller_data = seller_list(db)
 
             sellers = [{
@@ -115,10 +118,10 @@ def product_category(**kwargs):
         user_id = kwargs['user_id']
         role_id = kwargs['role_id']
 
-        if role_id == 1 :
+        if role_id == MASTER_ROLE_ID :
             seller_id = request.args.get('seller_id')
             attribute_group_id = get_attribute_group_id(db, seller_id)['attribute_group_id']
-        elif role_id == 2 :
+        elif role_id == SELLER_ROLE_ID :
             attribute_group_id = get_attribute_group_id(db, user_id)['attribute_group_id']
         elif role(db, role_id) is None:
             return jsonify(message="DATA_DOES_NOT_EXIST"), 404
@@ -222,3 +225,9 @@ def product_information(**kwargs):
     finally:
         if db:
             db.close()
+
+
+#@product_app.route('/', methods=['POST'])
+#@login_required
+#def save_product(**kwargs):
+
