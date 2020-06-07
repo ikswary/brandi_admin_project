@@ -21,7 +21,11 @@ from models.user_models import (
     insert_user_managers,
     get_id_role_password_status_from_account,
     insert_user_status,
-    get_user_status_history
+    get_user_status_history,
+    get_user_current_detail_id,
+    get_detail,
+    get_attribute,
+    get_managers
 )
 
 user_app = Blueprint('user_app', __name__)
@@ -162,9 +166,16 @@ class UserController(MethodView):
             elif kwargs['role_id'] == self.SELLER_ROLE_ID:
                 user_id = kwargs['user_id']
 
+            detail_id = get_user_current_detail_id(db, user_id)
             status_history = get_user_status_history(db, user_id)
+            details = get_detail(db, detail_id)
+            attributes = get_attribute(db, details['seller_attribute_id'])
+            managers = get_managers(db, detail_id)
 
-            return jsonify(history=status_history), 200
+            return jsonify(details=details,
+                           history=status_history,
+                           attributes=attributes,
+                           managers=managers), 200
 
         except pymysql.err.InternalError:
             db.rollback()
