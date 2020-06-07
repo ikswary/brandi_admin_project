@@ -1,3 +1,4 @@
+attrs==19.3.0
 bcrypt==3.1.7
 certifi==2020.4.5.1
 cffi==1.14.0
@@ -7,10 +8,12 @@ Flask==1.1.2
 Flask-Cors==3.0.8
 itsdangerous==1.1.0
 Jinja2==2.11.2
+jsonschema==3.2.0
 MarkupSafe==1.1.1
 pycparser==2.20
 PyJWT==1.7.1
 PyMySQL==0.9.3
+pyrsistent==0.16.0
 pytz==2020.1
 six==1.15.0
 Werkzeug==1.0.1
