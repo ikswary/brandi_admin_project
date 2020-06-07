@@ -26,7 +26,7 @@ def login_required(func):
             token = request.headers['Authorization']
             decoded_token = jwt.decode(token, SERCRET, HASH_ALGORITHM)
 
-            return func(*args, **decoded_token)
+            return func(*args, **kwargs, **decoded_token)
 
         except jwt.exceptions.DecodeError:
             return jsonify(message="TOKEN_ERROR"), 400
