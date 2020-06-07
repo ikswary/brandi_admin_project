@@ -122,3 +122,26 @@ def get_id_role_password_status_from_account(db, account):
 
     except Exception as e:
         raise e
+
+
+def get_user_status_history(db, user_id):
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            query = """
+            SELECT us.startdate, status.name, user.account
+            FROM user_status AS us
+            JOIN statuses AS status
+            ON us.status_id = status.id
+            JOIN users AS user
+            ON us.modifier_id = user.id
+            WHERE us.user_id = %s AND enddate = 99991231235959
+            """
+            cursor.execute(query, user_id)
+            if cursor.rowcount:
+                return cursor.fetchall()
+
+            return None
+
+    except Exception as e:
+        raise e
+

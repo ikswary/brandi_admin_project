@@ -20,7 +20,8 @@ from models.user_models import (
     insert_managers,
     insert_user_managers,
     get_id_role_password_status_from_account,
-    insert_user_status
+    insert_user_status,
+    get_user_status_history
 )
 
 user_app = Blueprint('user_app', __name__)
@@ -151,11 +152,19 @@ class UserController(MethodView):
                     DataError: 컬럼 타입과 매칭되지 않는 값이 DB에 전달되었을 때 발생
                     KeyError: 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
             """
+
             db = get_db_connector()
             if db is None:
                 return jsonify(message="DATABASE_INIT_ERROR"), 500
 
-            return jsonify(message=kwargs), 200
+            if kwargs['role_id'] == self.MASTER_ROLE_ID:
+                user_id = get_account_id(db, kwargs['user_account'])
+            elif kwargs['role_id'] == self.SELLER_ROLE_ID:
+                user_id = kwargs['user_id']
+
+            status_history = get_user_status_history(db, user_id)
+
+            return jsonify(history=status_history), 200
 
         except pymysql.err.InternalError:
             db.rollback()
@@ -238,29 +247,23 @@ def sign_in():
         return jsonify(message="SIGN_IN_COMPLETE", token=token), 200
 
     except pymysql.err.InternalError:
-        db.rollback()
         return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
     except pymysql.err.OperationalError:
-        db.rollback()
         return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
     except pymysql.err.ProgrammingError:
-        db.rollback()
         return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
     except pymysql.err.IntegrityError:
-        db.rollback()
         return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
     except pymysql.err.DataError:
-        db.rollback()
         return jsonify(message="DATA_ERROR"), 400
     except KeyError:
-        db.rollback()
         return jsonify(message="KEY_ERROR"), 400
     except Exception as e:
-        db.rollback()
         return jsonify(message=f"{e}"), 500
     finally:
         if db:
             db.close()
 
 
-user_app.add_url_rule('', view_func=UserController.as_view(name='sign-up'), methods=['GET', 'POST'])
+user_app.add_url_rule('', view_func=UserController.as_view(name='user_seller'), methods=['GET', 'POST'])
+user_app.add_url_rule('/<string:user_account>', view_func=UserController.as_view(name='user_master'), methods=['GET'])
