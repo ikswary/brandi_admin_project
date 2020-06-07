@@ -36,7 +36,7 @@ def login_required(func):
             return jsonify(message="TOKEN_EXPIRED"), 403
         except KeyError:
             return jsonify(message="TOKEN_DOES_NOT_EXIST"), 400
-        except Exception as e:
-            return jsonify(message=f"{e}"), 500
+        #except Exception as e:
+        #   return jsonify(message=f"{e}"), 500
 
     return wrapper

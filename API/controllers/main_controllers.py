@@ -9,10 +9,10 @@ from flask import Blueprint, request, jsonify
 
 from connections import get_db_connector
 from decorator import login_required
-from models.main_models import sidebar_list, sidebar_detail_list, role
+from models.main_models import MainDao
 
 main_app = Blueprint("main_app", __name__)
-
+main_dao = MainDao()
 
 @main_app.route('/category', methods=['GET'])
 @login_required
@@ -41,17 +41,17 @@ def category(**kwargs):
             return jsonify(message="DATABASE_INIT_ERROR"), 500
         role_id = kwargs['role_id']
 
-        if role(db, role_id) is None:
+        if main_dao.role(db, role_id) is None:
             return jsonify(message="DATA_DOES_NOT_EXIST"), 404
 
-        data = sidebar_list(db, role_id)
+        data = main_dao.sidebar_list(db, role_id)
 
         sidebar = [{
             "id": side_list.get('id'),
             "name": side_list.get('name'),
             "detail_data": [{"id": detail.get('id'),
                              "name": detail.get('name')}
-                            for detail in sidebar_detail_list(db, side_list.get('id'))]
+                            for detail in main_dao.sidebar_detail_list(db, side_list.get('id'))]
         } for side_list in data]
 
         return jsonify(data=sidebar), 200
