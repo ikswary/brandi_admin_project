@@ -53,3 +53,63 @@ def get_attribute_group_id(db, user_id):
             return cursor.fetchone()
     except Exception as e:
         raise e
+
+
+def country_data(db):
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute("""
+            SELECT id, name FROM countries
+            """)
+
+            return cursor.fetchall()
+    except Exception as e:
+        raise e
+
+
+def option_color(db):
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute("""
+            SELECT id, name FROM colors
+            """)
+
+            return cursor.fetchall()
+    except Exception as e:
+        raise e
+
+
+def option_size(db):
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute("""
+            SELECT id, name FROM sizes
+            """)
+
+            return cursor.fetchall()
+    except Exception as e:
+        raise e
+
+
+def color_filter(db):
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute("""
+            SELECT id, name, name_eng, image_url FROM color_filters
+            """)
+
+            return cursor.fetchall()
+    except Exception as e:
+        raise e
+
+
+def style_filter(db):
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute("""
+            SELECT id, name FROM style_filters
+            """)
+
+            return cursor.fetchall()
+    except Exception as e:
+        raise e
