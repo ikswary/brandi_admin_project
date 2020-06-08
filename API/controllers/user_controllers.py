@@ -14,19 +14,16 @@ from my_settings import SERCRET, HASH_ALGORITHM
 from connections import get_db_connector
 from decorator import login_required
 from models.user_models import (
-    get_account_id,
+    get_id_from_account,
+    get_account_from_id,
     insert_users,
     insert_user_details,
     insert_managers,
     insert_user_managers,
     get_id_role_password_status_from_account,
-    insert_user_status,
-    get_user_status_history,
-    get_user_current_detail_id,
-    get_detail,
-    get_attribute,
-    get_managers
+    insert_user_status
 )
+from services.user_get_service import user_get
 
 user_app = Blueprint('user_app', __name__)
 
@@ -90,7 +87,7 @@ class UserController(MethodView):
                 if not validator(data[field]):
                     return jsonify(message=field.upper() + "_VALIDATION_ERROR"), 400
 
-            user_id = get_account_id(db, data['account'])
+            user_id = get_id_from_account(db, data['account'])
             if user_id:
                 return jsonify(message="ACCOUNT_DUPLICATED"), 409
 
@@ -156,26 +153,20 @@ class UserController(MethodView):
                     DataError: 컬럼 타입과 매칭되지 않는 값이 DB에 전달되었을 때 발생
                     KeyError: 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
             """
-
             db = get_db_connector()
             if db is None:
                 return jsonify(message="DATABASE_INIT_ERROR"), 500
 
             if kwargs['role_id'] == self.MASTER_ROLE_ID:
-                user_id = get_account_id(db, kwargs['user_account'])
+                user_account = kwargs['user_account']
+                user_id = get_id_from_account(db, user_account)
             elif kwargs['role_id'] == self.SELLER_ROLE_ID:
                 user_id = kwargs['user_id']
+                user_account = get_account_from_id(db, user_id)
 
-            detail_id = get_user_current_detail_id(db, user_id)
-            status_history = get_user_status_history(db, user_id)
-            details = get_detail(db, detail_id)
-            attributes = get_attribute(db, details['seller_attribute_id'])
-            managers = get_managers(db, detail_id)
+            result = user_get(db, user_id, user_account, kwargs['role_id'])
 
-            return jsonify(details=details,
-                           history=status_history,
-                           attributes=attributes,
-                           managers=managers), 200
+            return jsonify(result), 200
 
         except pymysql.err.InternalError:
             db.rollback()
