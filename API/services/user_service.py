@@ -5,7 +5,6 @@ from models.user_models import (
     insert_user_managers,
     insert_user_status,
     get_user_status_history,
-    get_user_current_detail_id,
     get_detail,
     get_attribute,
     get_managers
@@ -18,26 +17,25 @@ BASIC_STATUS_ID = 1
 
 def sign_up_service(db, data):
     try:
-        user_id = insert_users(db, SELLER_ROLE_ID, data['account'])
-        insert_user_details(db, user_id=user_id, **data)
-        manager_id = insert_managers(db, data['manager_phone'])
-        insert_user_managers(db, user_id=user_id, manager_id=manager_id)
-        insert_user_status(db, user_id=user_id, modifier_id=user_id, status_id=BASIC_STATUS_ID)
+        user_id = insert_users(db, SELLER_ROLE_ID, data['account'])  # root user 레코드 생성
+        insert_user_details(db, user_id=user_id, **data)  # user details 레코드 생성
+        manager_id = insert_managers(db, data['manager_phone'])  # managers 레코드 생성
+        insert_user_managers(db, user_id=user_id, manager_id=manager_id)  # user_managers 레코드 생성
+        insert_user_status(db, user_id=user_id, modifier_id=user_id, status_id=BASIC_STATUS_ID)  # user의 상태를 입점 대기로 설정
     except Exception as e:
         raise e
 
 
 def get_user_data_service(db, user_id, account, role_id):
     try:
-        detail_id = get_user_current_detail_id(db, user_id)
-        status_history = get_user_status_history(db, user_id)
-        details = get_detail(db, detail_id)
-        attributes = get_attribute(db, details['seller_attribute_id'])
-        managers = get_managers(db, user_id)
+        status_history = get_user_status_history(db, user_id)  # user_status의 변경 기록을 조회
+        details = get_detail(db, user_id)  # user의 최신 details 레코드 조회
+        attributes = get_attribute(db, details['seller_attribute_id'])  # user의 최신 details에서 속성 조회
+        managers = get_managers(db, user_id) # user의 현재 담당자 조
 
         result = {
-            'role': role_id,
-            'base_info': {
+            'role': role_id,  # 셀러/마스터
+            'base_info': {   # 기본 정보
                 "profile_image": details['profile_image'],
                 "seller_status": status_history[-1]['name'],
                 "seller_attributes": {
@@ -48,7 +46,7 @@ def get_user_data_service(db, user_id, account, role_id):
                 "seller_name_eng": details['seller_name'],
                 "seller_account": account,
             },
-            'detail_info': {
+            'detail_info': {  # 상세 정보
                 "background_image": details['background_image'],
                 "introduction_short": details['introduction_short'],
                 "introduction_detail": details['introduction_detail'],
@@ -67,12 +65,13 @@ def get_user_data_service(db, user_id, account, role_id):
                 "bank_account_number": details['bank_account_number'],
                 "seller_status_history": status_history
             },
-            'model_size': {
+            'model_size': {  # 모델 사이즈
                 "height": details['height'],
                 "top_size": details['top_size'],
                 "bottom_size": details['bottom_size'],
                 "foot_size": details['foot_size']
-            }
+            },
+            'feed': details['feed']
         }
 
         return result

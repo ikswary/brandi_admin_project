@@ -187,7 +187,7 @@ def get_user_status_history(db, user_id):
             if cursor.rowcount:
                 return cursor.fetchall()
 
-            return None
+            raise Exception('QUERY_RETURNED_NOTHING')
 
     except Exception as e:
         raise e
@@ -207,13 +207,13 @@ def get_user_current_detail_id(db, user_id):
             if cursor.rowcount:
                 return cursor.fetchone()['id']
 
-            return None
+            raise Exception('QUERY_RETURNED_NOTHING')
 
     except Exception as e:
         raise e
 
 
-def get_detail(db, detail_id):
+def get_detail(db, user_id):
     try:
         with db.cursor(pymysql.cursors.DictCursor) as cursor:
             query = """
@@ -242,16 +242,16 @@ def get_detail(db, detail_id):
             foot_size,
             feed
             FROM seller_details
-            WHERE id = %s
+            WHERE id = %s AND enddate = 99991231235959
             """
 
-            affected_row = cursor.execute(query, detail_id)
+            affected_row = cursor.execute(query, user_id)
             if affected_row == -1:
                 raise Exception('EXECUTE_FAILED')
             if cursor.rowcount:
                 return cursor.fetchone()
 
-            return None
+            raise Exception('QUERY_RETURNED_NOTHING')
 
     except Exception as e:
         raise e
@@ -273,7 +273,7 @@ def get_attribute(db, seller_attributes_id):
             if cursor.rowcount:
                 return cursor.fetchall()
 
-            return None
+            raise Exception('QUERY_RETURNED_NOTHING')
 
     except Exception as e:
         raise e
@@ -295,7 +295,7 @@ def get_managers(db, user_id):
             if cursor.rowcount:
                 return cursor.fetchall()
 
-            return None
+            raise Exception('QUERY_RETURNED_NOTHING')
 
     except Exception as e:
         raise e
