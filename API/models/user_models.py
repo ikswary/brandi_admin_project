@@ -1,7 +1,7 @@
 import pymysql
 
 
-def get_account_id(db, account):
+def get_id_from_account(db, account):
     try:
         with db.cursor(pymysql.cursors.DictCursor) as cursor:
             query = """
@@ -11,6 +11,23 @@ def get_account_id(db, account):
             cursor.execute(query, account)
             if cursor.rowcount:
                 return cursor.fetchone()['id']
+
+            return None
+
+    except Exception as e:
+        raise e
+
+
+def get_account_from_id(db, user_id):
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            query = """
+            SELECT account FROM users
+            WHERE id = %s AND is_deleted = 0
+            """
+            cursor.execute(query, user_id)
+            if cursor.rowcount:
+                return cursor.fetchone()['account']
 
             return None
 

@@ -14,11 +14,9 @@ def login_required(func):
                 func: 로그인 토큰 검증이 필요한 함
 
             Returns:
-                token{
-                    user_id : 로그인 시도 유저 pk
-                    role_id : 로그인 시도 유저의 권한
-                    exp : 토큰 만료 시간
-                }
+                user_id : 로그인 시도 유저 pk
+                role_id : 로그인 시도 유저의 권한
+
 
             Exceptions:수
                 DecodeError: jwt형식이 유효하지 않을때 발생
