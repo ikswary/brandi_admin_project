@@ -6,10 +6,12 @@ sys.path.extend([BASE_DIR])
 import pymysql
 import bcrypt
 import jwt
+from jsonschema import validate, ValidationError
 from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify
 from flask.views import MethodView
 
+from jsonschemas import SIGN_UP_SCHEMA, SIGN_IN_SCHEMA
 from my_settings import SERCRET, HASH_ALGORITHM
 from connections import get_db_connector
 from decorator import login_required
@@ -56,36 +58,15 @@ class UserController(MethodView):
             DataError: 컬럼 타입과 매칭되지 않는 값이 DB에 전달되었을 때 발생
             KeyError: 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
         """
-        required_keys = ('account', 'password', 'seller_name', 'seller_name_eng',
-                         'manager_phone', 'cs_phone', 'seller_attribute_id', 'site_url')
-        validation_rules = {
-            'account': lambda account: True if re.match(
-                '^[a-z0-9\-_]{5,20}$', account) else False,
-            'password': lambda password: True if re.match(
-                '^(?=.*\d{1,20})(?=.*[~`!@#$%\^&*()-+=]{1,20})(?=.*[a-z]{1,20})(?=.*[A-Z]{1,20}).{8,20}$',
-                password) else False,
-            'seller_name': lambda seller_name: True if re.match(
-                '^[가-힣a-zA-z0-9]{1,50}$', seller_name) else False,
-            'seller_name_eng': lambda seller_name_eng: True if re.match(
-                '^[a-z]{1,100}$', seller_name_eng) else False,
-            'manager_phone': lambda manager_phone: True if re.match(
-                '^01(0|1|[6-9])-([0-9]{4})-([0-9]{4})$', manager_phone) else False,
-            'cs_phone': lambda cs_number: True if re.match(
-                '^(0[1-6][0-4]?)-(?:\d{3}|\d{4})-\d{4}$', cs_number) else False,
-            'site_url': lambda site_url: True if re.match(
-                '^(https?://)(([a-z0-9\-]+)\.)+[a-z0-9]{2,4}$', site_url) else False,
-        }
+        validate(request.json, SIGN_UP_SCHEMA)
+
         db = None
         try:
             db = get_db_connector()
             if db is None:
                 return jsonify(message="DATABASE_INIT_ERROR"), 500
-            data = {}
-            for key in required_keys:
-                data[key] = request.json[key]
-            for field, validator in validation_rules.items():
-                if not validator(data[field]):
-                    return jsonify(message=field.upper() + "_VALIDATION_ERROR"), 400
+
+            data = request.json
 
             user_id = get_id_from_account(db, data['account'])
             if user_id:
@@ -122,6 +103,9 @@ class UserController(MethodView):
         except KeyError:
             db.rollback()
             return jsonify(message="KEY_ERROR"), 400
+        except ValidationError as e:
+            error_path = str(e.path)[8:-3]
+            return jsonify(message=f"{error_path.upper()}_VALIDATION_ERROR"), 400
         except Exception as e:
             db.rollback()
             return jsonify(message=f"{e}"), 500
@@ -219,16 +203,16 @@ def sign_in():
             DataError: 컬럼 타입과 매칭되지 않는 값이 DB에 전달되었을 때 발생
             KeyError: 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
         """
-    required_keys = ('account', 'password')
+
+    validate(request.json, SIGN_IN_SCHEMA)
 
     db = None
     try:
         db = get_db_connector()
         if db is None:
             return jsonify(message="DATABASE_INIT_ERROR"), 500
-        data = {}
-        for key in required_keys:
-            data[key] = request.json[key]
+
+        data = request.json
 
         result = get_id_role_password_status_from_account(db, data['account'])
         if not result:
