@@ -163,6 +163,8 @@ class UserController(MethodView):
             elif kwargs['role_id'] == self.SELLER_ROLE_ID:
                 user_id = kwargs['user_id']
                 user_account = get_account_from_id(db, user_id)
+            if user_account is None or user_id is None:
+                return jsonify(message="INVALID_REQUEST"), 400
 
             result = user_get(db, user_id, user_account, kwargs['role_id'])
 
