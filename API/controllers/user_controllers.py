@@ -18,19 +18,14 @@ from decorator import login_required
 from models.user_models import (
     get_id_from_account,
     get_account_from_id,
-    insert_users,
-    insert_user_details,
-    insert_managers,
-    insert_user_managers,
-    get_id_role_password_status_from_account,
-    insert_user_status
+    get_id_role_password_status_from_account
 )
-from services.user_get_service import user_get
+from services.user_service import get_user_data_service, sign_up_service
 
 user_app = Blueprint('user_app', __name__)
 
 
-class UserController(MethodView):
+class User(MethodView):
     MASTER_ROLE_ID = 1
     SELLER_ROLE_ID = 2
     BASIC_STATUS_ID = 1
@@ -56,12 +51,12 @@ class UserController(MethodView):
             ProgramingError: SQL syntax가 잘못되었을 때 발생
             IntegrityError: Key의 무결성을 해쳤을 때 발생
             DataError: 컬럼 타입과 매칭되지 않는 값이 DB에 전달되었을 때 발생
-            KeyError: 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
+            ValidationError : 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
         """
-        validate(request.json, SIGN_UP_SCHEMA)
 
         db = None
         try:
+            validate(request.json, SIGN_UP_SCHEMA)
             db = get_db_connector()
             if db is None:
                 return jsonify(message="DATABASE_INIT_ERROR"), 500
@@ -76,11 +71,7 @@ class UserController(MethodView):
                                              bcrypt.gensalt()).decode('utf-8')
 
             db.begin()
-            user_id = insert_users(db, self.SELLER_ROLE_ID, data['account'])
-            user_detail_id = insert_user_details(db, user_id=user_id, **data)
-            manager_id = insert_managers(db, data['manager_phone'])
-            insert_user_managers(db, user_detail_id=user_detail_id, manager_id=manager_id)
-            insert_user_status(db, user_id=user_id, modifier_id=user_id, status_id=self.BASIC_STATUS_ID)
+            sign_up_service(db, data)
             db.commit()
 
             return jsonify(message="SIGN_UP_COMPLETE"), 200
@@ -140,7 +131,6 @@ class UserController(MethodView):
             db = get_db_connector()
             if db is None:
                 return jsonify(message="DATABASE_INIT_ERROR"), 500
-
             if kwargs['role_id'] == self.MASTER_ROLE_ID:
                 user_account = kwargs['user_account']
                 user_id = get_id_from_account(db, user_account)
@@ -150,7 +140,7 @@ class UserController(MethodView):
             if user_account is None or user_id is None:
                 return jsonify(message="INVALID_REQUEST"), 400
 
-            result = user_get(db, user_id, user_account, kwargs['role_id'])
+            result = get_user_data_service(db, user_id, user_account, kwargs['role_id'])
 
             return jsonify(result), 200
 
@@ -179,6 +169,9 @@ class UserController(MethodView):
             if db:
                 db.close()
 
+    # @login_required
+    # def put(self, **kwargs):
+
 
 @user_app.route('sign-in', methods=['POST'])
 def sign_in():
@@ -201,13 +194,12 @@ def sign_in():
             ProgramingError: SQL syntax가 잘못되었을 때 발생
             IntegrityError: Key의 무결성을 해쳤을 때 발생
             DataError: 컬럼 타입과 매칭되지 않는 값이 DB에 전달되었을 때 발생
-            KeyError: 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
+            ValidationError : 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
         """
-
-    validate(request.json, SIGN_IN_SCHEMA)
 
     db = None
     try:
+        validate(request.json, SIGN_IN_SCHEMA)
         db = get_db_connector()
         if db is None:
             return jsonify(message="DATABASE_INIT_ERROR"), 500
@@ -219,8 +211,8 @@ def sign_in():
             return jsonify(message="ACCOUNT_DOES_NOT_EXIST"), 404
         if not bcrypt.checkpw(data['password'].encode('utf-8'), result['password'].encode('utf-8')):
             return jsonify(message="PASSWORD_MISMATCH"), 403
-        if (result['role_id'] == UserController.SELLER_ROLE_ID
-                and result['status_id'] == UserController.BASIC_STATUS_ID):
+        if (result['role_id'] == User.SELLER_ROLE_ID
+                and result['status_id'] == User.BASIC_STATUS_ID):
             return jsonify(message="NOT_AUTHORIZED_USER"), 403
 
         token = jwt.encode(
@@ -246,6 +238,9 @@ def sign_in():
         return jsonify(message="DATA_ERROR"), 400
     except KeyError:
         return jsonify(message="KEY_ERROR"), 400
+    except ValidationError as e:
+        error_path = str(e.path)[8:-3]
+        return jsonify(message=f"{error_path.upper()}_VALIDATION_ERROR"), 400
     except Exception as e:
         return jsonify(message=f"{e}"), 500
     finally:
@@ -253,5 +248,5 @@ def sign_in():
             db.close()
 
 
-user_app.add_url_rule('', view_func=UserController.as_view(name='user_seller'), methods=['GET', 'POST'])
-user_app.add_url_rule('/<string:user_account>', view_func=UserController.as_view(name='user_master'), methods=['GET'])
+user_app.add_url_rule('', view_func=User.as_view(name='user_seller'), methods=['GET', 'POST'])
+user_app.add_url_rule('/<string:user_account>', view_func=User.as_view(name='user_master'), methods=['GET'])

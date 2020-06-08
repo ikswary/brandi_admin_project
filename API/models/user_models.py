@@ -97,8 +97,8 @@ def insert_user_managers(db, **kwargs):
     try:
         with db.cursor() as cursor:
             query = """
-            INSERT INTO user_managers(user_detail_id, manager_id)
-            VALUES(%(user_detail_id)s, %(manager_id)s)
+            INSERT INTO user_managers(user_id, manager_id)
+            VALUES(%(user_id)s, %(manager_id)s)
             """
             cursor.execute(query, kwargs)
     except Exception as e:
@@ -240,16 +240,16 @@ def get_attribute(db, seller_attributes_id):
         raise e
 
 
-def get_managers(db, detail_id):
+def get_managers(db, user_id):
     try:
         with db.cursor(pymysql.cursors.DictCursor) as cursor:
             query = """
             SELECT managers.name, managers.phone, managers.email 
             FROM user_managers AS um
             JOIN managers ON um.manager_id = managers.id
-            WHERE um.user_detail_id = %s AND um.is_deleted = 0
+            WHERE um.user_id = %s AND um.is_deleted = 0
             """
-            cursor.execute(query, detail_id)
+            cursor.execute(query, user_id)
             if cursor.rowcount:
                 return cursor.fetchall()
 

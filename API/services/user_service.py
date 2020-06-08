@@ -1,4 +1,9 @@
 from models.user_models import (
+    insert_users,
+    insert_user_details,
+    insert_managers,
+    insert_user_managers,
+    insert_user_status,
     get_user_status_history,
     get_user_current_detail_id,
     get_detail,
@@ -6,14 +11,29 @@ from models.user_models import (
     get_managers
 )
 
+MASTER_ROLE_ID = 1
+SELLER_ROLE_ID = 2
+BASIC_STATUS_ID = 1
 
-def user_get(db, user_id, account, role_id):
+
+def sign_up_service(db, data):
+    try:
+        user_id = insert_users(db, SELLER_ROLE_ID, data['account'])
+        insert_user_details(db, user_id=user_id, **data)
+        manager_id = insert_managers(db, data['manager_phone'])
+        insert_user_managers(db, user_id=user_id, manager_id=manager_id)
+        insert_user_status(db, user_id=user_id, modifier_id=user_id, status_id=BASIC_STATUS_ID)
+    except Exception as e:
+        raise e
+
+
+def get_user_data_service(db, user_id, account, role_id):
     try:
         detail_id = get_user_current_detail_id(db, user_id)
         status_history = get_user_status_history(db, user_id)
         details = get_detail(db, detail_id)
         attributes = get_attribute(db, details['seller_attribute_id'])
-        managers = get_managers(db, detail_id)
+        managers = get_managers(db, user_id)
 
         result = {
             'role': role_id,
