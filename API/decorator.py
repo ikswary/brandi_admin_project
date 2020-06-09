@@ -14,7 +14,9 @@ def login_required(func):
                 func: 로그인 토큰 검증이 필요한 함
 
             Returns:
-                func()
+                user_id : 로그인 시도 유저 pk
+                role_id : 로그인 시도 유저의 권한
+
 
             Exceptions:수
                 DecodeError: jwt형식이 유효하지 않을때 발생
@@ -29,7 +31,7 @@ def login_required(func):
             return func(*args, **kwargs, **decoded_token)
 
         except jwt.exceptions.DecodeError:
-            return jsonify(message="TOKEN_ERROR"), 400
+            return jsonify(message="TOKEN_NOT_RIGHT"), 400
         except jwt.ExpiredSignatureError:
             return jsonify(message="TOKEN_EXPIRED"), 403
         except KeyError:
