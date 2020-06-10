@@ -194,30 +194,30 @@ class User(MethodView):
                 seller_name: 셀러 이름,
                 seller_name_eng: 셀러 영어 이름,
                 seller_account: 셀러 계정,
-                "background_image": 배경 이미지(url),
-                "introduction_short": 셀러 한줄 소개,
-                "introduction_detail": 셀러 상세 소개,
-                "site_url": 홈페이지,
-                "manager": {
+                background_image: 배경 이미지(url),
+                introduction_short: 셀러 한줄 소개,
+                introduction_detail: 셀러 상세 소개,
+                site_url: 홈페이지,
+                manager: {
                                 "name: 담당자 이름,
                                 "phone": 담당자 전화번호,
                                 "email": 담당자 이메일
                             }
-                "cs_phone": 고객센터 전화번호,
-                "zip_code": 우편번호,
-                "address": 주소,
-                "address_detail": 상세 주소,
-                "weekday_start_time": 고객센터 운영시작시간(주중),
-                "weekday_end_time": 고객센터 운영종료시간(주중),
-                "weekend_start_time": 고객센터 운영시작시간(주말),
-                "weekend_end_time": 고객센터 운영시작시간(주말),
-                "bank": 정산은행,
-                "bank_account_name": 예금주,
-                "bank_account_number": 계좌번호
-                "height": 모델 키,
-                "top_size": 모델 상의 사이즈,
-                "bottom_size": 모델 하의 사이즈,
-                "foot_size": 모델 발 사이즈
+                cs_phone: 고객센터 전화번호,
+                zip_code: 우편번호,
+                address: 주소,
+                address_detail: 상세 주소,
+                weekday_start_time: 고객센터 운영시작시간(주중),
+                weekday_end_time: 고객센터 운영종료시간(주중),
+                weekend_start_time: 고객센터 운영시작시간(주말),
+                weekend_end_time: 고객센터 운영시작시간(주말),
+                bank: 정산은행,
+                bank_account_name: 예금주,
+                bank_account_number: 계좌번호
+                height: 모델 키,
+                top_size: 모델 상의 사이즈,
+                bottom_size: 모델 하의 사이즈,
+                foot_size: 모델 발 사이즈
 
             Returns:
                 {message: STATUS_MESSAGE}, http status code
@@ -354,6 +354,73 @@ def sign_in():
         return jsonify(message=f"{error_path.upper()}_VALIDATION_ERROR"), 400
     except Exception as e:
         return jsonify(message=f"{e}"), 500
+    finally:
+        if db:
+            db.close()
+
+
+@user_app.route('list', methods=['GET'])
+@login_required
+def user_list(**kwargs):
+    """마스터 유저의 셀러 정보 수정 페이지의 리스트를 리턴하는 API
+
+                Header:
+                    Authorizaion: jwt
+
+                Query Strings:
+                    <string:user_account>: 마스터권한일 경우 대상
+
+                Returns:
+                    {
+                        message: STATUS_MESSAGE
+                        token: JWT_TOKEN
+                        },
+                    http status code
+
+                Exceptions:
+                    InternalError: DATABASE가 존재하지 않을 때 발생
+                    OperationalError: DATABASE 접속이 인가되지 않았을 때 발생
+                    ProgramingError: SQL syntax가 잘못되었을 때 발생
+                    IntegrityError: 컬럼의 무결성을 해쳤을 때 발생
+                    DataError: 컬럼 타입과 매칭되지 않는 값이 DB에 전달되었을 때 발생
+                    KeyError: 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
+            """
+    db = None
+    try:
+        db = get_db_connector()
+        if db is None:
+            return jsonify(message="DATABASE_INIT_ERROR"), 500
+
+        if kwargs['role_id'] == USER_DATA_MODIFY_SELLER:
+            return jsonify(message="NOT_AUTHORIZED_USER"), 403
+
+        lists = user_dao.get_seller_list(db, offset=0, limit=1000)
+
+
+
+        return jsonify(list = lists), 200
+
+    # except pymysql.err.INVALID_REQUESTternalError:
+    #     db.rollback()
+    #     return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
+    # except pymysql.err.OperationalError:
+    #     db.rollback()
+    #     return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
+    # except pymysql.err.ProgrammingError:
+    #     db.rollback()
+    #     return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
+    # except pymysql.err.IntegrityError:
+    #     db.rollback()
+    #     return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
+    # except pymysql.err.DataError:
+    #     db.rollback()
+    #     return jsonify(message="DATA_ERROR"), 400
+    # except KeyError:
+    #     db.rollback()
+    #     return jsonify(message="KEY_ERROR"), 400
+    # except Exception as e:
+    #     db.rollback()
+    #     return jsonify(message=f"{e}"), 500
     finally:
         if db:
             db.close()

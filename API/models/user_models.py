@@ -267,10 +267,10 @@ class UserDao:
                 zip_code,
                 address,
                 address_detail,
-                weekday_start_time,
-                weekday_end_time,
-                weekend_start_time,
-                weekend_end_time,
+                TIME_FORMAT(weekday_start_time, '%%H:%%i') AS weekday_start_time,
+                TIME_FORMAT(weekday_end_time, '%%H:%%i') AS weekday_end_time,
+                TIME_FORMAT(weekend_start_time, '%%H:%%i') AS weekend_start_time,
+                TIME_FORMAT(weekend_end_time, '%%H:%%i') AS weekend_end_time,
                 bank,
                 bank_account_name,
                 bank_account_number,
@@ -314,6 +314,7 @@ class UserDao:
             with db.cursor() as cursor:
                 query = """
                 INSERT INTO seller_details(
+                startdate,
                 user_id,
                 modifier_id,
                 password,
@@ -340,9 +341,10 @@ class UserDao:
                 top_size,
                 bottom_size,
                 foot_size,
-                feed
+                feed,
                 )
                 VALUES(
+                %(startdate)s,
                 %(user_id)s,
                 %(modifier_id)s,
                 %(password)s,
@@ -424,6 +426,54 @@ class UserDao:
                 affected_row = cursor.execute(query, kwargs)
                 if affected_row == -1:
                     raise Exception('EXECUTE_FAILED')
+
+        except Exception as e:
+            raise e
+
+    def get_seller_list(self, db, **kwargs):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT 
+                    user.id,
+                    user.account,
+                    user.create_at as created_at,
+                    detail.seller_name as name,
+                    detail.seller_name_eng as name_eng,
+                    detail.site_url,
+                    manager.name as manager_name,
+                    manager.phone as manager_phone,
+                    manager.email as manager_email,
+                    status.name as seller_status,
+                    attr.name as seller_attribute,
+                    (SELECT COUNT(*) FROM users AS user
+                    INNER JOIN products AS product
+                    ON product.user_id = user.id AND product.is_deleted = 0) AS product_amount
+                FROM users AS user
+                INNER JOIN seller_details AS detail
+                ON detail.user_id = user.id AND detail.enddate = 99991231235959
+                INNER JOIN user_managers AS um
+                ON um.user_id = user.id AND um.is_deleted = 0 AND um.list_order = 1
+                INNER JOIN managers AS manager
+                ON um.manager_id = manager.id
+                INNER JOIN user_status AS us
+                ON user.id = us.user_id AND us.enddate = 99991231235959
+                INNER JOIN statuses AS status
+                ON us.status_id = status.id
+                INNER JOIN seller_attributes AS attr
+                ON attr.id = detail.seller_attribute_id 
+                WHERE user.role_id = 2
+                ORDER BY id DESC
+                LIMIT %(limit)s OFFSET %(offset)s
+                """
+
+                affected_row = cursor.execute(query, kwargs)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if cursor.rowcount:
+                    return affected_row, cursor.fetchall()
+
+                raise Exception('QUERY_RETURNED_NOTHING')
 
         except Exception as e:
             raise e

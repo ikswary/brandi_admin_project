@@ -1,4 +1,5 @@
 from datetime import datetime
+from copy import deepcopy
 
 from models.user_models import UserDao
 
@@ -15,7 +16,8 @@ def sign_up_service(db, data):
         user_dao.insert_user_details_first(db, user_id=user_id, **data)  # user details 레코드 생성
         manager_id = user_dao.insert_managers_first(db, data['manager_phone'])  # managers 레코드 생성
         user_dao.insert_user_managers_first(db, user_id=user_id, manager_id=manager_id)  # user_managers 레코드 생성
-        user_dao.insert_user_status(db, user_id=user_id, modifier_id=user_id, status_id=BASIC_STATUS_ID)  # user의 상태를 입점 대기로 설정
+        user_dao.insert_user_status(db, user_id=user_id, modifier_id=user_id,
+                                    status_id=BASIC_STATUS_ID)  # user의 상태를 입점 대기로 설정
     except Exception as e:
         raise e
 
@@ -80,37 +82,68 @@ def user_data_formatter(role_id, account, details, managers, attributes, status_
 
 
 def user_data_deformatter(base_info, detail_info, model_size):
-    detail_info.update(base_info)
-    detail_info.update(model_size)
-    managers = detail_info.pop('managers')
+    try:
+        detail_info.update(base_info)
+        detail_info.update(model_size)
+        managers = detail_info.pop('managers')
 
-    return detail_info, managers
+        return detail_info, managers
+
+    except Exception as e:
+        raise e
 
 
 def user_update_service(db, user_id, modifier_id, details, managers):
-    # detail 현재 레코드 조회하여 변경점 적용 후 update
-    current_detail = user_dao.get_user_detail(db, user_id)
-    print(current_detail)
-    current_detail.update(details)
+    try:
+        # user detail modify와 manager modify를 호출
+        user_detail_modify_service(db, user_id, modifier_id, details)
+        user_manager_modify_service(db, user_id, managers)
 
-    current_detail['user_id'] = user_id
-    current_detail['modifier_id'] = modifier_id
-    user_detail_modify_service(db, user_id, current_detail)
-    user_manager_modify_service(db, user_id, managers)
+    except Exception as e:
+        raise e
 
 
-def user_detail_modify_service(db, user_id, details):
-    enddate = datetime.now().strftime("%Y%m%d%H%M%S")
+def user_detail_modify_service(db, user_id, modifier_id, details):
+    try:
+        # detail 현재 레코드와 request로 전달받은 부분을 합치고
+        # 바뀐부분이 있는지 check후 update
+        last_detail = user_dao.get_user_detail(db, user_id)
+        current_detail = deepcopy(last_detail)
+        current_detail.update(details)
 
-    user_dao.update_detail(db, user_id, enddate)
-    user_dao.insert_user_details(db, details)
+        # 현재 request에서 전달받은 detail과 DB의 detail이 다르면 update 수행
+        if current_detail != last_detail:
+            current_time = datetime.now().strftime("%Y%m%d%H%M%S")
+            current_detail['user_id'] = user_id
+            current_detail['modifier_id'] = modifier_id
+            current_detail['startdate'] = current_time
+            user_dao.update_detail(db, user_id, current_time)
+            user_dao.insert_user_details(db, current_detail)
+
+    except Exception as e:
+        raise e
 
 
 def user_manager_modify_service(db, user_id, managers):
-    order = 1
+    try:
+        order = 1
 
-    user_dao.update_manager(db, user_id)
-    for manager in managers:
-        manager_id = user_dao.insert_managers(db, manager)
-        user_dao.insert_user_managers(db, user_id=user_id, manager_id=manager_id, list_order=order)
-        order += 1
+        # 현재 user의 manager는 소프트 딜리트 하고
+        # 전달받은 manager를 모두 Update
+        user_dao.update_manager(db, user_id)
+        for manager in managers:
+            manager_id = user_dao.insert_managers(db, manager)
+            user_dao.insert_user_managers(db, user_id=user_id, manager_id=manager_id, list_order=order)
+            order += 1
+    except Exception as e:
+        raise e
+
+
+def get_seller_list_service(db, limit, offset):
+    try:
+        # user_list에서 필요한 list와 쿼리 match 갯수를 리턴받는다
+        rows, lists = user_dao.get_seller_list()
+
+
+    except Exception as e:
+        raise e
