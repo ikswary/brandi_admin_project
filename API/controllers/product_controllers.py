@@ -14,7 +14,7 @@ from connections import get_db_connector
 from decorator import login_required
 from models.main_models import MainDao
 from models.product_models import ProductDao
-from services.product_service import product_save_service
+from services.product_service import product_save_service, product_data_service
 
 product_app = Blueprint("product_app", __name__)
 main_dao = MainDao()
@@ -400,52 +400,7 @@ def product_get(**kwargs):
         options_data = product_dao.find_options(db, product_id)
         tags_data = product_dao.find_option_tags(db, product_id)
 
-        product_data = [{
-            "product_code": product_code,
-            "on_sale": data['on_sale'],
-            "on_list": data['on_list'],
-            "first_category": {
-                "id": category_data['id'],
-                "name": category_data['name']
-                                },
-            "second_category": {
-                "id": category_data['second_categories.id'],
-                "name": category_data['second_categories.name']
-                                },
-                "manufacturer": data['manufacturer'],
-            "manufacturer_date": data['manufacture_date'],
-            "manufacture_country": {
-                "id": data['manufacture_country_id'],
-                "name": find_country_data(db, data['manufacture_country_id']) if data['manufacture_country_id'] else None
-                                    },
-            "name": data['name'],
-            "description_short": data['description_short'],
-            "images":[{
-                "url": image['large_url'],
-                "order": image['list_order']
-                        } for image in images_data],
-            "color_filter": data['color_filter_id'],
-            "style_filter": data['style_filter_id'],
-            "description_detail": data['description_detail'],
-            "option": [{
-                "id": option['id'],
-                "color_id": option['color_id'],
-                "color_name": option['name'],
-                "size_id": option['size_id'],
-                "size_name": option['sizes.name']
-                        } for option in options_data],
-            "price": data['price'],
-            "discount_rate": data['discount_rate'],
-            "discount_price": data['discount_price'],
-    	    "discounted_price" : data['price']*(data['discount_rate']/100),
-            "discount_start": data['discount_start'],
-            "discount_end": data['discount_end'],
-            "min_sales_unit": data['min_sales_unit'],
-            "max_sales_unit": data['max_sales_unit'],
-            "tag":[{
-                    "name": tag['name']
-                    } for tag in tags_data]
-                        }]
+        product_data = product_data_service(db, product_code, data, category_data, images_data,                  options_data, tags_data)
 
         return jsonify(data=product_data), 200
 
