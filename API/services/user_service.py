@@ -98,6 +98,9 @@ def user_update_service(db, user_id, modifier_id, details, managers):
         # user detail modify와 manager modify를 호출
         user_detail_modify_service(db, user_id, modifier_id, details)
         user_manager_modify_service(db, user_id, managers)
+        # 한번이라도 정보를 수정한 셀러는 activate 상태로 만들어준다
+        user_dao.activate_user(db, user_id)
+
 
     except Exception as e:
         raise e
@@ -147,3 +150,4 @@ def get_seller_list_service(db, limit, offset):
 
     except Exception as e:
         raise e
+
