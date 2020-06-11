@@ -142,14 +142,16 @@ def user_manager_modify_service(db, user_id, managers):
         raise e
 
 
-def get_seller_list_service(db, limit, offset):
+def get_seller_list_service(db, view, page):
     try:
         # user_list에서 필요한 list와 쿼리 match 갯수를 리턴받는다
 
         rows = user_dao.get_users_count(db)
-        lists = user_dao.get_seller_list(db, limit, offset)
+        lists = user_dao.get_seller_list(db, view, page)
         # action 버튼을 seller_status_id로 GROUP_CONCAT한 값을 리턴받는다
         actions = user_dao.get_actions_list(db)
+
+        list_pages = lambda rows: rows // view if rows % view == 0 else (rows // view) + 1
 
         # 리턴받은 액션버튼을 {id,name} 딕셔너리화 시켜 actions_list에 담는다
         actions_list = []
@@ -167,7 +169,13 @@ def get_seller_list_service(db, limit, offset):
         for user_list in lists:
             user_list['actions'] = actions_list[user_list['seller_status_id']]
 
+        if rows % view == 0:
+            list_pages = rows // view
+        elif rows % view > 0:
+            list_pages = (rows // view) + 1
+
         result = {
+            "page": list_pages,
             "record": rows,
             "list": lists
         }
