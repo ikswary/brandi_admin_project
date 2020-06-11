@@ -7,7 +7,7 @@ class ProductDao:
             with db.cursor(pymysql.cursors.DictCursor) as cursor:
                 query = """
                 SELECT user_id, profile_image, seller_name FROM seller_details
-                JOIN users on users.id=seller_details.user_id
+                INNER JOIN users on users.id=seller_details.user_id
                 WHERE seller_details.enddate="9999-12-31 23:59:59" AND seller_details.profile_image is not  Null AND users.role_id=2
                 """
 
@@ -370,5 +370,134 @@ class ProductDao:
                     raise Exception('EXECUTE_FAILED')
 
                 return None
+        except Exception as e:
+            raise e
+
+
+    def find_product(self, db, code):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT * FROM product_details INNER JOIN products
+                ON product_details.product_id = products.id
+                WHERE product_details.enddate="9999-12-31 23:59:59" AND products.code = %s
+                """
+
+                affected_row = cursor.execute(query, code)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row == 0:
+                    raise Exception('DATA_DOES_NOT_EXIST')
+
+                return cursor.fetchone()
+        except Exception as e:
+            raise e
+
+
+    def null_generator(self, query, data):
+        if data:
+            return query.replace('%s', "= " + str(data))
+        else:
+            return query.replace('%s', 'is NULL')
+
+
+    def find_category(self, db, first_category_id, second_category_id):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query_1 = """
+                SELECT * FROM first_categories LEFT JOIN second_categories
+                ON first_categories.id = second_categories.first_category_id
+                WHERE first_categories.id = %s AND"""
+
+                query_2 = """ second_categories.id %s
+                """
+
+                query = query_1 + self.null_generator(query_2, second_category_id)
+
+                affected_row = cursor.execute(query, first_category_id)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row == 0:
+                    raise Exception('DATA_DOES_NOT_EXIST')
+
+                return cursor.fetchone()
+        except Exception as e:
+            raise e
+
+
+    def find_country_data(self, db, country_id):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT name FROM countries WHERE id = %s
+                """
+
+                affected_row = cursor.execute(query, country_id)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row == 0:
+                    raise Exception('DATA_DOES_NOT_EXIST')
+
+                return cursor.fetchone()['name']
+        except Exception as e:
+            raise e
+
+
+    def find_images(self, db, product_id):
+        try:
+            with db. cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT * FROM product_images INNER JOIN images
+                ON product_images.image_id = images.id
+                WHERE product_images.product_id = %s
+                """
+
+                affected_row = cursor.execute(query, product_id)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row == 0:
+                    raise Exception('DATA_DOES_NOT_EXIST')
+
+                return cursor.fetchall()
+        except Exception as e:
+            raise e
+
+
+    def find_options(self, db, product_id):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT * FROM options INNER JOIN colors INNER JOIN sizes
+                ON colors.id = options.color_id and sizes.id = options.size_id
+                WHERE product_id = %s
+                """
+
+                affected_row = cursor.execute(query, product_id)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row == 0:
+                    raise Exception('DATA_DOES_NOT_EXIST')
+
+                return cursor.fetchall()
+        except Exception as e:
+            raise e
+
+
+    def find_option_tags(self, db, product_id):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT * FROM product_tags INNER JOIN tags
+                ON product_tags.tag_id = tags.id
+                WHERE product_id = %s
+                """
+
+                affected_row = cursor.execute(query, product_id)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row == 0:
+                    raise Exception('DATA_DOES_NOT_EXIST')
+
+                return cursor.fetchall()
         except Exception as e:
             raise e

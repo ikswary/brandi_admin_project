@@ -374,3 +374,95 @@ def save_product(**kwargs):
     finally:
         if db:
             db.close()
+
+
+@product_app.route('', methods=['GET'])
+@login_required
+def product_get(**kwargs):
+    """
+
+    """
+    db = None
+    try:
+        db = get_db_connector()
+        if db is None:
+            return jsonify(message="DATABASE_INIT_ERROR"), 500
+
+        product_code=request.args.get('product_code')
+        data = product_dao.find_product(db, product_code)
+
+        first_category_id = data['first_category_id']
+        second_category_id = data['second_category_id']
+        product_id = data['id']
+
+        category_data = product_dao.find_category(db, first_category_id, second_category_id)
+        images_data = product_dao.find_images(db, product_id)
+        options_data = product_dao.find_options(db, product_id)
+        tags_data = product_dao.find_option_tags(db, product_id)
+
+        product_data = [{
+            "product_code": product_code,
+            "on_sale": data['on_sale'],
+            "on_list": data['on_list'],
+            "first_category": {
+                "id": category_data['id'],
+                "name": category_data['name']
+                                },
+            "second_category": {
+                "id": category_data['second_categories.id'],
+                "name": category_data['second_categories.name']
+                                },
+                "manufacturer": data['manufacturer'],
+            "manufacturer_date": data['manufacture_date'],
+            "manufacture_country": {
+                "id": data['manufacture_country_id'],
+                "name": find_country_data(db, data['manufacture_country_id']) if data['manufacture_country_id'] else None
+                                    },
+            "name": data['name'],
+            "description_short": data['description_short'],
+            "images":[{
+                "url": image['large_url'],
+                "order": image['list_order']
+                        } for image in images_data],
+            "color_filter": data['color_filter_id'],
+            "style_filter": data['style_filter_id'],
+            "description_detail": data['description_detail'],
+            "option": [{
+                "id": option['id'],
+                "color_id": option['color_id'],
+                "color_name": option['name'],
+                "size_id": option['size_id'],
+                "size_name": option['sizes.name']
+                        } for option in options_data],
+            "price": data['price'],
+            "discount_rate": data['discount_rate'],
+            "discount_price": data['discount_price'],
+    	    "discounted_price" : data['price']*(data['discount_rate']/100),
+            "discount_start": data['discount_start'],
+            "discount_end": data['discount_end'],
+            "min_sales_unit": data['min_sales_unit'],
+            "max_sales_unit": data['max_sales_unit'],
+            "tag":[{
+                    "name": tag['name']
+                    } for tag in tags_data]
+                        }]
+
+        return jsonify(data=product_data), 200
+
+    except pymysql.err.InternalError:
+        return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
+    except pymysql.err.OperationalError:
+        return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
+    except pymysql.err.ProgrammingError:
+        return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
+    except pymysql.err.IntegrityError:
+        return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
+    except pymysql.err.DataError:
+        return jsonify(message="DATA_ERROR"), 400
+    except KeyError:
+        return jsonify(message="KEY_ERROR"), 400
+    except Exception as e:
+        return jsonify(message=f"{e}"), 500
+    finally:
+        if db:
+            db.close()
