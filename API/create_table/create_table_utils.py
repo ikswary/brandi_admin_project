@@ -31,6 +31,7 @@ def import_aquery_to_list(file):
     aquery_string = aquery_string.replace('`startdate` DATETIME', '`startdate` DATETIME DEFAULT CURRENT_TIMESTAMP ')
     aquery_string = aquery_string.replace('`enddate` DATETIME', '`enddate` DATETIME DEFAULT 99991231235959')
     aquery_string = aquery_string.replace('`is_deleted` TINYINT', '`is_deleted` TINYINT DEFAULT 0 ')
+    aquery_string = aquery_string.replace('`is_activated` TINYINT', '`is_activated` TINYINT DEFAULT 0 ')
     aquery_string = aquery_string.replace('`on_sale` TINYINT', '`on_sale` TINYINT DEFAULT 1 ')
     aquery_string = aquery_string.replace('`on_list` TINYINT', '`on_list` TINYINT DEFAULT 1 ')
     aquery_string = aquery_string.replace('`min_sales_unit` INT', '`min_sales_unit` INT DEFAULT 1')
