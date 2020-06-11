@@ -14,7 +14,7 @@ class UserDao:
                 if affected_row == -1:
                     raise Exception('EXECUTE_FAILED')
 
-                if cursor.rowcount:
+                if affected_row:
                     return cursor.fetchone()['id']
 
                 return None
@@ -32,7 +32,7 @@ class UserDao:
                 affected_row = cursor.execute(query, user_id)
                 if affected_row == -1:
                     raise Exception('EXECUTE_FAILED')
-                if cursor.rowcount:
+                if affected_row:
                     return cursor.fetchone()['account']
 
                 return None
@@ -153,7 +153,7 @@ class UserDao:
                 affected_row = cursor.execute(query, account)
                 if affected_row == -1:
                     raise Exception('EXECUTE_FAILED')
-                if cursor.rowcount:
+                if affected_row:
                     return cursor.fetchone()
 
                 return None
@@ -177,7 +177,7 @@ class UserDao:
                 affected_row = cursor.execute(query, user_id)
                 if affected_row == -1:
                     raise Exception('EXECUTE_FAILED')
-                if cursor.rowcount:
+                if affected_row:
                     return cursor.fetchall()
 
                 raise Exception('QUERY_RETURNED_NOTHING')
@@ -199,7 +199,7 @@ class UserDao:
                 affected_row = cursor.execute(query, user_id)
                 if affected_row == -1:
                     raise Exception('EXECUTE_FAILED')
-                if cursor.rowcount:
+                if affected_row:
                     return cursor.fetchall()
 
                 raise Exception('QUERY_RETURNED_NOTHING')
@@ -220,7 +220,7 @@ class UserDao:
                 affected_row = cursor.execute(query, seller_attributes_id)
                 if affected_row == -1:
                     raise Exception('EXECUTE_FAILED')
-                if cursor.rowcount:
+                if affected_row:
                     return cursor.fetchall()
 
                 raise Exception('QUERY_RETURNED_NOTHING')
@@ -241,7 +241,7 @@ class UserDao:
                 affected_row = cursor.execute(query, user_id)
                 if affected_row == -1:
                     raise Exception('EXECUTE_FAILED')
-                if cursor.rowcount:
+                if affected_row:
                     return cursor.fetchall()
 
                 raise Exception('QUERY_RETURNED_NOTHING')
@@ -286,7 +286,7 @@ class UserDao:
                 affected_row = cursor.execute(query, user_id)
                 if affected_row == -1:
                     raise Exception('EXECUTE_FAILED')
-                if cursor.rowcount:
+                if affected_row:
                     return cursor.fetchone()
 
                 raise Exception('QUERY_MACTHING_RECORD_DOES_NOT_EXIST')
@@ -303,6 +303,7 @@ class UserDao:
                 """
 
                 affected_row = cursor.execute(query, (enddate, user_id))
+                print(affected_row, cursor.rowcount)
                 if affected_row == -1:
                     raise Exception('UPDATE_FAILED')
 
@@ -374,7 +375,6 @@ class UserDao:
                 %(feed)s
                 )
                 """
-
                 affected_row = cursor.execute(query, details)
                 if affected_row == -1:
                     raise Exception('EXECUTE_FAILED')
@@ -430,7 +430,7 @@ class UserDao:
         except Exception as e:
             raise e
 
-    def get_seller_list(self, db, **kwargs):
+    def get_seller_list(self, db, *args):
         try:
             with db.cursor(pymysql.cursors.DictCursor) as cursor:
                 query = """
@@ -444,6 +444,7 @@ class UserDao:
                     manager.name as manager_name,
                     manager.phone as manager_phone,
                     manager.email as manager_email,
+                    status.id as seller_status_id,
                     status.name as seller_status,
                     attr.name as seller_attribute,
                     (SELECT COUNT(*) FROM users AS user
@@ -464,14 +465,58 @@ class UserDao:
                 ON attr.id = detail.seller_attribute_id 
                 WHERE user.role_id = 2
                 ORDER BY id DESC
-                LIMIT %(limit)s OFFSET %(offset)s
+                LIMIT %s OFFSET %s
                 """
 
-                affected_row = cursor.execute(query, kwargs)
+                affected_row = cursor.execute(query, args)
+                print(affected_row)
                 if affected_row == -1:
                     raise Exception('EXECUTE_FAILED')
-                if cursor.rowcount:
-                    return affected_row, cursor.fetchall()
+                if affected_row:
+                    return cursor.fetchall()
+
+                raise Exception('QUERY_RETURNED_NOTHING')
+
+        except Exception as e:
+            raise e
+
+    def get_actions_list(self, db):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT 
+                seller_statuses_id as seller_status_id,
+                group_concat(actions.name) as actions,
+                group_concat(actions_id) as id 
+                from status_actions AS sa
+                INNER JOIN actions ON actions.id = sa.actions_id
+                GROUP BY seller_statuses_id
+                """
+
+                affected_row = cursor.execute(query)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row:
+                    return cursor.fetchall()
+
+                raise Exception('QUERY_RETURNED_NOTHING')
+
+        except Exception as e:
+            raise e
+
+    def get_users_count(self, db):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT COUNT(*) AS count FROM users
+                WHERE role_id = 2
+                """
+
+                affected_row = cursor.execute(query)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row:
+                    return cursor.fetchone()['count']
 
                 return []
 

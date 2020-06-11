@@ -145,8 +145,34 @@ def user_manager_modify_service(db, user_id, managers):
 def get_seller_list_service(db, limit, offset):
     try:
         # user_list에서 필요한 list와 쿼리 match 갯수를 리턴받는다
-        rows, lists = user_dao.get_seller_list()
 
+        rows = user_dao.get_users_count(db)
+        lists = user_dao.get_seller_list(db, limit, offset)
+        # action 버튼을 seller_status_id로 GROUP_CONCAT한 값을 리턴받는다
+        actions = user_dao.get_actions_list(db)
+
+        # 리턴받은 액션버튼을 {id,name} 딕셔너리화 시켜 actions_list에 담는다
+        actions_list = []
+        for action in actions:
+            id_list = action['id'].split(',')
+            action_list = action['actions'].split(',')
+            reformat = [{
+                "id": id_list[i],
+                "name": action_list[i]
+            } for i in range(len(id_list))]
+
+            actions_list.append(reformat)
+
+        # 위에서 받아온 seller_list에 actions를 update한다
+        for user_list in lists:
+            user_list['actions'] = actions_list[user_list['seller_status_id']]
+
+        result = {
+            "record": rows,
+            "list": lists
+        }
+
+        return result
 
     except Exception as e:
         raise e
