@@ -213,7 +213,7 @@ class UserDao:
                 query = """
                 SELECT id, name FROM seller_attributes
                 WHERE attribute_group_id = (SELECT attribute_group_id 
-                FROM brandi_admin.seller_attributes 
+                FROM seller_attributes 
                 WHERE id = %s)
                 """
 
@@ -341,7 +341,7 @@ class UserDao:
                 top_size,
                 bottom_size,
                 foot_size,
-                feed,
+                feed
                 )
                 VALUES(
                 %(startdate)s,
@@ -473,7 +473,23 @@ class UserDao:
                 if cursor.rowcount:
                     return affected_row, cursor.fetchall()
 
-                raise Exception('QUERY_RETURNED_NOTHING')
+                return []
+
+        except Exception as e:
+            raise e
+
+
+    def activate_user(self, db, user_id):
+        try:
+            with db.cursor() as cursor:
+                query = """
+                UPDATE users SET is_activated = 1
+                WHERE id = %s
+                """
+
+                affected_row = cursor.execute(query, user_id)
+                if affected_row == -1:
+                    raise Exception('UPDATE_FAILED')
 
         except Exception as e:
             raise e
