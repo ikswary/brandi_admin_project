@@ -650,3 +650,909 @@ PRODUCT_SCHEMA = {
         }
     }
 }
+
+USER_DATA_MODIFY_MASTER = {
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "title": "The root schema",
+    "description": "The root schema comprises the entire JSON document.",
+    "default": {},
+    "examples": [
+        {
+            "base_info": {
+                "profile_image": "string",
+                "seller_attribute_id": 1,
+                "seller_name": "하이모디",
+                "seller_name_eng": "himodi"
+            },
+            "detail_info": {
+                "background_image": "string",
+                "introduction_short": "string",
+                "introduction_detail": "string",
+                "site_url": "http://tag.brandi.co.kr",
+                "managers": [
+                    {
+                        "name": "손진현",
+                        "phone": "010-3151-7153",
+                        "email": "ikswary@naver.com"
+                    }
+                ],
+                "cs_phone": "02-4592-7153",
+                "zip_code": "string",
+                "address": "string",
+                "address_detail": "string",
+                "weekday_start_time": "string",
+                "weekday_end_time": "string",
+                "weekend_start_time": "string",
+                "weekend_end_time": "string",
+                "bank": "string",
+                "bank_account_name": "string",
+                "bank_account_number": "string"
+            },
+            "model_size": {
+                "height": 180,
+                "top_size": 100,
+                "bottom_size": 28,
+                "foot_size": 280
+            }
+        }
+    ],
+    "required": [
+        "base_info",
+        "detail_info",
+        "model_size"
+    ],
+    "additionalProperties": True,
+    "properties": {
+        "base_info": {
+            "$id": "#/properties/base_info",
+            "type": "object",
+            "title": "The base_info schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": {},
+            "examples": [
+                {
+                    "profile_image": "string",
+                    "seller_attribute_id": 1,
+                    "seller_name": "하이모디",
+                    "seller_name_eng": "himodi"
+                }
+            ],
+            "required": [
+                "profile_image",
+                "seller_attribute_id",
+                "seller_name",
+                "seller_name_eng"
+            ],
+            "additionalProperties": True,
+            "properties": {
+                "profile_image": {
+                    "$id": "#/properties/base_info/properties/profile_image",
+                    "type": "string",
+                    "title": "The profile_image schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ]
+                },
+                "seller_attribute_id": {
+                    "$id": "#/properties/base_info/properties/seller_attribute_id",
+                    "type": "integer",
+                    "title": "The seller_attribute_id schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0,
+                    "examples": [
+                        1
+                    ]
+                },
+                "seller_name": {
+                    "$id": "#/properties/base_info/properties/seller_name",
+                    "type": "string",
+                    "title": "The seller_name schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "하이모디"
+                    ],
+                    "pattern": "^[가-힣a-zA-z0-9]{1,50}$"
+                },
+                "seller_name_eng": {
+                    "$id": "#/properties/base_info/properties/seller_name_eng",
+                    "type": "string",
+                    "title": "The seller_name_eng schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "himodi"
+                    ],
+                    "pattern": "^[a-z]{1,100}$"
+                }
+            }
+        },
+        "detail_info": {
+            "$id": "#/properties/detail_info",
+            "type": "object",
+            "title": "The detail_info schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": {},
+            "examples": [
+                {
+                    "background_image": "string",
+                    "introduction_short": "string",
+                    "introduction_detail": "string",
+                    "site_url": "http://tag.brandi.co.kr",
+                    "managers": [
+                        {
+                            "name": "손진현",
+                            "phone": "010-3151-7153",
+                            "email": "ikswary@naver.com"
+                        }
+                    ],
+                    "cs_phone": "02-4592-7153",
+                    "zip_code": "string",
+                    "address": "string",
+                    "address_detail": "string",
+                    "weekday_start_time": "string",
+                    "weekday_end_time": "string",
+                    "weekend_start_time": "string",
+                    "weekend_end_time": "string",
+                    "bank": "string",
+                    "bank_account_name": "string",
+                    "bank_account_number": "string"
+                }
+            ],
+            "required": [
+                "background_image",
+                "introduction_short",
+                "introduction_detail",
+                "site_url",
+                "managers",
+                "cs_phone",
+                "zip_code",
+                "address",
+                "address_detail",
+                "weekday_start_time",
+                "weekday_end_time",
+                "weekend_start_time",
+                "weekend_end_time",
+                "bank",
+                "bank_account_name",
+                "bank_account_number"
+            ],
+            "additionalProperties": True,
+            "properties": {
+                "background_image": {
+                    "$id": "#/properties/detail_info/properties/background_image",
+                    "type": "string",
+                    "title": "The background_image schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ]
+                },
+                "introduction_short": {
+                    "$id": "#/properties/detail_info/properties/introduction_short",
+                    "type": "string",
+                    "title": "The introduction_short schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ]
+                },
+                "introduction_detail": {
+                    "$id": "#/properties/detail_info/properties/introduction_detail",
+                    "type": "string",
+                    "title": "The introduction_detail schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ]
+                },
+                "site_url": {
+                    "$id": "#/properties/detail_info/properties/site_url",
+                    "type": "string",
+                    "title": "The site_url schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "http://tag.brandi.co.kr"
+                    ],
+                    "pattern": "^(https?://)(([a-z0-9\\-]+)\\.)+[a-z0-9]{2,4}$"
+                },
+                "managers": {
+                    "$id": "#/properties/detail_info/properties/managers",
+                    "type": "array",
+                    "title": "The managers schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": [],
+                    "examples": [
+                        [
+                            {
+                                "name": "손진현",
+                                "phone": "010-3151-7153",
+                                "email": "ikswary@naver.com"
+                            }
+                        ]
+                    ],
+                    "additionalItems": True,
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$id": "#/properties/detail_info/properties/managers/items/anyOf/0",
+                                "type": "object",
+                                "title": "The first anyOf schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": {},
+                                "examples": [
+                                    {
+                                        "name": "손진현",
+                                        "phone": "010-3151-7153",
+                                        "email": "ikswary@naver.com"
+                                    }
+                                ],
+                                "required": [
+                                    "name",
+                                    "phone",
+                                    "email"
+                                ],
+                                "additionalProperties": True,
+                                "properties": {
+                                    "name": {
+                                        "$id": "#/properties/detail_info/properties/managers/items/anyOf/0/properties/name",
+                                        "type": "string",
+                                        "title": "The name schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "default": "",
+                                        "examples": [
+                                            "손진현"
+                                        ],
+                                        "pattern": "^[가-힣a-zA-z0-9]{1,50}$"
+                                    },
+                                    "phone": {
+                                        "$id": "#/properties/detail_info/properties/managers/items/anyOf/0/properties/phone",
+                                        "type": "string",
+                                        "title": "The phone schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "default": "",
+                                        "examples": [
+                                            "010-3151-7153"
+                                        ],
+                                        "pattern": "^01(0|1|[6-9])-([0-9]{4})-([0-9]{4})$"
+                                    },
+                                    "email": {
+                                        "$id": "#/properties/detail_info/properties/managers/items/anyOf/0/properties/email",
+                                        "type": "string",
+                                        "title": "The email schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "default": "",
+                                        "examples": [
+                                            "ikswary@naver.com"
+                                        ],
+                                        "pattern": "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$"
+                                    }
+                                }
+                            }
+                        ],
+                        "$id": "#/properties/detail_info/properties/managers/items"
+                    }
+                },
+                "cs_phone": {
+                    "$id": "#/properties/detail_info/properties/cs_phone",
+                    "type": "string",
+                    "title": "The cs_phone schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "02-4592-7153"
+                    ],
+                    "pattern": "^(0[1-6][0-4]?)-([0-9]{3,4})-([0-9]{4})$"
+                },
+                "zip_code": {
+                    "$id": "#/properties/detail_info/properties/zip_code",
+                    "type": "string",
+                    "title": "The zip_code schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ],
+                    "pattern": "^[0-9]{5}$"
+                },
+                "address": {
+                    "$id": "#/properties/detail_info/properties/address",
+                    "type": "string",
+                    "title": "The address schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ]
+                },
+                "address_detail": {
+                    "$id": "#/properties/detail_info/properties/address_detail",
+                    "type": "string",
+                    "title": "The address_detail schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ]
+                },
+                "weekday_start_time": {
+                    "$id": "#/properties/detail_info/properties/weekday_start_time",
+                    "type": "string",
+                    "title": "The weekday_start_time schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ],
+                    "pattern": "^(0|1[0-9])|(2[0-3]):[0-5][0-9]$"
+                },
+                "weekday_end_time": {
+                    "$id": "#/properties/detail_info/properties/weekday_end_time",
+                    "type": "string",
+                    "title": "The weekday_end_time schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ],
+                    "pattern": "^(0|1[0-9])|(2[0-3]):[0-5][0-9]$"
+                },
+                "weekend_start_time": {
+                    "$id": "#/properties/detail_info/properties/weekend_start_time",
+                    "type": "string",
+                    "title": "The weekend_start_time schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ],
+                    "pattern": "^(0|1[0-9])|(2[0-3]):[0-5][0-9]$"
+                },
+                "weekend_end_time": {
+                    "$id": "#/properties/detail_info/properties/weekend_end_time",
+                    "type": "string",
+                    "title": "The weekend_end_time schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ],
+                    "pattern": "^(0|1[0-9])|(2[0-3]):[0-5][0-9]$"
+                },
+                "bank": {
+                    "$id": "#/properties/detail_info/properties/bank",
+                    "type": "string",
+                    "title": "The bank schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ]
+                },
+                "bank_account_name": {
+                    "$id": "#/properties/detail_info/properties/bank_account_name",
+                    "type": "string",
+                    "title": "The bank_account_name schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ]
+                },
+                "bank_account_number": {
+                    "$id": "#/properties/detail_info/properties/bank_account_number",
+                    "type": "string",
+                    "title": "The bank_account_number schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ]
+                }
+            }
+        },
+        "model_size": {
+            "$id": "#/properties/model_size",
+            "type": "object",
+            "title": "The model_size schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": {},
+            "examples": [
+                {
+                    "height": 180,
+                    "top_size": 100,
+                    "bottom_size": 28,
+                    "foot_size": 280
+                }
+            ],
+            "required": [
+                "height",
+                "top_size",
+                "bottom_size",
+                "foot_size"
+            ],
+            "additionalProperties": True,
+            "properties": {
+                "height": {
+                    "$id": "#/properties/model_size/properties/height",
+                    "type": "integer",
+                    "title": "The height schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0,
+                    "examples": [
+                        180
+                    ]
+                },
+                "top_size": {
+                    "$id": "#/properties/model_size/properties/top_size",
+                    "type": "integer",
+                    "title": "The top_size schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0,
+                    "examples": [
+                        100
+                    ]
+                },
+                "bottom_size": {
+                    "$id": "#/properties/model_size/properties/bottom_size",
+                    "type": "integer",
+                    "title": "The bottom_size schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0,
+                    "examples": [
+                        28
+                    ]
+                },
+                "foot_size": {
+                    "$id": "#/properties/model_size/properties/foot_size",
+                    "type": "integer",
+                    "title": "The foot_size schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0,
+                    "examples": [
+                        280
+                    ]
+                }
+            }
+        }
+    }
+}
+
+USER_DATA_MODIFY_SELLER = {
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "title": "The root schema",
+    "description": "The root schema comprises the entire JSON document.",
+    "default": {},
+    "examples": [
+        {
+            "base_info": {
+                "profile_image": "string"
+            },
+            "detail_info": {
+                "background_image": "string",
+                "introduction_short": "string",
+                "introduction_detail": "string",
+                "site_url": "http://tag.brandi.co.kr",
+                "managers": [
+                    {
+                        "name": "손진현",
+                        "phone": "010-3151-7153",
+                        "email": "ikswary@naver.com"
+                    }
+                ],
+                "cs_phone": "02-4592-7153",
+                "zip_code": "string",
+                "address": "string",
+                "address_detail": "string",
+                "weekday_start_time": "string",
+                "weekday_end_time": "string",
+                "weekend_start_time": "string",
+                "weekend_end_time": "string",
+                "bank": "string",
+                "bank_account_name": "string",
+                "bank_account_number": "string"
+            },
+            "model_size": {
+                "height": 180,
+                "top_size": 100,
+                "bottom_size": 28,
+                "foot_size": 280
+            }
+        }
+    ],
+    "required": [
+        "base_info",
+        "detail_info"
+    ],
+    "additionalProperties": True,
+    "properties": {
+        "base_info": {
+            "$id": "#/properties/base_info",
+            "type": "object",
+            "title": "The base_info schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": {},
+            "examples": [
+                {
+                    "profile_image": "string"
+                }
+            ],
+            "required": [
+                "profile_image"
+            ],
+            "additionalProperties": True,
+            "properties": {
+                "profile_image": {
+                    "$id": "#/properties/base_info/properties/profile_image",
+                    "type": "string",
+                    "title": "The profile_image schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ]
+                }
+            }
+        },
+        "detail_info": {
+            "$id": "#/properties/detail_info",
+            "type": "object",
+            "title": "The detail_info schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": {},
+            "examples": [
+                {
+                    "background_image": "string",
+                    "introduction_short": "string",
+                    "introduction_detail": "string",
+                    "site_url": "http://tag.brandi.co.kr",
+                    "managers": [
+                        {
+                            "name": "손진현",
+                            "phone": "010-3151-7153",
+                            "email": "ikswary@naver.com"
+                        }
+                    ],
+                    "cs_phone": "02-4592-7153",
+                    "zip_code": "string",
+                    "address": "string",
+                    "address_detail": "string",
+                    "weekday_start_time": "string",
+                    "weekday_end_time": "string",
+                    "weekend_start_time": "string",
+                    "weekend_end_time": "string",
+                    "bank": "string",
+                    "bank_account_name": "string",
+                    "bank_account_number": "string"
+                }
+            ],
+            "required": [
+                "introduction_short",
+                "site_url",
+                "managers",
+                "cs_phone",
+                "zip_code",
+                "address",
+                "address_detail",
+                "weekday_start_time",
+                "weekday_end_time",
+                "weekend_start_time",
+                "weekend_end_time",
+                "bank",
+                "bank_account_name",
+                "bank_account_number"
+            ],
+            "additionalProperties": True,
+            "properties": {
+                "background_image": {
+                    "$id": "#/properties/detail_info/properties/background_image",
+                    "type": "string",
+                    "title": "The background_image schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ]
+                },
+                "introduction_short": {
+                    "$id": "#/properties/detail_info/properties/introduction_short",
+                    "type": "string",
+                    "title": "The introduction_short schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ]
+                },
+                "introduction_detail": {
+                    "$id": "#/properties/detail_info/properties/introduction_detail",
+                    "type": "string",
+                    "title": "The introduction_detail schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ]
+                },
+                "site_url": {
+                    "$id": "#/properties/detail_info/properties/site_url",
+                    "type": "string",
+                    "title": "The site_url schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "http://tag.brandi.co.kr"
+                    ],
+                    "pattern": "^(https?://)(([a-z0-9\\-]+)\\.)+[a-z0-9]{2,4}$"
+                },
+                "managers": {
+                    "$id": "#/properties/detail_info/properties/managers",
+                    "type": "array",
+                    "title": "The managers schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": [],
+                    "examples": [
+                        [
+                            {
+                                "name": "손진현",
+                                "phone": "010-3151-7153",
+                                "email": "ikswary@naver.com"
+                            }
+                        ]
+                    ],
+                    "additionalItems": True,
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$id": "#/properties/detail_info/properties/managers/items/anyOf/0",
+                                "type": "object",
+                                "title": "The first anyOf schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": {},
+                                "examples": [
+                                    {
+                                        "name": "손진현",
+                                        "phone": "010-3151-7153",
+                                        "email": "ikswary@naver.com"
+                                    }
+                                ],
+                                "required": [
+                                    "name",
+                                    "phone",
+                                    "email"
+                                ],
+                                "additionalProperties": True,
+                                "properties": {
+                                    "name": {
+                                        "$id": "#/properties/detail_info/properties/managers/items/anyOf/0/properties/name",
+                                        "type": "string",
+                                        "title": "The name schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "default": "",
+                                        "examples": [
+                                            "손진현"
+                                        ],
+                                        "pattern": "^[가-힣a-zA-z0-9]{1,50}$"
+                                    },
+                                    "phone": {
+                                        "$id": "#/properties/detail_info/properties/managers/items/anyOf/0/properties/phone",
+                                        "type": "string",
+                                        "title": "The phone schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "default": "",
+                                        "examples": [
+                                            "010-3151-7153"
+                                        ],
+                                        "pattern": "^01(0|1|[6-9])-([0-9]{4})-([0-9]{4})$"
+                                    },
+                                    "email": {
+                                        "$id": "#/properties/detail_info/properties/managers/items/anyOf/0/properties/email",
+                                        "type": "string",
+                                        "title": "The email schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "default": "",
+                                        "examples": [
+                                            "ikswary@naver.com"
+                                        ],
+                                        "pattern": "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$"
+                                    }
+                                }
+                            }
+                        ],
+                        "$id": "#/properties/detail_info/properties/managers/items"
+                    }
+                },
+                "cs_phone": {
+                    "$id": "#/properties/detail_info/properties/cs_phone",
+                    "type": "string",
+                    "title": "The cs_phone schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "02-4592-7153"
+                    ],
+                    "pattern": "^(0[1-6][0-4]?)-([0-9]{3,4})-([0-9]{4})$"
+                },
+                "zip_code": {
+                    "$id": "#/properties/detail_info/properties/zip_code",
+                    "type": "string",
+                    "title": "The zip_code schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ],
+                    "pattern": "^[0-9]{5}$"
+                },
+                "address": {
+                    "$id": "#/properties/detail_info/properties/address",
+                    "type": "string",
+                    "title": "The address schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ]
+                },
+                "address_detail": {
+                    "$id": "#/properties/detail_info/properties/address_detail",
+                    "type": "string",
+                    "title": "The address_detail schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ]
+                },
+                "weekday_start_time": {
+                    "$id": "#/properties/detail_info/properties/weekday_start_time",
+                    "type": "string",
+                    "title": "The weekday_start_time schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ],
+                    "pattern": "^(0|1[0-9])|(2[0-3]):[0-5][0-9]$"
+                },
+                "weekday_end_time": {
+                    "$id": "#/properties/detail_info/properties/weekday_end_time",
+                    "type": "string",
+                    "title": "The weekday_end_time schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ],
+                    "pattern": "^(0|1[0-9])|(2[0-3]):[0-5][0-9]$"
+                },
+                "weekend_start_time": {
+                    "$id": "#/properties/detail_info/properties/weekend_start_time",
+                    "type": "string",
+                    "title": "The weekend_start_time schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ],
+                    "pattern": "^(0|1[0-9])|(2[0-3]):[0-5][0-9]$"
+                },
+                "weekend_end_time": {
+                    "$id": "#/properties/detail_info/properties/weekend_end_time",
+                    "type": "string",
+                    "title": "The weekend_end_time schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ],
+                    "pattern": "^(0|1[0-9])|(2[0-3]):[0-5][0-9]$"
+                },
+                "bank": {
+                    "$id": "#/properties/detail_info/properties/bank",
+                    "type": "string",
+                    "title": "The bank schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ]
+                },
+                "bank_account_name": {
+                    "$id": "#/properties/detail_info/properties/bank_account_name",
+                    "type": "string",
+                    "title": "The bank_account_name schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ]
+                },
+                "bank_account_number": {
+                    "$id": "#/properties/detail_info/properties/bank_account_number",
+                    "type": "string",
+                    "title": "The bank_account_number schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "string"
+                    ]
+                }
+            }
+        },
+        "model_size": {
+            "$id": "#/properties/model_size",
+            "type": "object",
+            "title": "The model_size schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": {},
+            "examples": [
+                {
+                    "height": 180,
+                    "top_size": 100,
+                    "bottom_size": 28,
+                    "foot_size": 280
+                }
+            ],
+            "required": [
+                "height",
+                "top_size",
+                "bottom_size",
+                "foot_size"
+            ],
+            "additionalProperties": True,
+            "properties": {
+                "height": {
+                    "$id": "#/properties/model_size/properties/height",
+                    "type": "integer",
+                    "title": "The height schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0,
+                    "examples": [
+                        180
+                    ]
+                },
+                "top_size": {
+                    "$id": "#/properties/model_size/properties/top_size",
+                    "type": "integer",
+                    "title": "The top_size schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0,
+                    "examples": [
+                        100
+                    ]
+                },
+                "bottom_size": {
+                    "$id": "#/properties/model_size/properties/bottom_size",
+                    "type": "integer",
+                    "title": "The bottom_size schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0,
+                    "examples": [
+                        28
+                    ]
+                },
+                "foot_size": {
+                    "$id": "#/properties/model_size/properties/foot_size",
+                    "type": "integer",
+                    "title": "The foot_size schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0,
+                    "examples": [
+                        280
+                    ]
+                }
+            }
+        }
+    }
+}

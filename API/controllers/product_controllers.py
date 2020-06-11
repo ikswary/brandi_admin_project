@@ -23,6 +23,7 @@ product_dao = ProductDao()
 MASTER_ROLE_ID = 1
 SELLER_ROLE_ID = 2
 
+
 @product_app.route('/seller', methods=['GET'])
 @login_required
 def seller(**kwargs):
@@ -113,7 +114,7 @@ def product_category(**kwargs):
         user_id = kwargs['user_id']
         role_id = kwargs['role_id']
 
-        if role_id == MASTER_ROLE_ID :
+        if role_id == MASTER_ROLE_ID:
             seller_id = request.args.get('seller_id')
             attribute_group_id = product_dao.get_attribute_group_id(db, seller_id)
         elif role_id == SELLER_ROLE_ID :
@@ -124,8 +125,8 @@ def product_category(**kwargs):
         first_category_data = product_dao.first_category(db, attribute_group_id)
 
         category_list = [{
-            "id":category.get('id'),
-            "name":category.get('name'),
+            "id": category.get('id'),
+            "name": category.get('name'),
             "second_category": [{
                 "id":category_detail.get('id'),
                 "name":category_detail.get('name')
@@ -183,23 +184,23 @@ def product_information(**kwargs):
         style_filters = product_dao.style_filter(db)
 
         information_data = [{
-            "country":[{
+            "country": [{
                 "id": country.get('id'),
-                "name": country.get('name')}for country in countries],
-            "option_color":[{
+                "name": country.get('name')} for country in countries],
+            "option_color": [{
                 "id": color.get('id'),
-                "name": color.get('name')}for color in colors],
+                "name": color.get('name')} for color in colors],
             "option_size": [{
                 "id": size.get('id'),
-                "name": size.get('name')}for size in sizes],
+                "name": size.get('name')} for size in sizes],
             "color_filter": [{
                 "id": color_data.get('id'),
                 "name": color_data.get('name'),
-       		"name_eng": color_data.get('name_eng'),
-       		"image_url": color_data.get('image_url')}for color_data in color_filters],
+                "name_eng": color_data.get('name_eng'),
+                "image_url": color_data.get('image_url')} for color_data in color_filters],
             "style_filter": [{
-                "id": style_data.get('id') ,
-                "name": style_data.get('name')}for style_data in style_filters]}]
+                "id": style_data.get('id'),
+                "name": style_data.get('name')} for style_data in style_filters]}]
 
         return jsonify(data=information_data), 200
 
@@ -221,6 +222,9 @@ def product_information(**kwargs):
         if db:
             db.close()
 
+# @product_app.route('/', methods=['POST'])
+# @login_required
+# def save_product(**kwargs):
 
 @product_app.route('', methods=['POST'])
 @login_required
