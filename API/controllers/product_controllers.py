@@ -9,7 +9,7 @@ from jsonschema import validate, ValidationError
 from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify
 
-from jsonschemas import PRODUCT_SCHEMA
+from jsonschemas import PRODUCT_SCHEMA, CHANGE_PRODUCT_SCHEMA
 from connections import get_db_connector
 from decorator import login_required
 from models.main_models import MainDao
@@ -318,6 +318,24 @@ def save_product(**kwargs):
             else:
                 option_duplicate_check.append((option['color_id'],option['size_id']))
 
+        # required가 아닌 항목이 Null값으로도 들어오지 않은 경우 처리
+        if 'description_short' not in data:
+            data['descriotion_short'] = None
+        if 'discount_rate' not in data:
+            data['discount_rate'] = None
+        if 'discount_price' not in data:
+            data['discount_price'] = None
+        if 'discount_start' not in data:
+            data['discount_start'] = None
+        if 'discount_end' not in data:
+            data['discount_end'] = None
+
+        # 상품 정보 고시 에러확인
+        manufacture_list = [data['manufacture_country_id'], data['manufacturer'], data['manufacture_date']]
+        # 직접 입력인 경우 None이 존재하면 안됨
+        if manufacture_list.count(None) == 1 or manufacture_list.count(None) == 2:
+            return jsonify(message = "DATA_ERROR"), 400
+
         # 아래에서 data 입력위해 불필요한 list_data 삭제
         rm_data = ['images','option','tag']
         for rm in rm_data:
@@ -378,7 +396,7 @@ def save_product(**kwargs):
 
 @product_app.route('', methods=['GET'])
 @login_required
-def product_get(**kwargs):
+def get_product_information(**kwargs):
     """ 상품 수정시 기본 정보 보내주는 API
 
         URL params:
@@ -410,13 +428,12 @@ def product_get(**kwargs):
 
         first_category_id = data['first_category_id']
         second_category_id = data['second_category_id']
-        product_id = data['id']
+        product_detail_id = data['id']
 
         category_data = product_dao.find_category(db, first_category_id, second_category_id)
-        images_data = product_dao.find_images(db, product_id)
-        options_data = product_dao.find_options(db, product_id)
-        tags_data = product_dao.find_option_tags(db, product_id)
-
+        images_data = product_dao.find_images(db, product_detail_id)
+        options_data = product_dao.find_options(db, product_detail_id)
+        tags_data = product_dao.find_product_tags(db, product_detail_id)
 
         product_data = product_data_service(db, product_code, data, category_data, images_data, options_data, tags_data)
         return jsonify(data=product_data), 200
@@ -438,3 +455,147 @@ def product_get(**kwargs):
     finally:
         if db:
             db.close()
+
+
+@product_app.route('', methods=['PUT'])
+@login_required
+def change_product_information(**kwargs):
+    """
+
+    """
+
+    db = None
+    try:
+        validate(request.json, CHANGE_PRODUCT_SCHEMA)
+        data = request.json
+
+        db = get_db_connector()
+        if db is None:
+            return jsonify(message="DATABASE_INIT_ERROR"), 500
+
+        data['modifier_id'] = kwargs['user_id']
+        product_code = data['product_code']
+
+        # print(data)
+        # 상품 코드를 이용하여 product_id를 구하고 data에 key,value 추가
+        product_id = product_dao.find_product(db, product_code)['product_id']
+        previous_product_detail_id = product_dao.find_product(db, product_code)['id']
+
+        data['product_id'] = product_id
+
+        tag_data = data['tag']
+        image_data = data['images']
+        option_data = data['option']
+
+        # 이미지가 5개를 넘어서 들어오는 경우
+        if len(image_data) >= 6:
+            return jsonify(message = "DATA_ERROR"), 400
+
+        # 옵션 중복 값 확인
+        option_duplicate_check=[]
+        # (color_id,size_id)쌍으로 중복 체크
+        for option in option_data:
+            if ((option['color_id'],option['size_id'])) in option_duplicate_check:
+                return jsonify(message = "DATA_ERROR"), 400
+            else:
+                option_duplicate_check.append((option['color_id'],option['size_id']))
+
+        # 기존의 옵션 코드에 저장된 내용과 현재 옵션값으로 받아온 정보가 다른 경우 체크
+        for option in option_data:
+            if option['code']:
+                option_details=product_dao.find_option_code(db, option['code'])
+                if (option_details['size_id'],option_details['color_id']) !=  (option['size_id'],option['color_id']):
+                    return jsonify(message = "DATA_ERROR"), 400
+
+        # required가 아닌 항목이 Null값으로도 들어오지 않은 경우 처리
+        if 'description_short' not in data:
+            data['descriotion_short'] = None
+        if 'discount_rate' not in data:
+            data['discount_rate'] = None
+        if 'discount_price' not in data:
+            data['discount_price'] = None
+        if 'discount_start' not in data:
+            data['discount_start'] = None
+        if 'discount_end' not in data:
+            data['discount_end'] = None
+
+        # 상품 정보 고시 에러확인
+        manufacture_list = [data['manufacture_country_id'], data['manufacturer'], data['manufacture_date']]
+        # 직접 입력인 경우 None이 존재하면 안됨
+        if manufacture_list.count(None) == 1 or manufacture_list.count(None) == 2:
+            return jsonify(message = "DATA_ERROR"), 400
+
+        # 아래에서 data 입력위해 불필요한 list_data 삭제
+        rm_data = ['images','option','tag']
+        for rm in rm_data:
+            del data[rm]
+
+        price = data['price']
+        discount_rate = data['discount_rate']
+        discount_price = data['discount_price']
+
+        # 할인율이 없는데 할인가가 있는 경우 에러 return
+        if discount_rate is None and discount_price is not None:
+            return jsonify(message = "DATA_ERROR"), 400
+        # 할인율이 음수인 경우 에러 return
+        elif discount_rate < 0:
+            return jsonify(message = "DATA_ERROR"), 400
+        # 할인율이 100%가 넘는 경우 에러 return
+        elif discount_rate >= 100:
+            return jsonify(message = "DATA_ERROR"), 400
+        # 할인율이 있고 할인가가 없는 경우 할인가 계산
+        elif discount_rate is not None and discount_price is None:
+            discount_data = math.floor(price*((100-discount_rate)/100)/10)*10
+            data['discount_price'] = int(discount_data)
+
+        db.begin()
+        product_detail_id = product_dao.insert_product_details(db, data)
+
+        # 이전 product_detail의 enddate 날짜 변경
+        previous_enddate = product_dao.find_product_date(db,product_detail_id)
+        product_dao.change_product_date(db, previous_enddate, previous_product_detail_id)
+
+        # 리스트로 들어온 tag_name을 이용하여 tag_id (tag가 db에 존재하는지) 찾기
+        for tag in tag_data:
+            tag_id = product_dao.find_tag_id(db, tag['name'])
+            # tag가 db에 존재하지 않으면tag 추가하고 product_tag에도 추가
+            if tag_id is None:
+                tag_id = product_dao.insert_tag(db, tag['name'])
+                product_dao.insert_product_tag(db, product_detail_id, tag_id)
+            # tag가 db에 존재하면 tag_id 이용하여 product_tag에 추가
+            elif tag_id:
+                tag_id = tag_id['id']
+                product_dao.insert_product_tag(db, product_detail_id, tag_id)
+
+        # 리스트로 들어온 image_data를 이용하여 image를 db에 추가 후 product에 연결
+        for order in range(len(image_data)):
+            large_url = image_data[order]['url']
+            medium_url = image_data[order]['url']
+            small_url = image_data[order]['url']
+            list_order = order+1
+            image_id = product_dao.insert_image(db, large_url, medium_url, small_url)
+            product_dao.insert_product_images(db, product_detail_id, image_id, list_order)
+
+        # 리스트로 들어온 option_data 추가
+        for option in option_data:
+            if option['code']:
+                color_id = option['color_id']
+                size_id = option['size_id']
+                stock = option['stock']
+                code = option['code']
+                product_dao.insert_options(db, product_detail_id, color_id, size_id, stock, code)
+            if option['code'] is None:
+                color_id = option['color_id']
+                size_id = option['size_id']
+                stock = option['stock']
+                code = option['code']
+                code_number = str(product_dao.count_options(db) + 1)
+                code = "SP"+code_number.zfill(18)
+                product_dao.insert_options(db, product_detail_id, color_id, size_id, stock, code)
+        db.commit()
+        return jsonify(''), 200
+
+    finally:
+        if db:
+            db.close()
+

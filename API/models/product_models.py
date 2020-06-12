@@ -196,6 +196,25 @@ class ProductDao:
             raise e
 
 
+    def count_options(self, db):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT COUNT(*) FROM options;
+                """
+
+                affected_row = cursor.execute(query)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row == 0:
+                    raise Exception('DATA_DOES_NOT_EXIST')
+
+                return cursor.fetchone()['COUNT(*)']
+
+        except Exception as e:
+            raise e
+
+
     def insert_product(self, db, user_id, code):
         try:
             with db.cursor() as cursor:
@@ -357,15 +376,15 @@ class ProductDao:
             raise e
 
 
-    def insert_options(self, db, product_id, color_id, size_id, stock):
+    def insert_options(self, db, product_id, color_id, size_id, stock, code):
         try:
             with db.cursor() as cursor:
                 query = """
-                INSERT INTO options(product_id, color_id, size_id, stock)
-                VALUES(%s, %s, %s, %s)
+                INSERT INTO options(product_id, color_id, size_id, stock, code)
+                VALUES(%s, %s, %s, %s, %s)
                 """
 
-                affected_row = cursor.execute(query, (product_id, color_id, size_id, stock))
+                affected_row = cursor.execute(query, (product_id, color_id, size_id, stock, code))
                 if affected_row == -1:
                     raise Exception('EXECUTE_FAILED')
 
@@ -483,7 +502,7 @@ class ProductDao:
             raise e
 
 
-    def find_option_tags(self, db, product_id):
+    def find_product_tags(self, db, product_id):
         try:
             with db.cursor(pymysql.cursors.DictCursor) as cursor:
                 query = """
@@ -499,5 +518,62 @@ class ProductDao:
                     raise Exception('DATA_DOES_NOT_EXIST')
 
                 return cursor.fetchall()
+        except Exception as e:
+            raise e
+
+
+    def change_product_date(self, db, enddate, product_id):
+        try:
+            with db.cursor() as cursor:
+                query = """
+                UPDATE product_details SET enddate = %s
+                WHERE id = %s
+                """
+
+                affected_row = cursor.execute(query, (enddate, product_id))
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row == 0:
+                    raise Exception('DATA_DOES_NOT_EXIST')
+
+                return None
+        except Exception as e:
+            raise e
+
+
+    def find_product_date(self, db, product_id):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT startdate FROM product_details
+                WHERE id = %s
+                """
+
+                affected_row = cursor.execute(query, product_id)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row == 0:
+                    raise Exception('DATA_DOES_NOT_EXIST')
+
+                return cursor.fetchone()['startdate']
+        except Exception as e:
+            raise e
+
+
+    def find_option_code(self, db, code):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT size_id, color_id FROM options
+                WHERE code = %s
+                """
+
+                affected_row = cursor.execute(query, code)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row == 0:
+                    raise Exception('DATA_DOES_NOT_EXIST')
+
+                return cursor.fetchone()
         except Exception as e:
             raise e

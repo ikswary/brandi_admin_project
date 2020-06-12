@@ -37,7 +37,9 @@ def product_save_service(db, data, seller_id, user_id, code, tag_data, image_dat
             color_id = option['color_id']
             size_id = option['size_id']
             stock = option['stock']
-            product_dao.insert_options(db, product_detail_id, color_id, size_id, stock)
+            code_number = str(product_dao.count_options(db) + 1)
+            code = "SP"+code_number.zfill(18)
+            product_dao.insert_options(db, product_detail_id, color_id, size_id, stock, code)
 
     except Exception as e:
         raise e
@@ -73,11 +75,12 @@ def product_data_service(db, product_code, data, category_data, images_data, opt
                  "style_filter": data['style_filter_id'],
                  "description_detail": data['description_detail'],
                  "option": [{
-                     "id": option['id'],
+                     "code": option['code'],
                      "color_id": option['color_id'],
                      "color_name": option['name'],
                      "size_id": option['size_id'],
-                     "size_name": option['sizes.name']
+                     "size_name": option['sizes.name'],
+                     "stock": option['stock']
                              } for option in options_data],
                  "price": data['price'],
                  "discount_rate": data['discount_rate'],
