@@ -216,6 +216,7 @@ PRODUCT_SCHEMA = {
         "on_sale",
         "on_list",
         "first_category_id",
+        "second_category_id",
         "manufacturer",
         "manufacture_date",
         "manufacture_country_id",
@@ -226,10 +227,6 @@ PRODUCT_SCHEMA = {
         "description_detail",
         "option",
         "price",
-        "discount_rate",
-        "discount_price",
-        "discount_start",
-        "discount_end",
         "min_sales_unit",
         "max_sales_unit",
         "tag"
@@ -1552,6 +1549,502 @@ USER_DATA_MODIFY_SELLER = {
                         280
                     ]
                 }
+            }
+        }
+    }
+}
+
+CHANGE_PRODUCT_SCHEMA = {
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "title": "The root schema",
+    "description": "The root schema comprises the entire JSON document.",
+    "default": {},
+    "examples": [
+        {
+            "product_code": "SB00000000000541630",
+            "on_sale": 1,
+            "on_list": 1,
+            "first_category_id": 22,
+            "second_category_id": 1,
+            "manufacturer": "제조사",
+            "manufacturer_date": "date",
+            "manufacture_country_id": 1,
+            "name": "간지나는 스킨로션_2",
+            "description_short": "string",
+            "images": [
+                {
+                    "url": "url"
+                }
+            ],
+            "color_filter_id": 2,
+            "style_filter_id": 2,
+            "description_detail": "상세 상품 정보",
+            "option": [
+                {
+                    "code": "SP00000000000541630",
+                    "color_id": 1,
+                    "size_id": 1,
+                    "stock": 1
+                }
+            ],
+            "price": 20000,
+            "discount_rate": 12,
+            "discount_price": 17600,
+            "discount_start": "2020-06-02 14:37",
+            "discount_end": "2020-06-26 14:37",
+            "min_sales_unit": 1,
+            "max_sales_unit": 20,
+            "tag": [
+                {
+                    "name": "간지"
+                }
+            ]
+        }
+    ],
+    "required": [
+        "product_code",
+        "on_sale",
+        "on_list",
+        "first_category_id",
+        "second_category_id",
+        "manufacturer",
+        "manufacture_date",
+        "manufacture_country_id",
+        "name",
+        "images",
+        "color_filter_id",
+        "style_filter_id",
+        "description_detail",
+        "option",
+        "price",
+        "min_sales_unit",
+        "max_sales_unit",
+        "tag"
+    ],
+    "additionalProperties": True,
+    "properties": {
+        "product_code": {
+            "$id": "#/properties/product_code",
+            "type": "string",
+            "title": "The product_code schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "SB00000000000541630"
+            ]
+        },
+        "on_sale": {
+            "$id": "#/properties/on_sale",
+            "type": "integer",
+            "title": "The on_sale schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                1
+            ]
+        },
+        "on_list": {
+            "$id": "#/properties/on_list",
+            "type": "integer",
+            "title": "The on_list schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                1
+            ]
+        },
+        "first_category_id": {
+            "$id": "#/properties/first_category_id",
+            "type": "integer",
+            "title": "The first_category_id schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                22
+            ]
+        },
+        "second_category_id": {
+            "$id": "#/properties/second_category_id",
+            "type": [
+                "integer",
+                "null"
+            ],
+            "title": "The second_category_id schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                1
+            ]
+        },
+        "manufacturer": {
+            "$id": "#/properties/manufacturer",
+            "type": [
+                "string",
+                "null"
+            ],
+            "title": "The manufacturer schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "제조사"
+            ]
+        },
+        "manufacture_date": {
+            "$id": "#/properties/manufacturer_date",
+            "type": [
+                "string",
+                "null"
+            ],
+            "title": "The manufacture_date schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "date"
+            ]
+        },
+        "manufacture_country_id": {
+            "$id": "#/properties/manufacture_country_id",
+            "type": [
+                "integer",
+                "null"
+            ],
+            "title": "The manufacture_country_id schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                1
+            ]
+        },
+        "name": {
+            "$id": "#/properties/name",
+            "type": "string",
+            "title": "The name schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "간지나는 스킨로션_2"
+            ]
+        },
+        "description_short": {
+            "$id": "#/properties/description_short",
+            "type": [
+                "string",
+                "null"
+            ],
+            "title": "The description_short schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "string"
+            ]
+        },
+        "images": {
+            "$id": "#/properties/images",
+            "type": "array",
+            "title": "The images schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": [],
+            "examples": [
+                [
+                    {
+                        "url": "url"
+                    }
+                ]
+            ],
+            "additionalItems": True,
+            "items": {
+                "anyOf": [
+                    {
+                        "$id": "#/properties/images/items/anyOf/0",
+                        "type": "object",
+                        "title": "The first anyOf schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "default": {},
+                        "examples": [
+                            {
+                                "url": "url"
+                            }
+                        ],
+                        "required": [
+                            "url"
+                        ],
+                        "additionalProperties": True,
+                        "properties": {
+                            "url": {
+                                "$id": "#/properties/images/items/anyOf/0/properties/url",
+                                "type": "string",
+                                "title": "The url schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": "",
+                                "examples": [
+                                    "url"
+                                ]
+                            }
+                        }
+                    }
+                ],
+                "$id": "#/properties/images/items"
+            }
+        },
+        "color_filter_id": {
+            "$id": "#/properties/color_filter_id",
+            "type": [
+                "integer",
+                "null"
+            ],
+            "title": "The color_filter_id schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                2
+            ]
+        },
+        "style_filter_id": {
+            "$id": "#/properties/style_filter_id",
+            "type": [
+                "integer",
+                "null"
+            ],
+            "title": "The style_filter_id schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                2
+            ]
+        },
+        "description_detail": {
+            "$id": "#/properties/description_detail",
+            "type": "string",
+            "title": "The description_detail schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "상세 상품 정보"
+            ]
+        },
+        "option": {
+            "$id": "#/properties/option",
+            "type": "array",
+            "title": "The option schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": [],
+            "examples": [
+                [
+                    {
+                        "code": "SP00000000000541630",
+                        "color_id": 1,
+                        "size_id": 1,
+                        "stock": 1
+                    }
+                ]
+            ],
+            "additionalItems": True,
+            "items": {
+                "anyOf": [
+                    {
+                        "$id": "#/properties/option/items/anyOf/0",
+                        "type": "object",
+                        "title": "The first anyOf schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "default": {},
+                        "examples": [
+                            {
+                                "code": "SP00000000000541630",
+                                "color_id": 1,
+                                "size_id": 1,
+                                "stock": 1
+                            }
+                        ],
+                        "required": [
+                            "code",
+                            "color_id",
+                            "size_id",
+                            "stock"
+                        ],
+                        "additionalProperties": True,
+                        "properties": {
+                            "code": {
+                                "$id": "#/properties/option/items/anyOf/0/properties/id",
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "title": "The id schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": "",
+                                "examples": [
+                                    "SP00000000000541630"
+                                ]
+                            },
+                            "color_id": {
+                                "$id": "#/properties/option/items/anyOf/0/properties/color_id",
+                                "type": "integer",
+                                "title": "The color_id schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": 0,
+                                "examples": [
+                                    1
+                                ]
+                            },
+                            "size_id": {
+                                "$id": "#/properties/option/items/anyOf/0/properties/size_id",
+                                "type": "integer",
+                                "title": "The size_id schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": 0,
+                                "examples": [
+                                    1
+                                ]
+                            },
+                            "stock": {
+                                "$id": "#/properties/option/items/anyOf/0/properties/stock",
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ],
+                                "title": "The stock schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": 0,
+                                "examples": [
+                                    1
+                                ]
+                            }
+                        }
+                    }
+                ],
+                "$id": "#/properties/option/items"
+            }
+        },
+        "price": {
+            "$id": "#/properties/price",
+            "type": "integer",
+            "title": "The price schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                20000
+            ]
+        },
+        "discount_rate": {
+            "$id": "#/properties/discount_rate",
+            "type": [
+                "integer",
+                "null"
+            ],
+            "title": "The discount_rate schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                12
+            ]
+        },
+        "discount_price": {
+            "$id": "#/properties/discount_price",
+            "type": [
+                "integer",
+                "null"
+            ],
+            "title": "The discount_price schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                17600
+            ]
+        },
+        "discount_start": {
+            "$id": "#/properties/discount_start",
+            "type": [
+                "string",
+                "null"
+            ],
+            "title": "The discount_start schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "2020-06-02 14:37"
+            ]
+        },
+        "discount_end": {
+            "$id": "#/properties/discount_end",
+            "type": [
+                "string",
+                "null"
+            ],
+            "title": "The discount_end schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "2020-06-26 14:37"
+            ]
+        },
+        "min_sales_unit": {
+            "$id": "#/properties/min_sales_unit",
+            "type": "integer",
+            "title": "The min_sales_unit schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                1
+            ]
+        },
+        "max_sales_unit": {
+            "$id": "#/properties/max_sales_unit",
+            "type": "integer",
+            "title": "The max_sales_unit schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                20
+            ]
+        },
+        "tag": {
+            "$id": "#/properties/tag",
+            "type": "array",
+            "title": "The tag schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": [],
+            "examples": [
+                [
+                    {
+                        "name": "간지"
+                    }
+                ]
+            ],
+            "additionalItems": True,
+            "items": {
+                "anyOf": [
+                    {
+                        "$id": "#/properties/tag/items/anyOf/0",
+                        "type": "object",
+                        "title": "The first anyOf schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "default": {},
+                        "examples": [
+                            {
+                                "name": "간지"
+                            }
+                        ],
+                        "required": [
+                            "name"
+                        ],
+                        "additionalProperties": True,
+                        "properties": {
+                            "name": {
+                                "$id": "#/properties/tag/items/anyOf/0/properties/name",
+                                "type": "string",
+                                "title": "The name schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": "",
+                                "examples": [
+                                    "간지"
+                                ]
+                            }
+                        }
+                    }
+                ],
+                "$id": "#/properties/tag/items"
             }
         }
     }
