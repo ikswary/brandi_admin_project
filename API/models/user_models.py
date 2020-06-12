@@ -124,8 +124,13 @@ class UserDao:
         try:
             with db.cursor() as cursor:
                 query = """
-                INSERT INTO user_status(user_id, modifier_id, status_id)
-                VALUES(%(user_id)s, %(modifier_id)s, %(status_id)s)
+                INSERT INTO user_status(user_id, modifier_id, status_id, startdate)
+                VALUES(
+                %(user_id)s, 
+                %(modifier_id)s, 
+                %(status_id)s, 
+                %(start_date)s
+                )
                 """
 
                 affected_row = cursor.execute(query, kwargs)
@@ -146,7 +151,7 @@ class UserDao:
                 AND details.enddate = 99991231235959)
                 JOIN user_status AS status
                 ON (status.user_id = users.id
-                AND details.enddate = 99991231235959)
+                AND status.enddate = 99991231235959)
                 WHERE users.account = %s AND users.is_deleted = 0
                 """
 
@@ -171,7 +176,7 @@ class UserDao:
                 ON us.status_id = status.id
                 JOIN users AS user
                 ON us.modifier_id = user.id
-                WHERE us.user_id = %s AND enddate = 99991231235959
+                WHERE us.user_id = %s
                 """
 
                 affected_row = cursor.execute(query, user_id)
@@ -193,7 +198,7 @@ class UserDao:
                 FROM user_status AS us
                 JOIN statuses AS status
                 ON us.status_id = status.id
-                WHERE us.user_id = %s AND enddate = 99991231235959
+                WHERE us.user_id = %s
                 """
 
                 affected_row = cursor.execute(query, user_id)
@@ -463,13 +468,12 @@ class UserDao:
                 ON us.status_id = status.id
                 INNER JOIN seller_attributes AS attr
                 ON attr.id = detail.seller_attribute_id 
-                WHERE user.role_id = 2
+                WHERE user.role_id = 2 AND user.is_deleted = 0
                 ORDER BY id DESC
                 LIMIT %s OFFSET %s
                 """
 
                 affected_row = cursor.execute(query, args)
-                print(affected_row)
                 if affected_row == -1:
                     raise Exception('EXECUTE_FAILED')
                 if affected_row:
@@ -509,7 +513,7 @@ class UserDao:
             with db.cursor(pymysql.cursors.DictCursor) as cursor:
                 query = """
                 SELECT COUNT(*) AS count FROM users
-                WHERE role_id = 2
+                WHERE role_id = 2 AND is_deleted = 0
                 """
 
                 affected_row = cursor.execute(query)
@@ -523,7 +527,6 @@ class UserDao:
         except Exception as e:
             raise e
 
-
     def activate_user(self, db, user_id):
         try:
             with db.cursor() as cursor:
@@ -535,6 +538,69 @@ class UserDao:
                 affected_row = cursor.execute(query, user_id)
                 if affected_row == -1:
                     raise Exception('UPDATE_FAILED')
+
+        except Exception as e:
+            raise e
+
+    def update_user_status(self, db, user_id, enddate):
+        try:
+            with db.cursor() as cursor:
+                query = """
+                UPDATE user_status SET enddate = %s
+                WHERE user_id = %s AND enddate = 99991231235959
+                """
+
+                affected_row = cursor.execute(query, (enddate, user_id))
+                if affected_row == 0 or affected_row == -1:
+                    raise Exception('UPDATE_FAILED')
+
+        except Exception as e:
+            raise e
+
+    def soft_delete_user(self, db, user_id):
+        try:
+            with db.cursor() as cursor:
+                query = """
+                UPDATE users SET is_deleted = 1
+                WHERE id = %s
+                """
+
+                affected_row = cursor.execute(query, user_id)
+                if affected_row == 0 or affected_row == -1:
+                    raise Exception('UPDATE_FAILED')
+
+        except Exception as e:
+            raise e
+
+    def get_user_status_id(self, db, user_id):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT status_id FROM user_status
+                WHERE user_id = %s AND enddate = 99991231235959
+                """
+                affected_row = cursor.execute(query, user_id)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row:
+                    return cursor.fetchone()['status_id']
+
+                return None
+        except Exception as e:
+            raise e
+
+    def get_actions_id(self, db, status_id):
+        try:
+            with db.cursor() as cursor:
+                query = """
+                SELECT actions_id FROM status_actions
+                WHERE seller_statuses_id = %s
+                """
+                affected_row = cursor.execute(query, status_id)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row:
+                    return cursor.fetchall()
 
         except Exception as e:
             raise e

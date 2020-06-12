@@ -1,7 +1,10 @@
 from datetime import datetime
 from copy import deepcopy
+from jsonschema import validate, ValidationError
 
+from exceptions import UserNotExistError, WrongActionError
 from models.user_models import UserDao
+from jsonschemas import USER_STATUS_UPDATE_SCHEMA
 
 MASTER_ROLE_ID = 1
 SELLER_ROLE_ID = 2
@@ -17,7 +20,7 @@ def sign_up_service(db, data):
         manager_id = user_dao.insert_managers_first(db, data['manager_phone'])  # managers 레코드 생성
         user_dao.insert_user_managers_first(db, user_id=user_id, manager_id=manager_id)  # user_managers 레코드 생성
         user_dao.insert_user_status(db, user_id=user_id, modifier_id=user_id,
-                                    status_id=BASIC_STATUS_ID)  # user의 상태를 입점 대기로 설정
+                                    status_id=BASIC_STATUS_ID, start_date=datetime.now())  # user의 상태를 입점 대기로 설정
     except Exception as e:
         raise e
 
@@ -101,7 +104,6 @@ def user_update_service(db, user_id, modifier_id, details, managers):
         # 한번이라도 정보를 수정한 셀러는 activate 상태로 만들어준다
         user_dao.activate_user(db, user_id)
 
-
     except Exception as e:
         raise e
 
@@ -151,8 +153,6 @@ def get_seller_list_service(db, view, page):
         # action 버튼을 seller_status_id로 GROUP_CONCAT한 값을 리턴받는다
         actions = user_dao.get_actions_list(db)
 
-        list_pages = lambda rows: rows // view if rows % view == 0 else (rows // view) + 1
-
         # 리턴받은 액션버튼을 {id,name} 딕셔너리화 시켜 actions_list에 담는다
         actions_list = []
         for action in actions:
@@ -167,7 +167,7 @@ def get_seller_list_service(db, view, page):
 
         # 위에서 받아온 seller_list에 actions를 update한다
         for user_list in lists:
-            user_list['actions'] = actions_list[user_list['seller_status_id']]
+            user_list['actions'] = actions_list[user_list['seller_status_id'] - 1]
 
         if rows % view == 0:
             list_pages = rows // view
@@ -185,3 +185,54 @@ def get_seller_list_service(db, view, page):
     except Exception as e:
         raise e
 
+
+def user_status_update_service(db, user_id, modifier_id, action):
+    action_status_mapping = {
+        '1': 2,  # 입점 승인 -> 입점 상태
+        '2': 5,  # 입점 거절 -> 퇴점 상태
+        '3': 3,  # 휴점 신청 -> 휴점 상태
+        '4': 2,  # 휴점 해제 -> 입점 상태
+        '5': 4,  # 퇴점 신청 처리 -> 퇴점 대기 상태
+        '6': 5,  # 퇴점 확정 처리 -> 퇴점 상태
+        '7': 2  # 퇴점 철회 처리 -> 입점 상태
+    }
+    try:
+        current_time = datetime.now().strftime("%Y%m%d%H%M%S")
+        user_dao.update_user_status(db, user_id, current_time)
+        user_dao.insert_user_status(db,
+                                    user_id=user_id,
+                                    modifier_id=modifier_id,
+                                    status_id=action_status_mapping[action],
+                                    start_date=current_time)
+
+        # 입점 거절 또는 퇴점 확정 처리 일 경우
+        if action in ('2', '6'):
+            user_dao.soft_delete_user(db, user_id)
+
+    except Exception as e:
+        raise e
+
+
+def user_status_update_validate_service(db, action, user_id):
+    try:
+        validation_object = {
+            "user_id": user_id,
+            "action": int(action)
+        }
+        validate(validation_object, USER_STATUS_UPDATE_SCHEMA)
+
+        # user의 id값으로 user의 status id를 조회한다
+        status_id = user_dao.get_user_status_id(db, user_id)
+        # 위 조회값이 없으면 ERROR를 raise한다
+        if status_id == 5 or status_id is None:
+            raise UserNotExistError
+
+        # user의 status에서 적용 가능한 버튼을 조회한다
+        right_actions = user_dao.get_actions_id(db, status_id)
+        right_action_list = [action[0] for action in right_actions]
+        # 입력받은 action값이 조회한 list에 존재하지 않다면 올바르지 않은 입력
+        if not validation_object['action'] in right_action_list:
+            raise WrongActionError
+
+    except Exception as e:
+        raise e

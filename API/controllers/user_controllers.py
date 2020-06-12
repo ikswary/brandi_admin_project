@@ -14,6 +14,7 @@ from flask.views import MethodView
 from my_settings import SERCRET, HASH_ALGORITHM
 from connections import get_db_connector
 from decorator import login_required
+from exceptions import UserNotExistError, WrongActionError
 from jsonschemas import (
     SIGN_UP_SCHEMA,
     SIGN_IN_SCHEMA,
@@ -27,7 +28,9 @@ from services.user_service import (
     user_data_formatter,
     user_data_deformatter,
     user_update_service,
-    get_seller_list_service
+    get_seller_list_service,
+    user_status_update_service,
+    user_status_update_validate_service
 )
 
 user_app = Blueprint('user_app', __name__)
@@ -259,27 +262,27 @@ class User(MethodView):
 
             return jsonify(''), 200
 
-        # except pymysql.err.InternalError:
-        #     db.rollback()
-        #     return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
-        # except pymysql.err.OperationalError:
-        #     db.rollback()
-        #     return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
-        # except pymysql.err.ProgrammingError:
-        #     db.rollback()
-        #     return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
-        # except pymysql.err.IntegrityError:
-        #     db.rollback()
-        #     return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
-        # except pymysql.err.DataError:
-        #     db.rollback()
-        #     return jsonify(message="DATA_ERROR"), 400
-        # except KeyError:
-        #     db.rollback()
-        #     return jsonify(message="KEY_ERROR"), 400
-        # except Exception as e:
-        #     db.rollback()
-        #     return jsonify(message=f"{e}"), 500
+        except pymysql.err.InternalError:
+            db.rollback()
+            return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
+        except pymysql.err.OperationalError:
+            db.rollback()
+            return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
+        except pymysql.err.ProgrammingError:
+            db.rollback()
+            return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
+        except pymysql.err.IntegrityError:
+            db.rollback()
+            return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
+        except pymysql.err.DataError:
+            db.rollback()
+            return jsonify(message="DATA_ERROR"), 400
+        except KeyError:
+            db.rollback()
+            return jsonify(message="KEY_ERROR"), 400
+        except Exception as e:
+            db.rollback()
+            return jsonify(message=f"{e}"), 500
         finally:
             if db:
                 db.close()
@@ -369,7 +372,7 @@ def user_list(**kwargs):
                     Authorizaion: jwt
 
                 Query Strings:
-                    <string:user_account>: 마스터권한일 경우 대상
+                    필터링 옵션
 
                 Returns:
                     {
@@ -396,31 +399,120 @@ def user_list(**kwargs):
         if kwargs['role_id'] == USER_DATA_MODIFY_SELLER:
             return jsonify(message="NOT_AUTHORIZED_USER"), 403
 
-        lists = get_seller_list_service(db, 1000, 0)
+        lists = get_seller_list_service(db, 10, 0)
 
         return jsonify(**lists), 200
 
-    # except pymysql.err.INVALID_REQUESTternalError:
-    #     db.rollback()
-    #     return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
-    # except pymysql.err.OperationalError:
-    #     db.rollback()
-    #     return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
-    # except pymysql.err.ProgrammingError:
-    #     db.rollback()
-    #     return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
-    # except pymysql.err.IntegrityError:
-    #     db.rollback()
-    #     return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
-    # except pymysql.err.DataError:
-    #     db.rollback()
-    #     return jsonify(message="DATA_ERROR"), 400
-    # except KeyError:
-    #     db.rollback()
-    #     return jsonify(message="KEY_ERROR"), 400
-    # except Exception as e:
-    #     db.rollback()
-    #     return jsonify(message=f"{e}"), 500
+    except pymysql.err.INVALID_REQUESTternalError:
+        db.rollback()
+        return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
+    except pymysql.err.OperationalError:
+        db.rollback()
+        return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
+    except pymysql.err.ProgrammingError:
+        db.rollback()
+        return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
+    except pymysql.err.IntegrityError:
+        db.rollback()
+        return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
+    except pymysql.err.DataError:
+        db.rollback()
+        return jsonify(message="DATA_ERROR"), 400
+    except KeyError:
+        db.rollback()
+        return jsonify(message="KEY_ERROR"), 400
+    except Exception as e:
+        db.rollback()
+        return jsonify(message=f"{e}"), 500
+    finally:
+        if db:
+            db.close()
+
+
+@user_app.route('status/<int:target_id>', methods=['PUT'])
+@login_required
+def user_status(**kwargs):
+    """마스터 유저의 셀러 정보 수정 페이지의 액션 버튼을 통해 셀러의 상태를 조정하는 API
+
+                Headers:
+                    Authorizaion: jwt
+
+                Url Params:
+                    <string:user_account>: 대상 user의 id
+
+                Query Strings:
+                    action: 유저에게 적용할 action id
+
+                Returns:
+                    {
+                        message: STATUS_MESSAGE
+                        token: JWT_TOKEN
+                        },
+                    http status code
+
+                Exceptions:
+                    InternalError: DATABASE가 존재하지 않을 때 발생
+                    OperationalError: DATABASE 접속이 인가되지 않았을 때 발생
+                    ProgramingError: SQL syntax가 잘못되었을 때 발생
+                    IntegrityError: 컬럼의 무결성을 해쳤을 때 발생
+                    UserNotExistError: urlparams로 전달받은 seller가 존재하지 않을 때
+                    WrongActionError: seller의 현재 상태에 적용되지 않는 action 버튼일 때
+                    DataError: 컬럼 타입과 매칭되지 않는 값이 DB에 전달되었을 때 발생
+                    KeyError: 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
+            """
+    db = None
+    try:
+        db = get_db_connector()
+        if db is None:
+            return jsonify(message="DATABASE_INIT_ERROR"), 500
+
+        # 마스터 권한 전용 메뉴이므로 마스터 토큰이 아닐 경우 요청 drop
+        if kwargs['role_id'] == USER_DATA_MODIFY_SELLER:
+            return jsonify(message="NOT_AUTHORIZED_USER"), 403
+
+        user_status_update_validate_service(db,
+                                            request.args['action'],
+                                            kwargs['target_id'])
+
+        # user_id : url params로 전달된 변경할 대상 유저의 id값
+        # modifier_id : 토큰으로부터 추출된 master의 id값
+        # action : query string으로 전달된 유저에 적용될 action id값
+        db.begin()
+        user_status_update_service(db,
+                                   user_id=kwargs['target_id'],
+                                   modifier_id=kwargs['user_id'],
+                                   action=request.args['action'])
+        db.commit()
+
+        return jsonify(''), 200
+
+    except pymysql.err.InternalError:
+        db.rollback()
+        return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
+    except pymysql.err.OperationalError:
+        db.rollback()
+        return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
+    except pymysql.err.ProgrammingError:
+        db.rollback()
+        return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
+    except pymysql.err.IntegrityError:
+        db.rollback()
+        return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
+    except pymysql.err.DataError:
+        db.rollback()
+        return jsonify(message="DATA_ERROR"), 400
+    except UserNotExistError:
+        db.rollback()
+        return jsonify(message="USER_DOES_NOT_EXIST"), 400
+    except WrongActionError:
+        db.rollback()
+        return jsonify(message="USER_DOES_NOT_SUPPORT_THIS_ACTION"), 400
+    except KeyError:
+        db.rollback()
+        return jsonify(message="KEY_ERROR"), 400
+    except Exception as e:
+        db.rollback()
+        return jsonify(message=f"{e}"), 500
     finally:
         if db:
             db.close()

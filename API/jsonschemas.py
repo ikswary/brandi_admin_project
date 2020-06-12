@@ -1556,3 +1556,46 @@ USER_DATA_MODIFY_SELLER = {
         }
     }
 }
+
+USER_STATUS_UPDATE_SCHEMA = {
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "title": "The root schema",
+    "description": "The root schema comprises the entire JSON document.",
+    "default": {},
+    "examples": [
+        {
+            "user_id": 1,
+            "action": 1
+        }
+    ],
+    "required": [
+        "user_id",
+        "action"
+    ],
+    "additionalProperties": True,
+    "properties": {
+        "user_id": {
+            "$id": "#/properties/user_id",
+            "type": "integer",
+            "title": "The user_id schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                1
+            ],
+            "pattern": "^[1-7]$"
+        },
+        "action": {
+            "$id": "#/properties/action",
+            "type": "integer",
+            "title": "The action schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                1
+            ]
+        }
+    }
+}
