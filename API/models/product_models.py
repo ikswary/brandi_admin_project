@@ -196,25 +196,6 @@ class ProductDao:
             raise e
 
 
-    def count_options(self, db):
-        try:
-            with db.cursor(pymysql.cursors.DictCursor) as cursor:
-                query = """
-                SELECT COUNT(*) FROM options;
-                """
-
-                affected_row = cursor.execute(query)
-                if affected_row == -1:
-                    raise Exception('EXECUTE_FAILED')
-                if affected_row == 0:
-                    raise Exception('DATA_DOES_NOT_EXIST')
-
-                return cursor.fetchone()['COUNT(*)']
-
-        except Exception as e:
-            raise e
-
-
     def insert_product(self, db, user_id, code):
         try:
             with db.cursor() as cursor:
@@ -575,5 +556,24 @@ class ProductDao:
                     raise Exception('DATA_DOES_NOT_EXIST')
 
                 return cursor.fetchone()
+        except Exception as e:
+            raise e
+
+
+    def find_last_option_code(self, db):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT code FROM options
+                ORDER BY code
+                """
+
+                affected_row = cursor.execute(query)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row == 0:
+                    return 1
+
+                return cursor.fetchall()[-1]['code']
         except Exception as e:
             raise e
