@@ -379,7 +379,24 @@ def save_product(**kwargs):
 @product_app.route('', methods=['GET'])
 @login_required
 def product_get(**kwargs):
-    """
+    """ 상품 수정시 기본 정보 보내주는 API
+
+        URL params:
+            <string:product_code>: 상품 코드
+
+        Args:
+             product_code : 상품 코드,
+
+        Returns:
+             {data : product_data}, http status code
+
+        Exceptions:
+            InternalError: DATABASE가 존재하지 않을 때 발생
+            OperationalError: DATABASE 접속이 인가되지 않았을 때 발생
+            ProgramingError: SQL syntax가 잘못되었을 때 발생
+            IntegrityError: Key의 무결성을 해쳤을 때 발생
+            DataError: 컬럼 타입과 매칭되지 않는 값이 DB에 전달되었을 때 발생
+            KeyError: 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
 
     """
     db = None
