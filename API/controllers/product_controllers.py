@@ -14,7 +14,7 @@ from connections import get_db_connector
 from decorator import login_required
 from models.main_models import MainDao
 from models.product_models import ProductDao
-from services.product_service import product_save_service, product_data_service
+from services.product_service import product_save_service, product_data_service, product_change_service
 
 product_app = Blueprint("product_app", __name__)
 main_dao = MainDao()
@@ -261,7 +261,7 @@ def save_product(**kwargs):
           "min_sales_unit": 최소판매수량,
           "max_sales_unit": 최대판매수량,
           "tag" : {
-                    "name": 상품 태
+                        "name": 상품 태
                   }
 
         Returns:
@@ -450,8 +450,8 @@ def get_product_information(**kwargs):
         return jsonify(message="DATA_ERROR"), 400
     except KeyError:
         return jsonify(message="KEY_ERROR"), 400
-    except Exception as e:
-        return jsonify(message=f"{e}"), 500
+    #except Exception as e:
+    #    return jsonify(message=f"{e}"), 500
     finally:
         if db:
             db.close()
@@ -461,7 +461,51 @@ def get_product_information(**kwargs):
 @login_required
 def change_product_information(**kwargs):
     """
+        Args:
+            "product_code": 상품코드,
+            "on_sale": 판매여부,
+            "on_list": 진열여부,
+            "first_category_id": 1차 카테고리,
+            "second_category_id": 2차 카테고리,
+            "manufacturer": 제조사,
+            "manufacture_date": 제조일자,
+            "manufacture_country_id": 원산지 id,
+            "name": 상품명,
+            "description_short": 한줄 상품 설명,
+            "images": {
+                        "url": 이미지 url
+                        }
+            "color_filter_id": 색상필터(썸네일 이미지),
+            "style_filter_id": 스타일필터,
+            "description_detail": 상세 상품 정보,
+            "option": {
+                        "code": 옵션 상품 코드,
+                        "color_id": 옵션 색상 id,
+                        "size_id": 옵션 size id,
+                        "stock": 재고 수량
+                      }
+            "price": 판매가,
+            "discount_rate": 할인율,
+            "discount_price": 할인판매가,
+            "discount_start": 할인기간 시작일,
+            "discount_end": 할인기간 종료일,
+            "min_sales_unit": 최소판매수량,
+            "max_sales_unit": 최대판매수량,
+            "tag" : {
+                        "name": 상품 태그
+                    }
 
+        Returns:
+            {message: ''}, http status code
+
+        Exceptions:
+            InternalError: DATABASE가 존재하지 않을 때 발생
+            OperationalError: DATABASE 접속이 인가되지 않았을 때 발생
+            ProgramingError: SQL syntax가 잘못되었을 때 발생
+            IntegrityError: Key의 무결성을 해쳤을 때 발생
+            DataError: 컬럼 타입과 매칭되지 않는 값이 DB에 전달되었을 때 발생
+            KeyError: 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
+            ValidationError : 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
     """
 
     db = None
@@ -476,7 +520,6 @@ def change_product_information(**kwargs):
         data['modifier_id'] = kwargs['user_id']
         product_code = data['product_code']
 
-        # print(data)
         # 상품 코드를 이용하여 product_id를 구하고 data에 key,value 추가
         product_id = product_dao.find_product(db, product_code)['product_id']
         previous_product_detail_id = product_dao.find_product(db, product_code)['id']
@@ -549,53 +592,34 @@ def change_product_information(**kwargs):
             data['discount_price'] = int(discount_data)
 
         db.begin()
-        product_detail_id = product_dao.insert_product_details(db, data)
-
-        # 이전 product_detail의 enddate 날짜 변경
-        previous_enddate = product_dao.find_product_date(db,product_detail_id)
-        product_dao.change_product_date(db, previous_enddate, previous_product_detail_id)
-
-        # 리스트로 들어온 tag_name을 이용하여 tag_id (tag가 db에 존재하는지) 찾기
-        for tag in tag_data:
-            tag_id = product_dao.find_tag_id(db, tag['name'])
-            # tag가 db에 존재하지 않으면tag 추가하고 product_tag에도 추가
-            if tag_id is None:
-                tag_id = product_dao.insert_tag(db, tag['name'])
-                product_dao.insert_product_tag(db, product_detail_id, tag_id)
-            # tag가 db에 존재하면 tag_id 이용하여 product_tag에 추가
-            elif tag_id:
-                tag_id = tag_id['id']
-                product_dao.insert_product_tag(db, product_detail_id, tag_id)
-
-        # 리스트로 들어온 image_data를 이용하여 image를 db에 추가 후 product에 연결
-        for order in range(len(image_data)):
-            large_url = image_data[order]['url']
-            medium_url = image_data[order]['url']
-            small_url = image_data[order]['url']
-            list_order = order+1
-            image_id = product_dao.insert_image(db, large_url, medium_url, small_url)
-            product_dao.insert_product_images(db, product_detail_id, image_id, list_order)
-
-        # 리스트로 들어온 option_data 추가
-        for option in option_data:
-            if option['code']:
-                color_id = option['color_id']
-                size_id = option['size_id']
-                stock = option['stock']
-                code = option['code']
-                product_dao.insert_options(db, product_detail_id, color_id, size_id, stock, code)
-            if option['code'] is None:
-                color_id = option['color_id']
-                size_id = option['size_id']
-                stock = option['stock']
-                code = option['code']
-                code_number = str(product_dao.count_options(db) + 1)
-                code = "SP"+code_number.zfill(18)
-                product_dao.insert_options(db, product_detail_id, color_id, size_id, stock, code)
+        product_change_service(db, previous_product_detail_id, data, tag_data, image_data, option_data)
         db.commit()
-        return jsonify(''), 200
+        return (''), 200
 
+    except pymysql.err.InternalError:
+        db.rollback()
+        return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
+    except pymysql.err.OperationalError:
+        db.rollback()
+        return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
+    except pymysql.err.ProgrammingError:
+        db.rollback()
+        return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
+    except pymysql.err.IntegrityError:
+        db.rollback()
+        return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
+    except pymysql.err.DataError:
+        db.rollback()
+        return jsonify(message="DATA_ERROR"), 400
+    except KeyError:
+        db.rollback()
+        return jsonify(message=f"KEY_ERROR"), 400
+    except ValidationError as e:
+        error_path = str(e.path)[8:-3]
+        return jsonify(message=f"{error_path.upper()}_VALIDATION_ERROR"), 400
+    except Exception as e:
+        db.rollback()
+        return jsonify(message=f"{e}"), 500
     finally:
         if db:
             db.close()
-
