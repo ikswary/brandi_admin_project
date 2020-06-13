@@ -4,7 +4,7 @@ from jsonschema import validate, ValidationError
 
 from exceptions import UserNotExistError, WrongActionError
 from models.user_models import UserDao
-from jsonschemas import USER_STATUS_UPDATE_SCHEMA
+from jsonschemas import USER_STATUS_UPDATE_SCHEMA, FILTER_SCHEMA
 
 MASTER_ROLE_ID = 1
 SELLER_ROLE_ID = 2
@@ -144,12 +144,66 @@ def user_manager_modify_service(db, user_id, managers):
         raise e
 
 
-def get_seller_list_service(db, view, page):
-    try:
-        # user_list에서 필요한 list와 쿼리 match 갯수를 리턴받는다
+def filter_query_generator(filter_options):
+    filter_keys = (
+        'id',
+        'account',
+        'seller_name_eng',
+        'seller_name',
+        'manager_name',
+        'seller_status',
+        'manager_phone',
+        'manager_email',
+        'seller_attribute',
+        'view',
+        'page'
+    )
 
-        rows = user_dao.get_users_count(db)
-        lists = user_dao.get_seller_list(db, view, page)
+    filters = dict()
+    for key in filter_keys:
+        filters[key] = filter_options.get(key, None)
+
+    query = ''
+    if filters['id']:
+        query = query + f" AND user.id = '{filters['id']}'"
+    if filters['account']:
+        query = query + f" AND user.account LIKE '%%{filters['account']}%%'"
+    if filters['seller_name_eng']:
+        query = query + f" AND detail.seller_name_eng LIKE '%%{filters['seller_name_eng']}%%'"
+    if filters['seller_name']:
+        query = query + f" AND detail.seller_name LIKE '%%{filters['seller_name']}%%'"
+    if filters['manager_name']:
+        query = query + f" AND manager.name LIKE '%%{filters['manager_name']}%%'"
+    if filters['seller_status']:
+        query = query + f" AND status.name = '{filters['seller_status']}'"
+    if filters['manager_phone']:
+        query = query + f" AND manager.phone LIKE '%%{filters['manager_phone']}%%'"
+    if filters['manager_email']:
+        query = query + f" AND manager.email LIKE '%%{filters['manager_email']}%%'"
+    if filters['seller_attribute']:
+        query = query + f" AND attr.name LIKE '%%{filters['seller_attribute']}%%'"
+
+    return query
+
+
+def filter_validation_service(filter_options):
+    try:
+        validate(filter_options, FILTER_SCHEMA)
+
+    except Exception as e:
+        raise e
+
+
+def get_seller_list_service(db, filter_options):
+    try:
+        # query string으로 전달받은 필터 조건들을 query문으로 변환
+        filter_query = filter_query_generator(filter_options)
+        limit = int(filter_options['view'])
+        offset = limit * (int(filter_options['page']) - 1)
+
+        # user_list에서 필요한 list와 쿼리 match 갯수를 리턴받는다
+        rows = user_dao.get_users_count(db, filter_query)
+        lists = user_dao.get_seller_list(db, filter_query, limit, offset)
         # action 버튼을 seller_status_id로 GROUP_CONCAT한 값을 리턴받는다
         actions = user_dao.get_actions_list(db)
 
@@ -165,14 +219,15 @@ def get_seller_list_service(db, view, page):
 
             actions_list.append(reformat)
 
-        # 위에서 받아온 seller_list에 actions를 update한다
-        for user_list in lists:
-            user_list['actions'] = actions_list[user_list['seller_status_id'] - 1]
+        if not lists:
+            # 위에서 받아온 seller_list에 actions를 update한다
+            for user_list in lists:
+                user_list['actions'] = actions_list[user_list['seller_status_id'] - 1]
 
-        if rows % view == 0:
-            list_pages = rows // view
-        elif rows % view > 0:
-            list_pages = (rows // view) + 1
+        if rows % limit == 0:
+            list_pages = rows // limit
+        elif rows % limit > 0:
+            list_pages = (rows // limit) + 1
 
         result = {
             "page": list_pages,

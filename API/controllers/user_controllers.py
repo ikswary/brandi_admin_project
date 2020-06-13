@@ -19,7 +19,7 @@ from jsonschemas import (
     SIGN_UP_SCHEMA,
     SIGN_IN_SCHEMA,
     USER_DATA_MODIFY_MASTER,
-    USER_DATA_MODIFY_SELLER
+    USER_DATA_MODIFY_SELLER,
 )
 from models.user_models import UserDao
 from services.user_service import (
@@ -30,7 +30,8 @@ from services.user_service import (
     user_update_service,
     get_seller_list_service,
     user_status_update_service,
-    user_status_update_validate_service
+    user_status_update_validate_service,
+    filter_validation_service
 )
 
 user_app = Blueprint('user_app', __name__)
@@ -371,8 +372,17 @@ def user_list(**kwargs):
                 Header:
                     Authorizaion: jwt
 
-                Query Strings:
-                    필터링 옵션
+                Query Strings: 필터링 옵션
+                    id: 유저 번호
+                    account: 셀러 계정
+                    seller_name_eng : 셀러 영어 이름
+                    seller_name : 셀러 한글 이름
+                    manager_name : 담당자 이름
+                    seller_status : 셀러 상태
+                    manager_phone : 담당자 전화번호
+                    manager_email : 담당자 이메일
+                    seller_attribute : 셀러 속성
+
 
                 Returns:
                     {
@@ -399,31 +409,32 @@ def user_list(**kwargs):
         if kwargs['role_id'] == USER_DATA_MODIFY_SELLER:
             return jsonify(message="NOT_AUTHORIZED_USER"), 403
 
-        lists = get_seller_list_service(db, 10, 0)
+        filter_validation_service(request.args)
+        lists = get_seller_list_service(db, request.args)
 
         return jsonify(**lists), 200
 
-    except pymysql.err.INVALID_REQUESTternalError:
-        db.rollback()
-        return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
-    except pymysql.err.OperationalError:
-        db.rollback()
-        return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
-    except pymysql.err.ProgrammingError:
-        db.rollback()
-        return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
-    except pymysql.err.IntegrityError:
-        db.rollback()
-        return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
-    except pymysql.err.DataError:
-        db.rollback()
-        return jsonify(message="DATA_ERROR"), 400
-    except KeyError:
-        db.rollback()
-        return jsonify(message="KEY_ERROR"), 400
-    except Exception as e:
-        db.rollback()
-        return jsonify(message=f"{e}"), 500
+    # except pymysql.err.INVALID_REQUESTternalError:
+    #     db.rollback()
+    #     return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
+    # except pymysql.err.OperationalError:
+    #     db.rollback()
+    #     return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
+    # except pymysql.err.ProgrammingError:
+    #     db.rollback()
+    #     return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
+    # except pymysql.err.IntegrityError:
+    #     db.rollback()
+    #     return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
+    # except pymysql.err.DataError:
+    #     db.rollback()
+    #     return jsonify(message="DATA_ERROR"), 400
+    # except KeyError:
+    #     db.rollback()
+    #     return jsonify(message="KEY_ERROR"), 400
+    # except Exception as e:
+    #     db.rollback()
+    #     return jsonify(message=f"{e}"), 500
     finally:
         if db:
             db.close()

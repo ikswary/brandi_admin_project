@@ -1599,3 +1599,147 @@ USER_STATUS_UPDATE_SCHEMA = {
         }
     }
 }
+
+FILTER_SCHEMA = {
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "title": "The root schema",
+    "description": "The root schema comprises the entire JSON document.",
+    "default": {},
+    "examples": [
+        {
+            "id": 1,
+            "account": "wecode123",
+            "seller_name_eng": "sjh",
+            "seller_name": "위코드",
+            "manager_name": "와썹맨",
+            "seller_status": "입점",
+            "manager_phone": "010-1234-5678",
+            "manager_email": "email",
+            "seller_attribute": "뷰티",
+            "view": 10,
+            "page": 5
+        }
+    ],
+    "required": [
+        "view",
+        "page"
+    ],
+    "additionalProperties": True,
+    "properties": {
+        "id": {
+            "$id": "#/properties/id",
+            "type": "integer",
+            "title": "The id schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                1
+            ]
+        },
+        "account": {
+            "$id": "#/properties/account",
+            "type": "string",
+            "title": "The account schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "wecode123"
+            ]
+        },
+        "seller_name_eng": {
+            "$id": "#/properties/seller_name_eng",
+            "type": "string",
+            "title": "The seller_name_eng schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "sjh"
+            ]
+        },
+        "seller_name": {
+            "$id": "#/properties/seller_name",
+            "type": "string",
+            "title": "The seller_name schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "위코드"
+            ]
+        },
+        "manager_name": {
+            "$id": "#/properties/manager_name",
+            "type": "string",
+            "title": "The manager_name schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "와썹맨"
+            ]
+        },
+        "seller_status": {
+            "$id": "#/properties/seller_status",
+            "type": "string",
+            "title": "The seller_status schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "입점"
+            ],
+            "pattern": "^(입점대기|입점|휴점|퇴점대기|퇴점)&"
+        },
+        "manager_phone": {
+            "$id": "#/properties/manager_phone",
+            "type": "string",
+            "title": "The manager_phone schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "010-1234-5678"
+            ]
+        },
+        "manager_email": {
+            "$id": "#/properties/manager_email",
+            "type": "string",
+            "title": "The manager_email schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "email"
+            ]
+        },
+        "seller_attribute": {
+            "$id": "#/properties/seller_attribute",
+            "type": "string",
+            "title": "The seller_attribute schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "뷰티"
+            ],
+            "pattern": "^(쇼핑몰|마켓|로드샵|디자이너브랜드|제너럴브랜드|내셔널브랜드|뷰티)$"
+        },
+        "view": {
+            "$id": "#/properties/view",
+            "type": "integer",
+            "title": "The view schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                10
+            ],
+            "pattern": "^(10|20|50|100|150)$"
+        },
+        "page": {
+            "$id": "#/properties/page",
+            "type": "integer",
+            "title": "The page schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                5
+            ]
+        }
+    }
+}

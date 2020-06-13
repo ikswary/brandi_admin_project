@@ -435,7 +435,7 @@ class UserDao:
         except Exception as e:
             raise e
 
-    def get_seller_list(self, db, *args):
+    def get_seller_list(self, db, filter_query, limit, offset):
         try:
             with db.cursor(pymysql.cursors.DictCursor) as cursor:
                 query = """
@@ -469,17 +469,17 @@ class UserDao:
                 INNER JOIN seller_attributes AS attr
                 ON attr.id = detail.seller_attribute_id 
                 WHERE user.role_id = 2 AND user.is_deleted = 0
+                """ + filter_query + """
                 ORDER BY id DESC
                 LIMIT %s OFFSET %s
                 """
 
-                affected_row = cursor.execute(query, args)
+                affected_row = cursor.execute(query, (limit, offset))
                 if affected_row == -1:
                     raise Exception('EXECUTE_FAILED')
                 if affected_row:
                     return cursor.fetchall()
-
-                raise Exception('QUERY_RETURNED_NOTHING')
+                return None
 
         except Exception as e:
             raise e
@@ -508,13 +508,26 @@ class UserDao:
         except Exception as e:
             raise e
 
-    def get_users_count(self, db):
+    def get_users_count(self, db, filter_query):
         try:
             with db.cursor(pymysql.cursors.DictCursor) as cursor:
                 query = """
-                SELECT COUNT(*) AS count FROM users
-                WHERE role_id = 2 AND is_deleted = 0
-                """
+                SELECT COUNT(*) AS count
+                FROM users AS user
+                INNER JOIN seller_details AS detail
+                ON detail.user_id = user.id AND detail.enddate = 99991231235959
+                INNER JOIN user_managers AS um
+                ON um.user_id = user.id AND um.is_deleted = 0 AND um.list_order = 1
+                INNER JOIN managers AS manager
+                ON um.manager_id = manager.id
+                INNER JOIN user_status AS us
+                ON user.id = us.user_id AND us.enddate = 99991231235959
+                INNER JOIN statuses AS status
+                ON us.status_id = status.id
+                INNER JOIN seller_attributes AS attr
+                ON attr.id = detail.seller_attribute_id 
+                WHERE user.role_id = 2 AND user.is_deleted = 0
+                """ + filter_query
 
                 affected_row = cursor.execute(query)
                 if affected_row == -1:
