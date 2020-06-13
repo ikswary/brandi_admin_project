@@ -12,11 +12,13 @@ from flask import Blueprint, request, jsonify
 from jsonschemas import PRODUCT_SCHEMA, CHANGE_PRODUCT_SCHEMA
 from connections import get_db_connector
 from decorator import login_required
+from models.user_models import UserDao
 from models.main_models import MainDao
 from models.product_models import ProductDao
 from services.product_service import product_save_service, product_data_service, product_change_service
 
 product_app = Blueprint("product_app", __name__)
+user_dao = UserDao()
 main_dao = MainDao()
 product_dao = ProductDao()
 
@@ -423,7 +425,7 @@ def get_product_information(**kwargs):
         if db is None:
             return jsonify(message="DATABASE_INIT_ERROR"), 500
 
-        product_code=request.args.get('product_code')
+        product_code=request.args.get('code')
         data = product_dao.find_product(db, product_code)
 
         first_category_id = data['first_category_id']
@@ -450,8 +452,8 @@ def get_product_information(**kwargs):
         return jsonify(message="DATA_ERROR"), 400
     except KeyError:
         return jsonify(message="KEY_ERROR"), 400
-    #except Exception as e:
-    #    return jsonify(message=f"{e}"), 500
+    except Exception as e:
+        return jsonify(message=f"{e}"), 500
     finally:
         if db:
             db.close()
@@ -623,3 +625,74 @@ def change_product_information(**kwargs):
     finally:
         if db:
             db.close()
+
+
+@product_app.route('/history', methods=['GET'])
+@login_required
+def history(**kwargs):
+    """상품 수정의 수정 이력 API
+
+        Args:
+             seller_id : 셀러 아이디,
+
+        Returns:
+             {data : category_list}, http status code
+
+        Exceptions:
+            InternalError: DATABASE가 존재하지 않을 때 발생
+            OperationalError: DATABASE 접속이 인가되지 않았을 때 발생
+            ProgramingError: SQL syntax가 잘못되었을 때 발생
+            IntegrityError: Key의 무결성을 해쳤을 때 발생
+            DataError: 컬럼 타입과 매칭되지 않는 값이 DB에 전달되었을 때 발생
+            KeyError: 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
+
+    """
+
+    db = None
+    try:
+        db = get_db_connector()
+        if db is None:
+            return jsonify(message="DATABASE_INIT_ERROR"), 500
+
+        product_code=request.args.get('code')
+
+        role_id = kwargs['role_id']
+
+        if role_id == MASTER_ROLE_ID:
+            history_data = product_dao.find_product_history(db, product_code)
+            history_list =[ {
+                "modified_data" : history['startdate'],
+                "on_sale": history['on_sale'],
+                "on_list": history['on_list'],
+                "price": history['price'],
+                "discount_price": history['discount_price'] if history['discount_price'] else history['price'],
+                "discount_rate": history['discount_rate'] if history['discount_rate'] else 0,
+                "modifier": user_dao.get_account_from_id(db, history['modifier_id']),
+                "group": "브랜디" }
+                    for history in history_data]
+
+            return jsonify(data=history_list), 200
+
+        elif role_id == SELLER_ROLE_ID:
+            return jsonify(message="UNAUTHORIZED"), 401
+        elif main_dao.role(db, role_id) is None:
+            return jsonify(message="DATA_DOES_NOT_EXIST"), 404
+
+    except pymysql.err.InternalError:
+        return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
+    except pymysql.err.OperationalError:
+        return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
+    except pymysql.err.ProgrammingError:
+        return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
+    except pymysql.err.IntegrityError:
+        return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
+    except pymysql.err.DataError:
+        return jsonify(message="DATA_ERROR"), 400
+    except KeyError:
+        return jsonify(message="KEY_ERROR"), 400
+    except Exception as e:
+        return jsonify(message=f"{e}"), 500
+    finally:
+        if db:
+            db.close()
+
