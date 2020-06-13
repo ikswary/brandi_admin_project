@@ -577,3 +577,23 @@ class ProductDao:
                 return cursor.fetchall()[-1]['code']
         except Exception as e:
             raise e
+
+
+    def find_product_history(self, db, code):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT startdate, on_sale, on_list, price, discount_rate, discount_price, modifier_id FROM product_details INNER JOIN products
+                ON product_details.product_id = products.id
+                WHERE code = %s
+                """
+
+                affected_row = cursor.execute(query, code)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row == 0:
+                    return 1
+
+                return cursor.fetchall()
+        except Exception as e:
+            raise e
