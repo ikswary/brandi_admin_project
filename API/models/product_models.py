@@ -14,8 +14,6 @@ class ProductDao:
                 affected_row = cursor.execute(query)
                 if affected_row == -1:
                     raise Exception('EXECUTE_FAILED')
-                if affected_row == 0:
-                    raise Exception('DATA_DOES_NOT_EXIST')
 
                 return cursor.fetchall()
         except Exception as e:
@@ -463,6 +461,27 @@ class ProductDao:
             raise e
 
 
+    def find_first_image(self, db, product_id):
+        try:
+            with db. cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT * FROM product_images INNER JOIN images
+                ON product_images.image_id = images.id
+                WHERE product_images.product_id = %s
+                AND list_order = 1
+                """
+
+                affected_row = cursor.execute(query, product_id)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row == 0:
+                    raise Exception('DATA_DOES_NOT_EXIST')
+
+                return cursor.fetchone()['large_url']
+        except Exception as e:
+            raise e
+
+
     def find_options(self, db, product_id):
         try:
             with db.cursor(pymysql.cursors.DictCursor) as cursor:
@@ -579,6 +598,25 @@ class ProductDao:
             raise e
 
 
+    def get_id_from_seller_name(self, db, seller_name):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT user_id FROM seller_details
+                WHERE seller_name = %s
+                """
+
+                affected_row = cursor.execute(query, seller_name)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row == 0:
+                    return Exception('DATA_DOES_NOT_EXIST')
+
+                return cursor.fetchone()['user_id']
+        except Exception as e:
+            raise e
+
+
     def find_product_history(self, db, code):
         try:
             with db.cursor(pymysql.cursors.DictCursor) as cursor:
@@ -592,8 +630,124 @@ class ProductDao:
                 if affected_row == -1:
                     raise Exception('EXECUTE_FAILED')
                 if affected_row == 0:
-                    return 1
+                    return Exception('DATA_DOES_NOT_EXIST')
 
                 return cursor.fetchall()
+        except Exception as e:
+            raise e
+
+
+    def product_filter(self, filter_dict):
+        try:
+            filter_query = ""
+
+            if filter_dict['start_period']:
+                query = "AND products.create_at > %(start_period)s "
+                filter_query = filter_query + query
+
+            if filter_dict['end_period']:
+                query = "AND products.create_at < %(end_period)s "
+                filter_query = filter_query + query
+
+            if filter_dict['user_id']:
+                query = "AND products.user_id = %(user_id)s "
+                filter_query = filter_query + query
+
+            if filter_dict['product_name']:
+                query= "AND name = %(product_name)s "
+                filter_query = filter_query + query
+
+            if filter_dict['product_id']:
+                query= "AND product_id = %(product_id)s "
+                filter_query = filter_query + query
+
+            if filter_dict['code']:
+                query= "AND code = %(code)s "
+                filter_query = filter_query + query
+
+            if filter_dict['seller_attribute']:
+                query= "AND seller_attribute_id = %(seller_attribute)s "
+                filter_query = filter_query + query
+
+            if filter_dict['on_sale']:
+                query= "AND on_sale = %(on_sale)s "
+                filter_query = filter_query + query
+
+            if filter_dict['on_list']:
+                query= "AND on_list = %(on_list)s "
+                filter_query = filter_query + query
+
+            if filter_dict['discount']:
+                if filter_dict['discount'] == 1:
+                    query = "AND discount_rate IS NOT NULL "
+                if filter_dict['discount'] == 0:
+                    query= "AND discount_rate IS NULL "
+                filter_query = filter_query + query
+
+            return filter_query
+
+        except Exception as e:
+            raise e
+
+
+    def pagination(self, filter_dict):
+        try:
+            pagination_query = "LIMIT %(limit)s "
+            if filter_dict['offset']:
+                query = "OFFSET %(offset)s "
+                pagination_query = pagination_query + query
+
+            return pagination_query
+
+        except Exception as e:
+            raise e
+
+
+    def product_list(self, db, filter_dict):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT product_details.id, product_id, products.create_at, name, code,
+                products.user_id, seller_name, on_sale, on_list, price, discount_price,
+                discount_rate, seller_attribute_id FROM product_details
+                LEFT JOIN products ON products.id = product_details.product_id
+                LEFT JOIN users ON products.user_id = users.id
+                LEFT JOIN seller_details on users.id = seller_details.user_id
+                WHERE product_details.enddate = "9999-12-31 23:59:59"
+                """
+
+                filter_query = self.product_filter(filter_dict)
+
+                order_query = """
+                ORDER BY product_id DESC """
+
+                pagination_query = self.pagination(filter_dict)
+
+                query = query + filter_query + order_query + pagination_query
+
+                affected_row = cursor.execute(query, filter_dict)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+
+                return [cursor.fetchall(), affected_row]
+        except Exception as e:
+            raise e
+
+
+    def find_seller_attribute(self, db, seller_attribute_id):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT name FROM seller_attributes
+                WHERE id = %s
+                """
+
+                affected_row = cursor.execute(query, seller_attribute_id)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row == 0:
+                    return Exception('DATA_DOES_NOT_EXIST')
+
+                return cursor.fetchone()['name']
         except Exception as e:
             raise e

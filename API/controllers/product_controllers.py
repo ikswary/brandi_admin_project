@@ -9,7 +9,7 @@ from jsonschema import validate, ValidationError
 from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify
 
-from jsonschemas import PRODUCT_SCHEMA, CHANGE_PRODUCT_SCHEMA
+from jsonschemas import PRODUCT_SCHEMA, CHANGE_PRODUCT_SCHEMA, PRODUCT_FILTER_SCHEMA
 from connections import get_db_connector
 from decorator import login_required
 from models.user_models import UserDao
@@ -52,6 +52,13 @@ def seller(**kwargs):
             return jsonify(message="DATABASE_INIT_ERROR"), 500
         role_id = kwargs['role_id']
 
+        # 마스터 권한 전용이므로 셀러인 경우 요청 drop
+        if role_id == SELLER_ROLE_ID:
+            return jsonify(message="UNAUTHORIZED"), 401
+        # 권한 정보가 없는 경우 에러
+        if main_dao.role(db, role_id) is None:
+            return jsonify(message="DATA_DOES_NOT_EXIST"), 404
+
         if role_id == MASTER_ROLE_ID:
             seller_data = product_dao.seller_list(db)
 
@@ -61,10 +68,6 @@ def seller(**kwargs):
                 "name": seller.get('seller_name')} for seller in seller_data]
 
             return jsonify(data=sellers), 200
-        elif role_id == SELLER_ROLE_ID:
-            return jsonify(message="UNAUTHORIZED"), 401
-        elif main_dao.role(db, role_id) is None:
-            return jsonify(message="DATA_DOES_NOT_EXIST"), 404
 
     except pymysql.err.InternalError:
         return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
@@ -645,7 +648,6 @@ def history(**kwargs):
             IntegrityError: Key의 무결성을 해쳤을 때 발생
             DataError: 컬럼 타입과 매칭되지 않는 값이 DB에 전달되었을 때 발생
             KeyError: 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
-
     """
 
     db = None
@@ -657,6 +659,13 @@ def history(**kwargs):
         product_code=request.args.get('code')
 
         role_id = kwargs['role_id']
+
+        # 마스터 권한 전용이므로 마스터가 아닌 경우 요청 drop
+        if role_id == SELLER_ROLE_ID:
+            return jsonify(message="UNAUTHORIZED"), 401
+        # 권한 정보를 찾을 수 없을 때
+        if main_dao.role(db, role_id) is None:
+            return jsonify(message="DATA_DOES_NOT_EXIST"), 404
 
         if role_id == MASTER_ROLE_ID:
             history_data = product_dao.find_product_history(db, product_code)
@@ -672,11 +681,6 @@ def history(**kwargs):
                     for history in history_data]
 
             return jsonify(data=history_list), 200
-
-        elif role_id == SELLER_ROLE_ID:
-            return jsonify(message="UNAUTHORIZED"), 401
-        elif main_dao.role(db, role_id) is None:
-            return jsonify(message="DATA_DOES_NOT_EXIST"), 404
 
     except pymysql.err.InternalError:
         return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
@@ -696,3 +700,131 @@ def history(**kwargs):
         if db:
             db.close()
 
+
+@product_app.route('/list', methods=['GET'])
+@login_required
+def product_list(**kwargs):
+    """상품관리 리스트 및 필터
+
+        Header:
+            Authorizaion: jwt
+
+         Query Strings: 필터링 옵션
+            start_period: 조회 시작 기간
+            end_period: 조회 마지막 기간
+            seller_name: 셀러 한글 이름
+            seller_attribute: 셀러 구분
+            product_name: 상품명
+            product_id: 상품번호
+            code: 상품코드
+            on_sale : 판매여부
+            on_list: 진열여부
+            discount: 할인여부
+
+        Returns:
+            {data = product_list}, http status code
+
+        Exceptions:
+            InternalError: DATABASE가 존재하지 않을 때 발생
+            OperationalError: DATABASE 접속이 인가되지 않았을 때 발생
+            ProgramingError: SQL syntax가 잘못되었을 때 발생
+            IntegrityError: 컬럼의 무결성을 해쳤을 때 발생
+            DataError: 컬럼 타입과 매칭되지 않는 값이 DB에 전달되었을 때 발생
+            KeyError: 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
+            ValidationError : 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
+    """
+
+    db = None
+    try:
+        db = get_db_connector()
+
+        # filter의 validation 확인
+        validate(request.args, PRODUCT_FILTER_SCHEMA)
+
+        if db is None:
+            return jsonify(message="DATABASE_INIT_ERROR"), 500
+
+        role_id = kwargs['role_id']
+        user_id = kwargs['user_id']
+
+        # pagination 조건 생성
+        filter_dict = {}
+        filter_dict['limit'] = request.args.get('limit', 10, int)
+        filter_dict['offset'] = request.args.get('offset', 0, int)
+
+        # 권한이 마스터인 경우의  필터 조건 생성
+        if role_id == MASTER_ROLE_ID:
+            filter_list = ['start_period', 'end_period', 'seller_name', 'user_id', 'product_name', 'product_id', 'code', 'seller_attribute', 'on_sale', 'on_list', 'discount']
+
+            for filter_key in filter_list:
+                filter_dict[filter_key] = request.args.get(filter_key, None)
+
+            # seller_name을 user_id로 변환
+            if filter_dict['seller_name']:
+                filter_dict['user_id'] = product_dao.get_id_from_seller_name(db, filter_dict['seller_name'])
+
+            # Select로 검색하는 값이 한번에 여러개 들어온 경우 에러 return
+            select_check_list = [filter_dict['product_name'], filter_dict['product_id'], filter_dict['code']]
+            if select_check_list.count(None) == 0 or select_check_list.count(None) == 1:
+                return jsonify(message = "DATA_ERROR"), 400
+
+        # 권한이 셀러인 경우의 필터 조건 생성
+        if role_id == SELLER_ROLE_ID:
+            filter_list = ['start_period', 'end_period', 'product_name', 'product_id', 'code', 'on_sale', 'on_list', 'discount']
+            for filter_key in filter_list:
+                filter_dict[filter_key] = request.args.get('filter_key', None)
+
+            # 셀러권한인 경우 셀러 아이디를 필터에 추가
+            filter_dict['user_id'] = user_id
+
+            # Select로 검색하는 값이 한번에 여러개 들어온 경우 에러 return
+            select_check_list = [filter_dict['product_name'], filter_dict['product_id'], filter_dict['code']]
+            if select_check_list.count(None) == 0 or select_check_list.count(None) == 1:
+                return jsonify(message = "DATA_ERROR"), 400
+
+        if main_dao.role(db, role_id) is None:
+            return jsonify(message="DATA_DOES_NOT_EXIST"), 404
+
+        products_data = product_dao.product_list(db, filter_dict)[0]
+        quantity =  product_dao.product_list(db, filter_dict)[1]
+
+        product_list = {
+            "quantity": quantity,
+            "product" : [{
+            "created_at": product['create_at'],
+            "image": product_dao.find_first_image(db, product['id']),
+            "product_name": product['name'],
+            "product_code": product['code'],
+            "product_id" : product['product_id'],
+            "seller_attribute": product_dao.find_seller_attribute(db, product['seller_attribute_id']),
+            "seller_name": product['seller_name'],
+            "price": product['price'],
+            "discount_price": product['discount_price'] if product['discount_price'] else product['price'],
+            "discount_rate": product['discount_rate'],
+            "on_sale": product['on_sale'],
+            "on_list": product['on_list'],
+    	    "discount": 1 if product['discount_rate'] else 0
+                }   for product in products_data]}
+
+        return jsonify(data = product_list), 200
+
+    except pymysql.err.InternalError:
+        return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
+    except pymysql.err.OperationalError:
+        return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
+    except pymysql.err.ProgrammingError:
+        return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
+    except pymysql.err.IntegrityError:
+        return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
+    except pymysql.err.DataError:
+        return jsonify(message="DATA_ERROR"), 400
+    except KeyError:
+        return jsonify(message="KEY_ERROR"), 400
+    except ValidationError as e:
+         error_path = str(e.path)[8:-3]
+         return jsonify(message=f"{error_path.upper()}_VALIDATION_ERROR"), 400
+    except Exception as e:
+        return jsonify(message=f"{e}"), 500
+    finally:
+        if db:
+            db.close()
