@@ -235,7 +235,7 @@ PRODUCT_SCHEMA = {
     "properties": {
         "seller_id": {
             "$id": "#/properties/seller_id",
-            "type": "integer",
+            "type": ["integer", "null"],
             "title": "The seller_id schema",
             "description": "An explanation about the purpose of this instance.",
             "default": 0,
@@ -1583,7 +1583,7 @@ CHANGE_PRODUCT_SCHEMA = {
             "description_detail": "상세 상품 정보",
             "option": [
                 {
-                    "code": "SP00000000000541630",
+                    "code": 2,
                     "color_id": 1,
                     "size_id": 1,
                     "stock": 1
@@ -1833,7 +1833,7 @@ CHANGE_PRODUCT_SCHEMA = {
             "examples": [
                 [
                     {
-                        "code": "SP00000000000541630",
+                        "code": 2,
                         "color_id": 1,
                         "size_id": 1,
                         "stock": 1
@@ -1851,7 +1851,7 @@ CHANGE_PRODUCT_SCHEMA = {
                         "default": {},
                         "examples": [
                             {
-                                "code": "SP00000000000541630",
+                                "code": 2,
                                 "color_id": 1,
                                 "size_id": 1,
                                 "stock": 1
@@ -1868,14 +1868,14 @@ CHANGE_PRODUCT_SCHEMA = {
                             "code": {
                                 "$id": "#/properties/option/items/anyOf/0/properties/id",
                                 "type": [
-                                    "string",
+                                    "integer",
                                     "null"
                                 ],
                                 "title": "The id schema",
                                 "description": "An explanation about the purpose of this instance.",
                                 "default": "",
                                 "examples": [
-                                    "SP00000000000541630"
+                                    2
                                 ]
                             },
                             "color_id": {
@@ -2233,6 +2233,160 @@ FILTER_SCHEMA = {
             "default": 0,
             "examples": [
                 5
+            ]
+        }
+    }
+}
+
+PRODUCT_FILTER_SCHEMA = {
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "title": "The root schema",
+    "description": "The root schema comprises the entire JSON document.",
+    "default": {},
+    "examples": [
+        {
+            "start_period": "2020-06-12",
+            "end_period": "2020-07-02",
+            "user_id": 1,
+            "product_name": "상품",
+            "product_id": "1",
+            "code": "SB000000000000000009",
+            "seller_attribute": "1",
+            "on_sale": "1",
+            "on_list": "1",
+            "discount": "1",
+            "limit": "10",
+            "offset": "0"
+        }
+    ],
+    "required": [],
+    "additionalProperties": True,
+    "properties": {
+        "start_period": {
+            "$id": "#/properties/start_period",
+            "type": ["string","null"],
+            "title": "The start_period schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "2020-06-12"
+            ]
+        },
+        "end_period": {
+            "$id": "#/properties/end_period",
+            "type": ["string","null"],
+            "title": "The end_period schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "2020-07-02"
+            ]
+        },
+        "user_id": {
+            "$id": "#/properties/seller_name",
+            "type": ["integer","null"],
+            "title": "The seller_name schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                1
+            ]
+        },
+        "product_name": {
+            "$id": "#/properties/product_name",
+            "type": ["string","null"],
+            "title": "The product_name schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "상품"
+            ]
+        },
+        "product_id": {
+            "$id": "#/properties/product_id",
+            "type": ["string", "null"],
+            "title": "The product_id schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "1"
+            ]
+        },
+        "code": {
+            "$id": "#/properties/code",
+            "type": ["string","null"],
+            "title": "The code schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "SB000000000000000009"
+            ]
+        },
+        "seller_attribute": {
+            "$id": "#/properties/seller_attribute",
+            "type": ["string", "null"],
+            "title": "The seller_attribute schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "1"
+            ],
+            "pattern": "^(1|2|3|4|5|6|7)$"
+        },
+        "on_sale": {
+            "$id": "#/properties/on_sale",
+            "type": ["string","null"],
+            "title": "The on_sale schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "1"
+            ],
+            "pattern": "^(0|1)$"
+        },
+        "on_list": {
+            "$id": "#/properties/on_list",
+            "type": ["string", "null"],
+            "title": "The on_list schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "1"
+            ],
+            "pattern": "^(0|1)$"
+        },
+        "discount": {
+            "$id": "#/properties/discount",
+            "type": ["string", "null"],
+            "title": "The discount schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "1"
+            ],
+            "pattern": "^(0|1)$"
+        },
+        "limit": {
+            "$id": "#/properties/limit",
+            "type": ["string", "null"],
+            "title": "The limit schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "10"
+            ],
+            "pattern": "^(10|20|50)$"
+        },
+        "offset": {
+            "$id": "#/properties/offset",
+            "type": ["string", "null"],
+            "title": "The offset schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "0"
             ]
         }
     }
