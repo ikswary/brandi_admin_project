@@ -99,6 +99,7 @@ def product_data_service(db, product_code, data, category_data, images_data, opt
     except Exception as e:
         raise e
 
+
 def product_change_service(db, previous_product_detail_id, data, tag_data, image_data, option_data):
     try:
         product_detail_id = product_dao.insert_product_details(db, data)
