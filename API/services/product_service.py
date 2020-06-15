@@ -37,10 +37,11 @@ def product_save_service(db, data, seller_id, user_id, code, tag_data, image_dat
             color_id = option['color_id']
             size_id = option['size_id']
             stock = option['stock']
-            if product_dao.find_last_option_code(db) == 1:
+            code_number = product_dao.find_last_option_code(db)
+            if code_number == 1:
                 code = 1
-            if product_dao.find_last_option_code(db) != 1:
-                code = int(product_dao.find_last_option_code(db)[2:])+1
+            if code_number != 1:
+                code = int(code_number)+1
             product_dao.insert_options(db, product_detail_id, color_id, size_id, stock, code)
 
     except Exception as e:
@@ -141,10 +142,11 @@ def product_change_service(db, previous_product_detail_id, data, tag_data, image
                 color_id = option['color_id']
                 size_id = option['size_id']
                 stock = option['stock']
-                if product_dao.find_last_option_code(db) == 1:
+                code_number = product_dao.find_last_option_code(db)
+                if code_number == 1:
                     code = 1
-                if product_dao.find_last_option_code(db) != 1:
-                    code = int(product_dao.find_last_option_code(db)[2:])+1
+                if code_number != 1:
+                    code = int(code_number) + 1
                 product_dao.insert_options(db, product_detail_id, color_id, size_id, stock, code)
 
     except Exception as e:
