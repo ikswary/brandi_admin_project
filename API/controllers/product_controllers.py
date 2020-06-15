@@ -987,13 +987,10 @@ def find_seller_name(**kwargs):
         if role_id == MASTER_ROLE_ID:
             seller_data = product_dao.similar_seller_name(db, seller_name)
 
-            print(seller_data)
             seller_list = [{ "id" : seller['user_id'],
                   "name": seller['seller_name'],
                   "image": seller['profile_image']
                 }for seller in seller_data]
-
-            print(seller_list)
 
             return jsonify(data=seller_list), 200
 
