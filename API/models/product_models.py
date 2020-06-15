@@ -751,3 +751,4 @@ class ProductDao:
                 return cursor.fetchone()['name']
         except Exception as e:
             raise e
+
