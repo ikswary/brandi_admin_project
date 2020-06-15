@@ -836,8 +836,8 @@ def change_product_status(**kwargs):
     """상품 상태 변경 API
 
         Args:
-            code : 상품 코드,
-            on_sale: 판매여부,
+            code : 상품 코드
+            on_sale: 판매여부
             on_list: 진열여부
 
         Returns:
