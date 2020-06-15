@@ -34,9 +34,9 @@ def login_required(func):
             return jsonify(message="TOKEN_NOT_RIGHT"), 400
         except jwt.ExpiredSignatureError:
             return jsonify(message="TOKEN_EXPIRED"), 403
-        except KeyError:
-             return jsonify(message="TOKEN_DOES_NOT_EXIST"), 400
-        except Exception as e:
-           return jsonify(message=f"{e}"), 500
+        #except KeyError:
+        #     return jsonify(message="TOKEN_DOES_NOT_EXIST"), 400
+        #except Exception as e:
+        #   return jsonify(message=f"{e}"), 500
 
     return wrapper

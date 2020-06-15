@@ -9,7 +9,7 @@ from jsonschema import validate, ValidationError
 from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify
 
-from jsonschemas import PRODUCT_SCHEMA, CHANGE_PRODUCT_SCHEMA, PRODUCT_FILTER_SCHEMA
+from jsonschemas import PRODUCT_SCHEMA, CHANGE_PRODUCT_SCHEMA, PRODUCT_FILTER_SCHEMA, PRODUCT_STATUS_SCHEMA
 from connections import get_db_connector
 from decorator import login_required
 from models.user_models import UserDao
@@ -636,10 +636,10 @@ def history(**kwargs):
     """상품 수정의 수정 이력 API
 
         Args:
-             seller_id : 셀러 아이디,
+             code : 상품 코드
 
         Returns:
-             {data : category_list}, http status code
+             {data : history_list}, http status code
 
         Exceptions:
             InternalError: DATABASE가 존재하지 않을 때 발생
@@ -824,6 +824,122 @@ def product_list(**kwargs):
          error_path = str(e.path)[8:-3]
          return jsonify(message=f"{error_path.upper()}_VALIDATION_ERROR"), 400
     except Exception as e:
+        return jsonify(message=f"{e}"), 500
+    finally:
+        if db:
+            db.close()
+
+
+@product_app.route('/status', methods=['PUT'])
+@login_required
+def change_product_status(**kwargs):
+    """상품 상태 변경 API
+
+        Args:
+            code : 상품 코드,
+            on_sale: 판매여부,
+            on_list: 진열여부
+
+        Returns:
+            {message: ''}, http status code
+
+        Exceptions:
+            InternalError: DATABASE가 존재하지 않을 때 발생
+            OperationalError: DATABASE 접속이 인가되지 않았을 때 발생
+            ProgramingError: SQL syntax가 잘못되었을 때 발생
+            IntegrityError: Key의 무결성을 해쳤을 때 발생
+            DataError: 컬럼 타입과 매칭되지 않는 값이 DB에 전달되었을 때 발생
+            KeyError: 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
+            ValidationError : 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
+    """
+
+    db = None
+    try:
+        db = get_db_connector()
+
+        validate(request.json, PRODUCT_STATUS_SCHEMA)
+        # 상품 코드를 이용하여 이전의 데이터 및 정보  불러오기
+        product_code=request.json['product_code']
+        product_id = product_dao.find_product(db, product_code)['product_id']
+        previous_product_detail_id = product_dao.find_product(db, product_code)['id']
+
+        previous_data = product_dao.find_product(db, product_code)
+        product_detail_id = previous_data['id']
+
+        images_data = product_dao.find_images(db, product_detail_id)
+        options_data = product_dao.find_options(db, product_detail_id)
+        tags_data = product_dao.find_product_tags(db, product_detail_id)
+
+        # 변경 값 받아와서 이전 값에서 변경하기
+        on_sale = request.json.get('on_sale', None)
+        on_list = request.json.get('on_list', None)
+
+        if on_sale is not None:
+            if not (on_sale == 1 or on_sale == 0) :
+                return jsonify(message = "DATA_ERROR"), 400
+            previous_data['on_sale'] = on_sale
+
+        if on_list is not None:
+            if not (on_list == 1 or on_list == 0):
+                return jsonify(message = "DATA_ERROR"), 400
+            previous_data['on_list'] = on_list
+
+        db.begin()
+        # 변경된 데이터 삽입 후 삽입 된 번호 return
+        product_detail_id = product_dao.insert_product_details(db, previous_data)
+
+        # 이전 product_detail의 enddate 날짜 변경
+        previous_enddate = product_dao.find_product_date(db,product_detail_id)
+        product_dao.change_product_date(db, previous_enddate, previous_product_detail_id)
+
+        # 리스트로 들어온 태그 데이터 삽입
+        for tag in tags_data:
+            tag_id = product_dao.find_tag_id(db, tag['name'])['id']
+            product_dao.insert_product_tag(db, product_detail_id, tag_id)
+
+        # 리스트로 들어온 imgae_data 삽입
+        for image in images_data:
+            large_url = image['large_url']
+            medium_url = image['medium_url']
+            small_url = image['small_url']
+            list_order = image['list_order']
+            image_id = product_dao.insert_image(db, large_url, medium_url, small_url)
+            product_dao.insert_product_images(db, product_detail_id, image_id, list_order)
+
+        # 리스트로 들어온 option_data 추가
+        for option in options_data:
+            color_id = option['color_id']
+            size_id = option['size_id']
+            stock = option['stock']
+            code = option['code']
+            product_dao.insert_options(db, product_detail_id, color_id, size_id, stock, code)
+
+        db.commit()
+        return (''), 200
+
+    except pymysql.err.InternalError:
+        db.rollback()
+        return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
+    except pymysql.err.OperationalError:
+        db.rollback()
+        return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
+    except pymysql.err.ProgrammingError:
+        db.rollback()
+        return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
+    except pymysql.err.IntegrityError:
+        db.rollback()
+        return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
+    except pymysql.err.DataError:
+        db.rollback()
+        return jsonify(message="DATA_ERROR"), 400
+    except KeyError:
+        db.rollback()
+        return jsonify(message=f"KEY_ERROR"), 400
+    except ValidationError as e:
+        error_path = str(e.path)[8:-3]
+        return jsonify(message=f"{error_path.upper()}_VALIDATION_ERROR"), 400
+    except Exception as e:
+        db.rollback()
         return jsonify(message=f"{e}"), 500
     finally:
         if db:

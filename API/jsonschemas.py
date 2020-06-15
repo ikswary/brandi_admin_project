@@ -2319,3 +2319,65 @@ PRODUCT_FILTER_SCHEMA = {
         }
     }
 }
+
+
+PRODUCT_STATUS_SCHEMA = {
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "title": "The root schema",
+    "description": "The root schema comprises the entire JSON document.",
+    "default": {},
+    "examples": [
+        {
+            "product_code": "SB00000034534524",
+            "on_sale": 0,
+            "on_list": 1
+        }
+    ],
+    "required": [
+        "product_code",
+        "on_sale",
+        "on_list"
+    ],
+    "additionalProperties": True,
+    "properties": {
+        "product_code": {
+            "$id": "#/properties/product_code",
+            "type": "string",
+            "title": "The product_code schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "SB00000034534524"
+            ]
+        },
+        "on_sale": {
+            "$id": "#/properties/on_sale",
+            "type": [
+                "integer",
+                "null"
+            ],
+            "title": "The on_sale schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                0
+            ],
+            "pattern": "^(0|1)$"
+        },
+        "on_list": {
+            "$id": "#/properties/on_list",
+            "type": [
+                "integer",
+                "null"
+            ],
+            "title": "The on_list schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                1
+            ]
+        }
+    }
+}
