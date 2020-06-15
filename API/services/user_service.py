@@ -52,7 +52,7 @@ def user_data_formatter(role_id, account, details, managers, attributes, status_
                 "selected": details['seller_attribute_id']
             },
             "seller_name": details['seller_name'],
-            "seller_name_eng": details['seller_name'],
+            "seller_name_eng": details['seller_name_eng'],
             "seller_account": account,
         },
         'detail_info': {  # 상세 정보
@@ -60,7 +60,7 @@ def user_data_formatter(role_id, account, details, managers, attributes, status_
             "introduction_short": details['introduction_short'],
             "introduction_detail": details['introduction_detail'],
             "site_url": details['site_url'],
-            "manages": managers,
+            "managers": managers,
             "cs_phone": details['cs_phone'],
             "zip_code": details['zip_code'],
             "address": details['address'],
@@ -165,7 +165,7 @@ def filter_query_generator(filter_options):
 
     query = ''
     if filters['id']:
-        query = query + f" AND user.id = '{filters['id']}'"
+        query = query + f" AND user.id = {filters['id']}"
     if filters['account']:
         query = query + f" AND user.account LIKE '%%{filters['account']}%%'"
     if filters['seller_name_eng']:
@@ -183,6 +183,7 @@ def filter_query_generator(filter_options):
     if filters['seller_attribute']:
         query = query + f" AND attr.name LIKE '%%{filters['seller_attribute']}%%'"
 
+    print(query)
     return query
 
 
@@ -206,20 +207,19 @@ def get_seller_list_service(db, filter_options):
         lists = user_dao.get_seller_list(db, filter_query, limit, offset)
         # action 버튼을 seller_status_id로 GROUP_CONCAT한 값을 리턴받는다
         actions = user_dao.get_actions_list(db)
-
         # 리턴받은 액션버튼을 {id,name} 딕셔너리화 시켜 actions_list에 담는다
         actions_list = []
         for action in actions:
             id_list = action['id'].split(',')
             action_list = action['actions'].split(',')
             reformat = [{
-                "id": id_list[i],
+                "id": int(id_list[i]),
                 "name": action_list[i]
             } for i in range(len(id_list))]
 
             actions_list.append(reformat)
 
-        if not lists:
+        if lists:
             # 위에서 받아온 seller_list에 actions를 update한다
             for user_list in lists:
                 user_list['actions'] = actions_list[user_list['seller_status_id'] - 1]
@@ -243,13 +243,13 @@ def get_seller_list_service(db, filter_options):
 
 def user_status_update_service(db, user_id, modifier_id, action):
     action_status_mapping = {
-        '1': 2,  # 입점 승인 -> 입점 상태
-        '2': 5,  # 입점 거절 -> 퇴점 상태
-        '3': 3,  # 휴점 신청 -> 휴점 상태
-        '4': 2,  # 휴점 해제 -> 입점 상태
-        '5': 4,  # 퇴점 신청 처리 -> 퇴점 대기 상태
-        '6': 5,  # 퇴점 확정 처리 -> 퇴점 상태
-        '7': 2  # 퇴점 철회 처리 -> 입점 상태
+        1: 2,  # 입점 승인 -> 입점 상태
+        2: 5,  # 입점 거절 -> 퇴점 상태
+        3: 3,  # 휴점 신청 -> 휴점 상태
+        4: 2,  # 휴점 해제 -> 입점 상태
+        5: 4,  # 퇴점 신청 처리 -> 퇴점 대기 상태
+        6: 5,  # 퇴점 확정 처리 -> 퇴점 상태
+        7: 2  # 퇴점 철회 처리 -> 입점 상태
     }
     try:
         current_time = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -261,7 +261,7 @@ def user_status_update_service(db, user_id, modifier_id, action):
                                     start_date=current_time)
 
         # 입점 거절 또는 퇴점 확정 처리 일 경우
-        if action in ('2', '6'):
+        if action in (2, 6):
             user_dao.soft_delete_user(db, user_id)
 
     except Exception as e:
