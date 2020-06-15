@@ -681,9 +681,9 @@ class ProductDao:
                 filter_query = filter_query + query
 
             if filter_dict['discount']:
-                if filter_dict['discount'] == 1:
+                if filter_dict['discount'] == '1':
                     query = "AND discount_rate IS NOT NULL "
-                if filter_dict['discount'] == 0:
+                if filter_dict['discount'] == '0':
                     query= "AND discount_rate IS NULL "
                 filter_query = filter_query + query
 
@@ -716,7 +716,7 @@ class ProductDao:
                 LEFT JOIN products ON products.id = product_details.product_id
                 LEFT JOIN users ON products.user_id = users.id
                 LEFT JOIN seller_details on users.id = seller_details.user_id
-                AND seller_details.enddate = "9999-12-32 23:59:59"
+                AND seller_details.enddate = "9999-12-31 23:59:59"
                 WHERE product_details.enddate = "9999-12-31 23:59:59"
                 """
 
