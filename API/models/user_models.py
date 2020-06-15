@@ -132,7 +132,7 @@ class UserDao:
                 %(start_date)s
                 )
                 """
-
+                print(kwargs)
                 affected_row = cursor.execute(query, kwargs)
                 if affected_row == -1:
                     raise Exception('EXECUTE_FAILED')
@@ -439,7 +439,7 @@ class UserDao:
         try:
             with db.cursor(pymysql.cursors.DictCursor) as cursor:
                 query = """
-                SELECT 
+                SELECT
                     user.id,
                     user.account,
                     user.create_at as created_at,
@@ -452,10 +452,9 @@ class UserDao:
                     status.id as seller_status_id,
                     status.name as seller_status,
                     attr.name as seller_attribute,
-                    (SELECT COUNT(*) FROM users AS user
-                    INNER JOIN products AS product
-                    ON product.user_id = user.id AND product.is_deleted = 0) AS product_amount
-                FROM users AS user
+                    (SELECT COUNT(*) FROM products 
+                    WHERE products.user_id = user.id AND is_deleted=0) AS product_amount
+                FROM users AS user  
                 INNER JOIN seller_details AS detail
                 ON detail.user_id = user.id AND detail.enddate = 99991231235959
                 INNER JOIN user_managers AS um

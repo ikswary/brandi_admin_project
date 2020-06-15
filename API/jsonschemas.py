@@ -697,8 +697,7 @@ USER_DATA_MODIFY_MASTER = {
     ],
     "required": [
         "base_info",
-        "detail_info",
-        "model_size"
+        "detail_info"
     ],
     "additionalProperties": True,
     "properties": {
@@ -801,9 +800,7 @@ USER_DATA_MODIFY_MASTER = {
                 }
             ],
             "required": [
-                "background_image",
                 "introduction_short",
-                "introduction_detail",
                 "site_url",
                 "managers",
                 "cs_phone",
@@ -812,8 +809,6 @@ USER_DATA_MODIFY_MASTER = {
                 "address_detail",
                 "weekday_start_time",
                 "weekday_end_time",
-                "weekend_start_time",
-                "weekend_end_time",
                 "bank",
                 "bank_account_name",
                 "bank_account_number"
@@ -834,16 +829,6 @@ USER_DATA_MODIFY_MASTER = {
                     "$id": "#/properties/detail_info/properties/introduction_short",
                     "type": "string",
                     "title": "The introduction_short schema",
-                    "description": "An explanation about the purpose of this instance.",
-                    "default": "",
-                    "examples": [
-                        "string"
-                    ]
-                },
-                "introduction_detail": {
-                    "$id": "#/properties/detail_info/properties/introduction_detail",
-                    "type": "string",
-                    "title": "The introduction_detail schema",
                     "description": "An explanation about the purpose of this instance.",
                     "default": "",
                     "examples": [
@@ -995,28 +980,6 @@ USER_DATA_MODIFY_MASTER = {
                     "$id": "#/properties/detail_info/properties/weekday_end_time",
                     "type": "string",
                     "title": "The weekday_end_time schema",
-                    "description": "An explanation about the purpose of this instance.",
-                    "default": "",
-                    "examples": [
-                        "string"
-                    ],
-                    "pattern": "^(0|1[0-9])|(2[0-3]):[0-5][0-9]$"
-                },
-                "weekend_start_time": {
-                    "$id": "#/properties/detail_info/properties/weekend_start_time",
-                    "type": "string",
-                    "title": "The weekend_start_time schema",
-                    "description": "An explanation about the purpose of this instance.",
-                    "default": "",
-                    "examples": [
-                        "string"
-                    ],
-                    "pattern": "^(0|1[0-9])|(2[0-3]):[0-5][0-9]$"
-                },
-                "weekend_end_time": {
-                    "$id": "#/properties/detail_info/properties/weekend_end_time",
-                    "type": "string",
-                    "title": "The weekend_end_time schema",
                     "description": "An explanation about the purpose of this instance.",
                     "default": "",
                     "examples": [
@@ -1243,8 +1206,6 @@ USER_DATA_MODIFY_SELLER = {
                 "address_detail",
                 "weekday_start_time",
                 "weekday_end_time",
-                "weekend_start_time",
-                "weekend_end_time",
                 "bank",
                 "bank_account_name",
                 "bank_account_number"
@@ -1265,16 +1226,6 @@ USER_DATA_MODIFY_SELLER = {
                     "$id": "#/properties/detail_info/properties/introduction_short",
                     "type": "string",
                     "title": "The introduction_short schema",
-                    "description": "An explanation about the purpose of this instance.",
-                    "default": "",
-                    "examples": [
-                        "string"
-                    ]
-                },
-                "introduction_detail": {
-                    "$id": "#/properties/detail_info/properties/introduction_detail",
-                    "type": "string",
-                    "title": "The introduction_detail schema",
                     "description": "An explanation about the purpose of this instance.",
                     "default": "",
                     "examples": [
@@ -1426,28 +1377,6 @@ USER_DATA_MODIFY_SELLER = {
                     "$id": "#/properties/detail_info/properties/weekday_end_time",
                     "type": "string",
                     "title": "The weekday_end_time schema",
-                    "description": "An explanation about the purpose of this instance.",
-                    "default": "",
-                    "examples": [
-                        "string"
-                    ],
-                    "pattern": "^(0|1[0-9])|(2[0-3]):[0-5][0-9]$"
-                },
-                "weekend_start_time": {
-                    "$id": "#/properties/detail_info/properties/weekend_start_time",
-                    "type": "string",
-                    "title": "The weekend_start_time schema",
-                    "description": "An explanation about the purpose of this instance.",
-                    "default": "",
-                    "examples": [
-                        "string"
-                    ],
-                    "pattern": "^(0|1[0-9])|(2[0-3]):[0-5][0-9]$"
-                },
-                "weekend_end_time": {
-                    "$id": "#/properties/detail_info/properties/weekend_end_time",
-                    "type": "string",
-                    "title": "The weekend_end_time schema",
                     "description": "An explanation about the purpose of this instance.",
                     "default": "",
                     "examples": [
@@ -2050,7 +1979,6 @@ CHANGE_PRODUCT_SCHEMA = {
     }
 }
 
-
 USER_STATUS_UPDATE_SCHEMA = {
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "http://example.com/example.json",
@@ -2124,7 +2052,7 @@ FILTER_SCHEMA = {
     "properties": {
         "id": {
             "$id": "#/properties/id",
-            "type": "integer",
+            "type": "string",
             "title": "The id schema",
             "description": "An explanation about the purpose of this instance.",
             "default": 0,
@@ -2181,7 +2109,7 @@ FILTER_SCHEMA = {
             "examples": [
                 "입점"
             ],
-            "pattern": "^(입점대기|입점|휴점|퇴점대기|퇴점)&"
+            "pattern": "^(입점대기|입점|휴점|퇴점대기|퇴점)$"
         },
         "manager_phone": {
             "$id": "#/properties/manager_phone",
@@ -2216,7 +2144,7 @@ FILTER_SCHEMA = {
         },
         "view": {
             "$id": "#/properties/view",
-            "type": "integer",
+            "type": "string",
             "title": "The view schema",
             "description": "An explanation about the purpose of this instance.",
             "default": 0,
@@ -2227,7 +2155,7 @@ FILTER_SCHEMA = {
         },
         "page": {
             "$id": "#/properties/page",
-            "type": "integer",
+            "type": "string",
             "title": "The page schema",
             "description": "An explanation about the purpose of this instance.",
             "default": 0,
