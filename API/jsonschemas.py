@@ -2181,7 +2181,6 @@ PRODUCT_FILTER_SCHEMA = {
             "product_name": "상품",
             "product_id": "1",
             "code": "SB000000000000000009",
-            "seller_attribute": "1",
             "on_sale": "1",
             "on_list": "1",
             "discount": "1",
@@ -2251,17 +2250,6 @@ PRODUCT_FILTER_SCHEMA = {
             "examples": [
                 "SB000000000000000009"
             ]
-        },
-        "seller_attribute": {
-            "$id": "#/properties/seller_attribute",
-            "type": ["string", "null"],
-            "title": "The seller_attribute schema",
-            "description": "An explanation about the purpose of this instance.",
-            "default": "",
-            "examples": [
-                "1"
-            ],
-            "pattern": "^(1|2|3|4|5|6|7)$"
         },
         "on_sale": {
             "$id": "#/properties/on_sale",

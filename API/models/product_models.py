@@ -269,6 +269,7 @@ class ProductDao:
         except Exception as e:
             raise e
 
+
     def find_tag_id(self, db, tag_name):
         try:
             with db.cursor(pymysql.cursors.DictCursor) as cursor:
@@ -284,6 +285,7 @@ class ProductDao:
                 return cursor.fetchone()
         except Exception as e:
             raise e
+
 
     def insert_tag(self, db, tag_name):
         try:
@@ -658,7 +660,7 @@ class ProductDao:
                 filter_query = filter_query + query
 
             if filter_dict['product_id']:
-                query= "AND product_id = %(product_id)s "
+                query= "AND product_id = %s "
                 filter_query = filter_query + query
 
             if filter_dict['code']:
@@ -666,7 +668,7 @@ class ProductDao:
                 filter_query = filter_query + query
 
             if filter_dict['seller_attribute']:
-                query= "AND seller_attribute_id = %(seller_attribute)s "
+                query= "AND seller_attribute_id IN %(seller_attribute)s "
                 filter_query = filter_query + query
 
             if filter_dict['on_sale']:
@@ -751,4 +753,5 @@ class ProductDao:
                 return cursor.fetchone()['name']
         except Exception as e:
             raise e
+
 

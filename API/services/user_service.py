@@ -183,7 +183,6 @@ def filter_query_generator(filter_options):
     if filters['seller_attribute']:
         query = query + f" AND attr.name LIKE '%%{filters['seller_attribute']}%%'"
 
-    print(query)
     return query
 
 

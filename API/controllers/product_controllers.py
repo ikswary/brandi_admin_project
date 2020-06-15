@@ -227,9 +227,6 @@ def product_information(**kwargs):
         if db:
             db.close()
 
-# @product_app.route('/', methods=['POST'])
-# @login_required
-# def save_product(**kwargs):
 
 @product_app.route('', methods=['POST'])
 @login_required
@@ -736,13 +733,8 @@ def product_list(**kwargs):
 
     db = None
     try:
-        db = get_db_connector()
-
         # filter의 validation 확인
         validate(request.args, PRODUCT_FILTER_SCHEMA)
-
-        if db is None:
-            return jsonify(message="DATABASE_INIT_ERROR"), 500
 
         role_id = kwargs['role_id']
         user_id = kwargs['user_id']
@@ -754,10 +746,18 @@ def product_list(**kwargs):
 
         # 권한이 마스터인 경우의  필터 조건 생성
         if role_id == MASTER_ROLE_ID:
-            filter_list = ['start_period', 'end_period', 'seller_name', 'user_id', 'product_name', 'product_id', 'code', 'seller_attribute', 'on_sale', 'on_list', 'discount']
+            filter_list = ['start_period', 'end_period', 'seller_name', 'user_id', 'product_name', 'product_id', 'code', 'on_sale', 'on_list', 'discount']
 
             for filter_key in filter_list:
                 filter_dict[filter_key] = request.args.get(filter_key, None)
+
+            # seller_attribute_id 값 리스트로 저장 / 잘못된 필터 데이터가 들어오면 에러 return
+            seller_attribute_check_list = ['1','2','3','4','5','6','7']
+            seller_attributes = tuple(request.args.getlist('seller_attribute', None))
+            for seller_attribute in seller_attributes:
+                if seller_attribute not in seller_attribute_check_list:
+                    return jsonify(message = "DATA_ERROR"), 400
+            filter_dict['seller_attribute'] = seller_attributes
 
             # seller_name을 user_id로 변환
             if filter_dict['seller_name']:
@@ -781,6 +781,11 @@ def product_list(**kwargs):
             select_check_list = [filter_dict['product_name'], filter_dict['product_id'], filter_dict['code']]
             if select_check_list.count(None) == 0 or select_check_list.count(None) == 1:
                 return jsonify(message = "DATA_ERROR"), 400
+
+        db = get_db_connector()
+
+        if db is None:
+            return jsonify(message="DATABASE_INIT_ERROR"), 500
 
         if main_dao.role(db, role_id) is None:
             return jsonify(message="DATA_DOES_NOT_EXIST"), 404
@@ -855,14 +860,13 @@ def change_product_status(**kwargs):
 
     db = None
     try:
-        db = get_db_connector()
-
         validate(request.json, PRODUCT_STATUS_SCHEMA)
         # 상품 코드를 이용하여 이전의 데이터 및 정보  불러오기
         product_code=request.json['product_code']
-        product_id = product_dao.find_product(db, product_code)['product_id']
-        previous_product_detail_id = product_dao.find_product(db, product_code)['id']
 
+        db = get_db_connector()
+
+        previous_product_detail_id = product_dao.find_product(db, product_code)['id']
         previous_data = product_dao.find_product(db, product_code)
         product_detail_id = previous_data['id']
 
