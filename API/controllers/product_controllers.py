@@ -948,3 +948,70 @@ def change_product_status(**kwargs):
     finally:
         if db:
             db.close()
+
+
+@product_app.route('/seller-name', methods=['GET'])
+@login_required
+def find_seller_name(**kwargs):
+    """
+    Args:
+        seller_name : 셀러 한글 이름
+
+    Returns:
+        {data : seller_list}, http status code
+
+    Exceptions:
+        InternalError: DATABASE가 존재하지 않을 때 발생
+        OperationalError: DATABASE 접속이 인가되지 않았을 때 발생
+        ProgramingError: SQL syntax가 잘못되었을 때 발생
+        IntegrityError: Key의 무결성을 해쳤을 때 발생
+        DataError: 컬럼 타입과 매칭되지 않는 값이 DB에 전달되었을 때 발생
+        KeyError: 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
+    """
+    db = None
+    try:
+        role_id = kwargs['role_id']
+        seller_name = request.args['seller_name']
+
+        db = get_db_connector()
+        if db is None:
+            return jsonify(message="DATABASE_INIT_ERROR"), 500
+
+        # 마스터 권한 전용이므로 셀러인 경우 요청 drop
+        if role_id == SELLER_ROLE_ID:
+            return jsonify(message="UNAUTHORIZED"), 401
+        # 권한 정보가 없는 경우 에러
+        if main_dao.role(db, role_id) is None:
+            return jsonify(message="DATA_DOES_NOT_EXIST"), 404
+
+        if role_id == MASTER_ROLE_ID:
+            seller_data = product_dao.similar_seller_name(db, seller_name)
+
+            print(seller_data)
+            seller_list = [{ "id" : seller['user_id'],
+                  "name": seller['seller_name'],
+                  "image": seller['profile_image']
+                }for seller in seller_data]
+
+            print(seller_list)
+
+            return jsonify(data=seller_list), 200
+
+    except pymysql.err.InternalError:
+        return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
+    except pymysql.err.OperationalError:
+        return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
+    except pymysql.err.ProgrammingError:
+        return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
+    except pymysql.err.IntegrityError:
+        return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
+    except pymysql.err.DataError:
+        return jsonify(message="DATA_ERROR"), 400
+    except KeyError:
+        return jsonify(message="KEY_ERROR"), 400
+    except Exception as e:
+        return jsonify(message=f"{e}"), 500
+    finally:
+        if db:
+            db.close()
+

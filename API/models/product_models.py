@@ -620,6 +620,25 @@ class ProductDao:
             raise e
 
 
+    def similar_seller_name(self, db, seller_name):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT user_id, seller_name, profile_image FROM seller_details
+                WHERE seller_name LIKE %s
+                """
+
+                affected_row = cursor.execute(query, "%" + seller_name + "%")
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row == 0:
+                    return Exception('DATA_DOES_NOT_EXIST')
+
+                return cursor.fetchall()
+        except Exception as e:
+            raise e
+
+
     def find_product_history(self, db, code):
         try:
             with db.cursor(pymysql.cursors.DictCursor) as cursor:
