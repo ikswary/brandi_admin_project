@@ -703,9 +703,9 @@ class ProductDao:
 
             if filter_dict['discount']:
                 if filter_dict['discount'] == '1':
-                    query = "AND discount_rate IS NOT NULL "
+                    query = "AND discount_rate != 0 "
                 if filter_dict['discount'] == '0':
-                    query= "AND discount_rate IS NULL "
+                    query= "AND discount_rate = 0 "
                 filter_query = filter_query + query
 
             return filter_query

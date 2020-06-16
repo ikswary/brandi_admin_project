@@ -324,7 +324,7 @@ def save_product(**kwargs):
         if 'description_short' not in data:
             data['descriotion_short'] = None
         if 'discount_rate' not in data:
-            data['discount_rate'] = None
+            data['discount_rate'] = 0
         if 'discount_price' not in data:
             data['discount_price'] = None
         if 'discount_start' not in data:
@@ -348,16 +348,16 @@ def save_product(**kwargs):
         discount_price = data['discount_price']
 
         # 할인율이 없는데 할인가가 있는 경우 에러 return
-        if discount_rate is None and discount_price is not None:
+        if discount_rate == 0 and discount_price is not None:
             return jsonify(message = "DATA_ERROR"), 400
         # 할인율이 음수인 경우 에러 return
-        elif discount_rate < 0:
+        if discount_rate < 0:
             return jsonify(message = "DATA_ERROR"), 400
         # 할인율이 100%가 넘는 경우 에러 return
-        elif discount_rate >= 100:
+        if discount_rate >= 100:
             return jsonify(message = "DATA_ERROR"), 400
         # 할인율이 있고 할인가가 없는 경우 할인가 계산
-        elif discount_rate is not None and discount_price is None:
+        elif discount_rate != 0 and discount_price is None:
             discount_data = math.floor(price*((100-discount_rate)/100)/10)*10
             data['discount_price'] = int(discount_data)
 
@@ -556,7 +556,7 @@ def change_product_information(**kwargs):
         if 'description_short' not in data:
             data['descriotion_short'] = None
         if 'discount_rate' not in data:
-            data['discount_rate'] = None
+            data['discount_rate'] = 0
         if 'discount_price' not in data:
             data['discount_price'] = None
         if 'discount_start' not in data:
@@ -580,7 +580,7 @@ def change_product_information(**kwargs):
         discount_price = data['discount_price']
 
         # 할인율이 없는데 할인가가 있는 경우 에러 return
-        if discount_rate is None and discount_price is not None:
+        if discount_rate == 0 and discount_price is not None:
             return jsonify(message = "DATA_ERROR"), 400
         # 할인율이 음수인 경우 에러 return
         elif discount_rate < 0:
@@ -589,7 +589,7 @@ def change_product_information(**kwargs):
         elif discount_rate >= 100:
             return jsonify(message = "DATA_ERROR"), 400
         # 할인율이 있고 할인가가 없는 경우 할인가 계산
-        elif discount_rate is not None and discount_price is None:
+        elif discount_rate !=0 and discount_price is None:
             discount_data = math.floor(price*((100-discount_rate)/100)/10)*10
             data['discount_price'] = int(discount_data)
 
@@ -808,7 +808,7 @@ def product_list(**kwargs):
             "discount_rate": product['discount_rate'],
             "on_sale": product['on_sale'],
             "on_list": product['on_list'],
-    	    "discount": 1 if product['discount_rate'] else 0
+    	    "discount": 0 if product['discount_rate'] == 0 else 1
                 }   for product in products_data]}
 
         return jsonify(data = product_list), 200

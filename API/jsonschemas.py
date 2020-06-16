@@ -527,10 +527,7 @@ PRODUCT_SCHEMA = {
         },
         "discount_rate": {
             "$id": "#/properties/discount_rate",
-            "type": [
-                "integer",
-                "null"
-            ],
+            "type": "integer",
             "title": "The discount_rate schema",
             "description": "An explanation about the purpose of this instance.",
             "default": 0,
@@ -1858,10 +1855,7 @@ CHANGE_PRODUCT_SCHEMA = {
         },
         "discount_rate": {
             "$id": "#/properties/discount_rate",
-            "type": [
-                "integer",
-                "null"
-            ],
+            "type": "integer",
             "title": "The discount_rate schema",
             "description": "An explanation about the purpose of this instance.",
             "default": 0,
