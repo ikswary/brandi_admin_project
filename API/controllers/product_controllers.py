@@ -759,7 +759,9 @@ def product_list(**kwargs):
                     return jsonify(message = "DATA_ERROR"), 400
             filter_dict['seller_attribute'] = seller_attributes
 
-            # seller_name을 user_id로 변환
+            db = get_db_connector()
+
+            #seller_name을 user_id로 변환
             if filter_dict['seller_name']:
                 filter_dict['user_id'] = product_dao.get_id_from_seller_name(db, filter_dict['seller_name'])
 
@@ -781,8 +783,6 @@ def product_list(**kwargs):
             select_check_list = [filter_dict['product_name'], filter_dict['product_id'], filter_dict['code']]
             if select_check_list.count(None) == 0 or select_check_list.count(None) == 1:
                 return jsonify(message = "DATA_ERROR"), 400
-
-        db = get_db_connector()
 
         if db is None:
             return jsonify(message="DATABASE_INIT_ERROR"), 500

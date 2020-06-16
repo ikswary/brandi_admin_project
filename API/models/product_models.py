@@ -600,7 +600,6 @@ class ProductDao:
         except Exception as e:
             raise e
 
-
     def get_id_from_seller_name(self, db, seller_name):
         try:
             with db.cursor(pymysql.cursors.DictCursor) as cursor:
@@ -613,12 +612,11 @@ class ProductDao:
                 if affected_row == -1:
                     raise Exception('EXECUTE_FAILED')
                 if affected_row == 0:
-                    return Exception('DATA_DOES_NOT_EXIST')
+                    return 0
 
                 return cursor.fetchone()['user_id']
         except Exception as e:
             raise e
-
 
     def similar_seller_name(self, db, seller_name):
         try:
@@ -671,6 +669,10 @@ class ProductDao:
                 query = "AND products.create_at < %(end_period)s "
                 filter_query = filter_query + query
 
+            if filter_dict['user_id'] == 0:
+                query = "AND products.user_id = 0 "
+                filter_query = filter_query + query
+
             if filter_dict['user_id']:
                 query = "AND products.user_id = %(user_id)s "
                 filter_query = filter_query + query
@@ -680,7 +682,7 @@ class ProductDao:
                 filter_query = filter_query + query
 
             if filter_dict['product_id']:
-                query= "AND product_id = %s "
+                query= "AND product_id = %(product_id)s "
                 filter_query = filter_query + query
 
             if filter_dict['code']:
