@@ -754,10 +754,33 @@ class ProductDao:
                 if affected_row == -1:
                     raise Exception('EXECUTE_FAILED')
 
-                return [cursor.fetchall(), affected_row]
+                return cursor.fetchall()
         except Exception as e:
             raise e
 
+    def count_product_list(self, db, filter_dict):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT COUNT(*) FROM product_details
+                LEFT JOIN products ON products.id = product_details.product_id
+                LEFT JOIN users ON products.user_id = users.id
+                LEFT JOIN seller_details on users.id = seller_details.user_id
+                AND seller_details.enddate = "9999-12-31 23:59:59"
+                WHERE product_details.enddate = "9999-12-31 23:59:59"
+                """
+
+                filter_query = self.product_filter(filter_dict)
+
+                query = query + filter_query
+
+                affected_row = cursor.execute(query, filter_dict)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+
+                return cursor.fetchone()['COUNT(*)']
+        except Exception as e:
+            raise e
 
     def find_seller_attribute(self, db, seller_attribute_id):
         try:

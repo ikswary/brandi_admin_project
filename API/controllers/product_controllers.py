@@ -790,8 +790,8 @@ def product_list(**kwargs):
         if main_dao.role(db, role_id) is None:
             return jsonify(message="DATA_DOES_NOT_EXIST"), 404
 
-        products_data = product_dao.product_list(db, filter_dict)[0]
-        quantity =  product_dao.product_list(db, filter_dict)[1]
+        products_data = product_dao.product_list(db, filter_dict)
+        quantity = product_dao.count_product_list(db, filter_dict)
 
         product_list = {
             "quantity": quantity,
