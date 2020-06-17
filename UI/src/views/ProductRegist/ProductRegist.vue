@@ -878,6 +878,7 @@ export default {
   },
   methods: {
     test01: function() {
+      if (confirm("상품을 등록 하시겠습니까?") == true){
       axios
         .post(
           `${JA_URL}/product`,
@@ -909,7 +910,7 @@ export default {
           },
           {
             headers: {
-              Authorization: localStorage.token
+              Authorization: localStorage.Authorization
             }
           }
         )
@@ -917,8 +918,13 @@ export default {
           console.log(response);
         })
         .catch(error => {
-          console.log(error.response.data.message);
-        });
+          if (error.response.data.message === "SUCCESS") {
+              alert("상품이 등록되었습니다");
+            }
+          else
+          alert("입력을 확인 해 주십시오")
+          
+        });}
     },
     inputTag: function() {
       let index = (this.tag.length-1);
@@ -1045,7 +1051,7 @@ export default {
       axios
         .get(`${JA_URL}/product/information`, {
           headers: {
-            Authorization: localStorage.token
+            Authorization: localStorage.Authorization
           }
         })
         .then(response => {
@@ -1056,7 +1062,7 @@ export default {
       axios
         .get(`${JA_URL}/product/information`, {
           headers: {
-            Authorization: localStorage.token
+            Authorization: localStorage.Authorization
           }
         })
         .then(response => {
@@ -1084,7 +1090,7 @@ export default {
       axios
         .get(`${JA_URL}/product/category?seller_id=${id}`, {
           headers: {
-            Authorization: localStorage.token
+            Authorization: localStorage.Authorization
           }
         })
         .then(response => {
@@ -1097,7 +1103,7 @@ export default {
       axios
         .get(`${JA_URL}/product/seller-name?seller_name=${this.searchSeller}`, {
           headers: {
-            Authorization: localStorage.token
+            Authorization: localStorage.Authorization
           }
         })
         .then(response => {
@@ -1112,7 +1118,7 @@ export default {
       axios
         .get(`${JA_URL}/product?code=${this.code}`, {
           headers: {
-            Authorization: localStorage.token
+            Authorization: localStorage.Authorization
           }
         })
         .then(response => {

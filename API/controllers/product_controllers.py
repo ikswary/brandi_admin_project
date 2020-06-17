@@ -318,7 +318,7 @@ def save_product(**kwargs):
         product_save_service(db, data, seller_id, user_id, code, tag_data, image_data, option_data)
         db.commit()
 
-        return (''),200
+        return jsonify(message="SUCCESS"),200
 
     except pymysql.err.InternalError:
         db.rollback()
