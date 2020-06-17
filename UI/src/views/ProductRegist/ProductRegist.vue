@@ -1023,7 +1023,7 @@
                                         <span class="checked">
                                           <input v-model="min_sales_unit" value ="1" type="radio"/>
                                         </span>
-                                      </div>1개 이상
+                                      </div>상
                                     </label>
                                     <label>
                                       <div class="radio">
@@ -1058,11 +1058,11 @@
                                     <label>
                                       <div class="radio">
                                         <span>
-                                          <input class type="radio" disabled />
+                                          <input class type="radio"  />
                                         </span>
                                       </div>
                                     </label>
-                                    <input type="text" class="minimum-amount" /> 개 이상
+                                    <input type="text" v-model="max_sales_unit" value="0" /> 개 이상
                                     <span class="font-color-blue">(20개를 초과하여 설정하실 수 없습니다)</span>
                                   </div>
                                 </td>

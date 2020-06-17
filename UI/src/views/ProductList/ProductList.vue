@@ -15,7 +15,7 @@
         <div>조회 기간</div>
     <b-form-datepicker id="datepicker-placeholder" placeholder="클릭해주세요" local="kr" style="width:180px"></b-form-datepicker>
       <span class="span-input-group"> ~ </span>
-    <b-form-datepicker v-model="value" :min="min" :max="max" locale="kr" placeholder="클릭해주세요" style="width:180px"></b-form-datepicker>
+    <b-form-datepicker id="datepicker-placeholder2" placeholder="클릭해주세요" local="kr" style="width:180px"></b-form-datepicker>
 
       </div>
       <div class="filterDiv">
@@ -216,21 +216,9 @@ import axios from "axios";
 import { JH_URL } from "../../config/urlConfig";
 export default {
   data() {
-     const now = new Date()
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-      // 15th two months prior
-      const minDate = new Date(today)
-      minDate.setMonth(minDate.getDate() - 11)
-      minDate.setDate(16)
-      // 15th in two months
-      const maxDate = new Date(today)
-      maxDate.setMonth(maxDate.getDate() + 5)
-      maxDate.setDate(16)
     return {
-       value: '',
-        min: minDate,
-        max: maxDate,
       infoDatas: {},
+
       searchDatas: [
         { name: "seller_name", state: "" },
         { name: "code", state: 3 },
@@ -287,8 +275,6 @@ export default {
       attGeneral: { state: false },
       attBeauty: { state: false },
       page: 1,
-
-      
     };
   },
 computed: {
