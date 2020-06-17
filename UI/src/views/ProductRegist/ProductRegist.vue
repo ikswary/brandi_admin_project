@@ -177,7 +177,7 @@
                       v-model="firstCateSelected"
                       @change="getSecondCategory(firstCateSelected)"
                     >
-                      <option value="0">1차 카테고리를 선택해 주세요.</option>
+                      <option value="">1차 카테고리를 선택해주세요.</option>
                       <option
                         :value="index"
                         v-for="(list,index) in firstCate"
@@ -187,12 +187,12 @@
                   </td>
                 </tr>
                 <tr>
-                  <th>2차 카테고리를 선택해 주세요.</th>
+                  <th>2차 카테고리</th>
                   <td>
                     <select 
                     v-model="secondCateId"
                     >
-                      <option>2차 카테고리</option>
+                      <option value="">1차 카테고리를 먼저 선택해 주세요.</option>
                       <option
                         :value="list.id"
                         v-for="list in secondCate"
@@ -418,7 +418,10 @@
               </tr>           
             <!-- 상품 태그 관리 -->
               <tr>
-                <th>상품 태그 관리</th>
+                <th>
+                    상품 태그 관리
+                    <i class="xi-pen" />
+                </th>
                 <td>
                   <div class="box">
                     <b-form-tags
@@ -1011,7 +1014,7 @@ export default {
     //   // axios
     //   //   .get(`${YE_URL}/product-options`, {
     //   //     headers: {
-    //   //       Authorization: localStorage.token
+    //   //       Authorization: localStorage.Authorization
     //   //     }
     //   //   })
     //   //   .then(response => {
@@ -1045,7 +1048,7 @@ export default {
       axios
         .get(`${JA_URL}/product/information`, {
           headers: {
-            Authorization: localStorage.token
+            Authorization: localStorage.Authorization
           }
         })
         .then(response => {
@@ -1056,7 +1059,7 @@ export default {
       axios
         .get(`${JA_URL}/product/information`, {
           headers: {
-            Authorization: localStorage.token
+            Authorization: localStorage.Authorization
           }
         })
         .then(response => {
@@ -1084,7 +1087,7 @@ export default {
       axios
         .get(`${JA_URL}/product/category?seller_id=${id}`, {
           headers: {
-            Authorization: localStorage.token
+            Authorization: localStorage.Authorization
           }
         })
         .then(response => {
@@ -1095,9 +1098,9 @@ export default {
     searchSellerList: function(e) {
       this.searchSeller = e;
       axios
-        .get(`${JA_URL}/product/seller-name?seller_name=${this.searchSeller}`, {
+        .get(`${JA_URL}/product/seller?seller_name=${this.searchSeller}`, {
           headers: {
-            Authorization: localStorage.token
+            Authorization: localStorage.Authorization
           }
         })
         .then(response => {
@@ -1112,7 +1115,7 @@ export default {
       axios
         .get(`${JA_URL}/product?code=${this.code}`, {
           headers: {
-            Authorization: localStorage.token
+            Authorization: localStorage.Authorization
           }
         })
         .then(response => {
