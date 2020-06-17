@@ -4,23 +4,23 @@
       <div class="logo"></div>
       <SignUpBox />
     </div>
-    <Footer />
+    <LoginFooter />
   </div>
 </template>
 
 <script>
-import SignUpBox from './SignUpBox';
-import Footer from '../Login/Footer';
+import SignUpBox from "./SignUpBox";
+import LoginFooter from "../Login/LoginFooter";
 
 export default {
   components: {
     SignUpBox,
-    Footer,
-  },
+    LoginFooter
+  }
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .container {
   width: 100vw !important;
   margin: 75px auto 0 auto !important;
@@ -31,22 +31,10 @@ export default {
     width: 360px;
     height: 82px;
     margin: 0 auto;
-    background-image: url('http://sadmin.brandi.co.kr/include/img/logo_seller_admin_1.png');
+    background-image: url("http://sadmin.brandi.co.kr/include/img/logo_seller_admin_1.png");
     background-size: 130px 52px;
     background-repeat: no-repeat;
     background-position: center;
-  }
-}
-.footer {
-  width: 100vw;
-  height: 74px;
-  padding-top: 30px;
-  font-size: 12px;
-  color: #999ba2;
-  text-align: center;
-  background-color: #35363a;
-  div {
-    margin-bottom: 5px;
   }
 }
 </style>
