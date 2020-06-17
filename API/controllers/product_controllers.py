@@ -249,11 +249,11 @@ def save_product(**kwargs):
                         "url": 이미지 url
                      }
            "color_filter_id": 색상필터(썸네일 이미지),
-           "style_filter_id": 스타일필터,
+           "style_filter_id": 스타일필터,름
            "description_detail": 상세 상품 정보,
            "option": {
-                        "color_id": 옵션 색상 id,
-                        "size_id": 옵션 size id,
+                        "color_name": 옵션 색상 이,
+                        "size_name": 옵션 size 이름,
                         "stock": 재고 수량
                      }
           "price": 판매가,
@@ -314,12 +314,12 @@ def save_product(**kwargs):
 
         # 옵션 중복 값 확인
         option_duplicate_check=[]
-        # (color_id,size_id)쌍으로 중복 체크
+        # (color_name,size_name)쌍으로 중복 체크
         for option in option_data:
-            if ((option['color_id'],option['size_id'])) in option_duplicate_check:
+            if ((option['color_name'],option['size_name'])) in option_duplicate_check:
                 return jsonify(message = "DATA_ERROR"), 400
             else:
-                option_duplicate_check.append((option['color_id'],option['size_id']))
+                option_duplicate_check.append((option['color_name'],option['size_name']))
 
         # required가 아닌 항목이 Null값으로도 들어오지 않은 경우 처리
         if 'description_short' not in data:
@@ -483,8 +483,8 @@ def change_product_information(**kwargs):
             "description_detail": 상세 상품 정보,
             "option": {
                         "code": 옵션 상품 코드,
-                        "color_id": 옵션 색상 id,
-                        "size_id": 옵션 size id,
+                        "color_name": 옵션 색상 이,
+                        "size_name": 옵션 size 이름,
                         "stock": 재고 수량
                       }
             "price": 판매가,
@@ -539,18 +539,18 @@ def change_product_information(**kwargs):
 
         # 옵션 중복 값 확인
         option_duplicate_check=[]
-        # (color_id,size_id)쌍으로 중복 체크
+        # (color_name,size_name)쌍으로 중복 체크
         for option in option_data:
-            if ((option['color_id'],option['size_id'])) in option_duplicate_check:
+            if ((option['color_name'],option['size_name'])) in option_duplicate_check:
                 return jsonify(message = "DATA_ERROR"), 400
             else:
-                option_duplicate_check.append((option['color_id'],option['size_id']))
+                option_duplicate_check.append((option['color_name'],option['size_name']))
 
         # 기존의 옵션 코드에 저장된 내용과 현재 옵션값으로 받아온 정보가 다른 경우 체크
         for option in option_data:
             if option['code']:
                 option_details=product_dao.find_option_code(db, option['code'])
-                if (option_details['size_id'],option_details['color_id']) !=  (option['size_id'],option['color_id']):
+                if (option_details['size_id'],option_details['color_id']) !=  (product_dao.get_option_size_id(db,option['size_id']),product_dao.get_option_color_id(db, option['color_id'])):
                     return jsonify(message = "DATA_ERROR"), 400
 
         # required가 아닌 항목이 Null값으로도 들어오지 않은 경우 처리

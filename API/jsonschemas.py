@@ -192,8 +192,8 @@ PRODUCT_SCHEMA = {
             "description_detail": "string",
             "option": [
                 {
-                    "color_id": 1,
-                    "size_id": 1,
+                    "color_name": 1,
+                    "size_name": 1,
                     "stock": 10
                 }
             ],
@@ -439,8 +439,8 @@ PRODUCT_SCHEMA = {
             "examples": [
                 [
                     {
-                        "color_id": 1,
-                        "size_id": 1,
+                        "color_name": 1,
+                        "size_name": 1,
                         "stock": 10
                     }
                 ]
@@ -456,38 +456,38 @@ PRODUCT_SCHEMA = {
                         "default": {},
                         "examples": [
                             {
-                                "color_id": 1,
-                                "size_id": 1,
+                                "color_name": 1,
+                                "size_name": 1,
                                 "stock": 10
                             }
                         ],
                         "required": [
-                            "color_id",
-                            "size_id",
+                            "color_name",
+                            "size_name",
                             "stock"
                         ],
                         "additionalProperties": True,
                         "properties": {
-                            "color_id": {
-                                "$id": "#/properties/option/items/anyOf/0/properties/color_id",
+                            "color_name": {
+                                "$id": "#/properties/option/items/anyOf/0/properties/color_name",
                                 "type": [
-                                    "integer",
+                                    "string",
                                     "null"
                                 ],
-                                "title": "The color_id schema",
+                                "title": "The color_name schema",
                                 "description": "An explanation about the purpose of this instance.",
                                 "default": 0,
                                 "examples": [
                                     1
                                 ]
                             },
-                            "size_id": {
-                                "$id": "#/properties/option/items/anyOf/0/properties/size_id",
+                            "size_name": {
+                                "$id": "#/properties/option/items/anyOf/0/properties/size_name",
                                 "type": [
-                                    "integer",
+                                    "string",
                                     "null"
                                 ],
-                                "title": "The size_id schema",
+                                "title": "The size_name schema",
                                 "description": "An explanation about the purpose of this instance.",
                                 "default": 0,
                                 "examples": [
@@ -1495,8 +1495,8 @@ CHANGE_PRODUCT_SCHEMA = {
             "option": [
                 {
                     "code": 2,
-                    "color_id": 1,
-                    "size_id": 1,
+                    "color_name": 1,
+                    "size_name": 1,
                     "stock": 1
                 }
             ],
@@ -1744,8 +1744,8 @@ CHANGE_PRODUCT_SCHEMA = {
                 [
                     {
                         "code": 2,
-                        "color_id": 1,
-                        "size_id": 1,
+                        "color_name": 1,
+                        "size_name": 1,
                         "stock": 1
                     }
                 ]
@@ -1762,15 +1762,15 @@ CHANGE_PRODUCT_SCHEMA = {
                         "examples": [
                             {
                                 "code": 2,
-                                "color_id": 1,
-                                "size_id": 1,
+                                "color_name": 1,
+                                "size_name": 1,
                                 "stock": 1
                             }
                         ],
                         "required": [
                             "code",
-                            "color_id",
-                            "size_id",
+                            "color_name",
+                            "size_name",
                             "stock"
                         ],
                         "additionalProperties": True,
@@ -1788,20 +1788,20 @@ CHANGE_PRODUCT_SCHEMA = {
                                     2
                                 ]
                             },
-                            "color_id": {
-                                "$id": "#/properties/option/items/anyOf/0/properties/color_id",
-                                "type": "integer",
-                                "title": "The color_id schema",
+                            "color_name": {
+                                "$id": "#/properties/option/items/anyOf/0/properties/color_name",
+                                "type": "string",
+                                "title": "The color_name schema",
                                 "description": "An explanation about the purpose of this instance.",
                                 "default": 0,
                                 "examples": [
                                     1
                                 ]
                             },
-                            "size_id": {
-                                "$id": "#/properties/option/items/anyOf/0/properties/size_id",
-                                "type": "integer",
-                                "title": "The size_id schema",
+                            "size_name": {
+                                "$id": "#/properties/option/items/anyOf/0/properties/size_name",
+                                "type": "string",
+                                "title": "The size_name schema",
                                 "description": "An explanation about the purpose of this instance.",
                                 "default": 0,
                                 "examples": [

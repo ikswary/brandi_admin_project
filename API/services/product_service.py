@@ -34,8 +34,8 @@ def product_save_service(db, data, seller_id, user_id, code, tag_data, image_dat
 
         # 리스트로 들어온 option_data 추가
         for option in option_data:
-            color_id = option['color_id']
-            size_id = option['size_id']
+            color_id = product_dao.get_option_color_id(db, option['color_name'])
+            size_id = product_dao.get_option_size_id(db, option['size_name'])
             stock = option['stock']
             code_number = product_dao.find_last_option_code(db)
             if code_number == 1:
@@ -133,14 +133,14 @@ def product_change_service(db, previous_product_detail_id, data, tag_data, image
         # 리스트로 들어온 option_data 추가
         for option in option_data:
             if option['code']:
-                color_id = option['color_id']
-                size_id = option['size_id']
+                color_id = product_dao.get_option_color_id(db, option['color_name'])
+                size_id = product_dao.get_option_size_id(db, option['size_name'])
                 stock = option['stock']
                 code = option['code']
                 product_dao.insert_options(db, product_detail_id, color_id, size_id, stock, code)
             if option['code'] is None:
-                color_id = option['color_id']
-                size_id = option['size_id']
+                color_id = product_dao.get_option_color_id(db, option['color_name'])
+                size_id = product_dao.get_option_size_id(db, option['size_name'])
                 stock = option['stock']
                 code_number = product_dao.find_last_option_code(db)
                 if code_number == 1:

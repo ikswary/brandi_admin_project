@@ -801,3 +801,39 @@ class ProductDao:
                 return cursor.fetchone()['name']
         except Exception as e:
             raise e
+
+    def get_option_color_id(self, db, color_name):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT id FROM colors
+                WHERE name = %s
+                """
+
+                affected_row = cursor.execute(query, color_name)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row == 0:
+                    return Exception('DATA_DOES_NOT_EXIST')
+
+                return cursor.fetchone()['id']
+        except Exception as e:
+            raise e
+
+    def get_option_size_id(self, db, size_name):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT id FROM sizes
+                WHERE name = %s
+                """
+
+                affected_row = cursor.execute(query, size_name)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row == 0:
+                    return Exception('DATA_DOES_NOT_EXIST')
+
+                return cursor.fetchone()['id']
+        except Exception as e:
+            raise e
