@@ -80,7 +80,7 @@ export default {
             if (response.data.token) {
               localStorage.setItem("Authorization", response.data.token);
               localStorage.setItem("id", this.loginValue);
-              this.$router.push("/main/seller/sellerlist");
+              this.$router.push("/main/");
             }
           })
           .catch(error => {

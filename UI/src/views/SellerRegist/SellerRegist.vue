@@ -399,7 +399,7 @@
                 </tbody>
                 <td
                 v-for="history in detailInfo.seller_status_history"
-                :key="history.account"
+                :key="history.account" class="historyTr3"
                 >
                 <tr class="historyTr">
                     <td>{{history.startdate}}</td>
@@ -726,7 +726,7 @@ export default {
     }
     td {
       display: flex;
-      padding: 10px;
+      padding: 8px;
       height: 100%;
       vertical-align: middle;
     }
@@ -798,17 +798,24 @@ export default {
     th {
       background-color: #eee;
     }
-   
+     padding: 8px 8px 0 8px !important;
+
     
   }
   .historyTr {
     width : 150px;
    border-left: 1px solid lightgray;
+   
 
  }
  .historyTr2 {
    width : 149px;
    border-bottom: 1px solid lightgray;
+     
+ }
+
+ .historyTr3 {
+   padding: 0 0 0 8px !important;
  }
  .seller_att {
 
