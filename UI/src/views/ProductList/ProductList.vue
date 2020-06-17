@@ -13,22 +13,22 @@
     <div class="filterBox">
       <div class="filterDiv">
         <div>조회 기간</div>
-    <b-form-datepicker id="datepicker-placeholder" placeholder="클릭해주세요" local="kr" style="width:180px"></b-form-datepicker>
-      <span class="span-input-group"> ~ </span>
-    <b-form-datepicker v-model="value" :min="min" :max="max" locale="kr" placeholder="클릭해주세요" style="width:180px"></b-form-datepicker>
+        <b-form-datepicker v-model="searchPeriod[0].value" id="datepicker-placeholder" placeholder="클릭해주세요" local="kr" style="width:180px"></b-form-datepicker>
+          <span class="span-input-group"> ~ </span>
+        <b-form-datepicker v-model="searchPeriod[1].value" id="datepicker-placeholder2" placeholder="클릭해주세요" local="kr" style="width:180px"></b-form-datepicker>
 
       </div>
       <div class="filterDiv">
         <div>셀러명</div>
         <div>
-          <input type="text" class="seller_name_input" v-model="inputBtn[0].state" placeholder="검색어를 입력하세요." />
+          <input type="text" v-model="inputBtn[0].state" placeholder="검색어를 입력하세요." />
           <select v-model="selectBtn[0].name">
             <option value>Select</option>
             <option value="product_name">상품명</option>
             <option value="product_id">상품번호</option>
             <option value="code">상품코드</option>
           </select>
-          <input v-model="selectBtn[0].state" class="seller_name_input" type="text" placeholder="검색어를 입력하세요." />
+          <input v-model="selectBtn[0].state" type="text" placeholder="검색어를 입력하세요." />
         </div>
       </div>
       <div class="filterDiv">
@@ -127,26 +127,20 @@
       </div>
       <div class="submitBox">
         <div class="Btn searchBtn" @click="search()">검색</div>
-        <div class="Btn resetBtn">초기화</div>
+        <div class="Btn resetBtn" @click="reset()">초기화</div>
       </div>
     </div>
-     <!-- <select v-model="saleBtn[0].name">
-            <option value>판매여부</option>
-            <option value="for_sale">판매</option>
-            <option value="not_sale">미판매</option>
-          </select> -->
-          <div class="select-button">
+    <div class="select-button">
          <div>
     <b-form-select v-model="saled" :options="saleproduct" style="width:100px"></b-form-select>
          </div>
           <div>
     <b-form-select v-model="displayed" :options="displayproduct" style="width:100px"></b-form-select>
   </div>
-       
             <div><b-button variant="warning">적용</b-button>
             </div>
           </div>
-    
+
     <div class="count">전체 조회건 수 : {{infoDatas.quantity}}</div>
     <div class="tableBox">
       <!-- 테이블 시작 부분입니다.. -->
@@ -156,8 +150,7 @@
             <div class="tableIn">
               <thead>
                 <tr>
-                  <th class="text-left checkbox-width"><input type="checkbox" v-model="selectAll"></th>
-                  <th class="text-left enrollday-width">등록일</th>
+                  <th class="text-left">등록일</th>
                   <th class="text-left">대표이미지</th>
                   <th class="text-left">상품명</th>
                   <th class="text-left">상품코드</th>
@@ -172,8 +165,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="info in infoDatas.product" :key="info.id" >
-                  <td><input type="checkbox" v-model="selected" :value="info.id"></td>
+                <tr v-for="info in infoDatas.product" :key="info.id">
                   <td>{{info.created_at}}</td>
                   <td></td>
                   <td>{{info.product_name}}</td>
@@ -189,7 +181,6 @@
                   <td>{{info.on_sale ? "판매" : "미판매"}}</td>
                   <td>{{info.on_list ? "진열" : "미진열"}}</td>
                   <td>{{info.discount ? "할인" : "미할인"}}</td>
-                  
                 </tr>
               </tbody>
             </div>
@@ -197,18 +188,20 @@
         </v-simple-table>
       </template>
     </div>
-
     <div id="app">
   <v-app id="inspire">
     <div class="text-center">
       <v-pagination
         v-model="page"
-        :length="2"
+        :length="maxPage"
+        :total-visible="7"
+        @input="search"
       ></v-pagination>
     </div>
   </v-app>
 </div>
   </div>
+  
 </template>
 
 <script>
@@ -216,21 +209,18 @@ import axios from "axios";
 import { JH_URL } from "../../config/urlConfig";
 export default {
   data() {
-     const now = new Date()
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-      // 15th two months prior
-      const minDate = new Date(today)
-      minDate.setMonth(minDate.getDate() - 11)
-      minDate.setDate(16)
-      // 15th in two months
-      const maxDate = new Date(today)
-      maxDate.setMonth(maxDate.getDate() + 5)
-      maxDate.setDate(16)
     return {
-       value: '',
-        min: minDate,
-        max: maxDate,
-      infoDatas: {},
+      infoDatas: {
+      },
+
+      page: 1,
+      maxPage: 1,
+
+      searchPeriod: [
+        { name: "start_period", value: null },
+        { name: "end_period", value: null}
+      ],
+
       searchDatas: [
         { name: "seller_name", state: "" },
         { name: "code", state: 3 },
@@ -243,23 +233,9 @@ export default {
         { name: "on_list", state: 3 }
       ],
 
-      inputBtn: [{ name: "user", state: "" }],
+      inputBtn: [{ name: "seller_name", state: "" }],
 
       selectBtn: [{ name: "", state: "" }],
-      saled: null,
-      saleproduct: [
-          { value: null, text: '판매여부' },
-          { value: '1', text: '판매' },
-          { value: '2', text: '미판매' },
-        ],
-       displayed: null,
-        displayproduct: [
-          { value: null, text: '진열여부' },
-          { value: '1', text: '진열' },
-          { value: '2', text: '미진열' },
-        ],
-
-     checked :[],
 
       attBtn: [
         { name: "", state: 1 },
@@ -271,13 +247,6 @@ export default {
         { name: "seller_attribute", state: 0 },
         { name: "seller_attribute", state: 0 }
       ],
-        info: [ 
-            { "id": "1", "name": "Shad Jast"},
-            { "id": "2", "name": "Duane Metz"}, 
-            { "id": "3", "name": "Myah Kris" }, 
-            { "id": "4", "name": "Dr. Kamron Wunsch" }
-        ],
-        selected: [],
 
       attAll: { state: true },
       attShop: { state: false },
@@ -285,30 +254,10 @@ export default {
       attLoad: { state: false },
       attDesigner: { state: false },
       attGeneral: { state: false },
-      attBeauty: { state: false },
-      page: 1,
-
-      
+      attBeauty: { state: false }
     };
   },
-computed: {
-        selectAll: {
-            get: function () {
-                return this.infoDatas.product ? this.selected.length == this.infoDatas.product.length : false;
-            },
-            set: function (value) {
-                var selected = [];
-
-                if (value) {
-                    this.infoDatas.product.forEach(function (info) {
-                        selected.push(info.id);
-                    });
-                }
-
-                this.selected = selected;
-            }
-        }
-    },  mounted: function() {
+  mounted: function() {
     this.getListDatas();
   },
   methods: {
@@ -318,50 +267,88 @@ computed: {
       this.twoBtn.filter(item => {
         item.state < 3 ? queryString.push(`${item.name}=${item.state}&`) : "";
       });
-      console.log("twobtn=", queryString)
       this.inputBtn.filter(item => {
         item.state.length > 0
           ? queryString.push(`${item.name}=${item.state}&`)
           : "";
       });
-      console.log("inputbtn=", queryString)
       this.selectBtn.filter(item => {
         item.state.length > 0
           ? queryString.push(`${item.name}=${item.state}&`)
           : "";
       });
-      console.log("selectbtn=", queryString)
-      this.attBtn.filter(item => {
-        item.state 
+      this.searchPeriod.filter(item => {
+        item.value
+          ? queryString.push(`${item.name}=${item.value}&`)
+          : "";
+      });
+      
+      if (this.attBtn[0].state == 0){
+        this.attBtn.filter(item => {
+        item.state
         ? queryString.push(`${item.name}=${item.state}&`) 
         : "";
       });
-      console.log("attbtn=", queryString)
+      }
+      
 
       axios
-        .get(`${JH_URL}/product/list?limit=20&offset=0&${queryString.join("")}`, {
+        .get(`${JH_URL}/product/list?limit=10&offset=${(this.page - 1) * 10}&${queryString.join("")}`, {
           headers: {
             Authorization: localStorage.Authorization
           }
         })
         .then(response => {
-          console.log(response.data)
           this.infoDatas = response.data.data;
         });
-      console.log("url=",`${JH_URL}/product/list?limit=20&offset=0&${queryString.join("")}`);
+      console.log("url=",`${JH_URL}/product/list?limit=10&offset=0&${queryString.join("")}`);
     },
     getListDatas: function() {
       axios
-        .get(`${JH_URL}/product/list?limit=20&offset=0`, {
+        .get(`${JH_URL}/product/list?limit=10&offset=0`, {
           headers: {
             Authorization: localStorage.Authorization
           }
         })
         .then(response => {
-          console.log(response.data)
           this.infoDatas = response.data.data;
+          this.maxPage = Math.ceil(this.infoDatas.quantity/10)
+          console.log(this.infoDatas.quantity)
+          console.log(this.maxPage)
         });
     },
+    reset: function() {
+      this.searchDatas = [
+        { name: "seller_name", state: "" },
+        { name: "code", state: 3 },
+        { name: "seller_attribute", state: 3 }
+      ]
+      this. twoBtn = [
+        { name: "on_sale", state: 3 },
+        { name: "discount", state: 3 },
+        { name: "on_list", state: 3 }
+      ]
+      this.inputBtn = [{ name: "seller_name", state: "" }]
+      this.selectBtn = [{ name: "", state: "" }]
+
+      this.attBtn = [
+        { name: "", state: 1 },
+        { name: "seller_attribute", state: 0 },
+        { name: "seller_attribute", state: 0 },
+        { name: "seller_attribute", state: 0 },
+        { name: "seller_attribute", state: 0 },
+        { name: "seller_attribute", state: 0 },
+        { name: "seller_attribute", state: 0 },
+        { name: "seller_attribute", state: 0 }      ]
+      
+      this.searchPeriod= [
+        { name: "start_period", value: null },
+        { name: "end_period", value: null}
+      ],
+
+      this.getListDatas()
+    },
+
     clickCheck: function(name, stateNumber) {
       if (name.state === stateNumber) {
         name.state = 3;
@@ -381,21 +368,15 @@ computed: {
         this.attBtn[7].state = 0;
 
       } else if (this.attBtn[0].state) {
-        this.attBtn[0].state = 0;
+        this.attBtn[0].state = 1;
       }
     },
     attClickCheck: function(index) {
       !this.attBtn[index].state
         ? this.attBtn[index].state = index
         : this.attBtn[index].state = 0
-      // this.attBtn[index].state = index;
 
-      // this.attBtn[index].state
-      //   ? (this.attCount = this.attCount + 1)
-      //   : (this.attCount = this.attCount - 1);
-
-      if (this.attCount === 7) {
-        this.attCount = 0;
+      if (this.attBtn.filter(item => item.state != 0).length === 7) {
         this.attBtn[0].state = 1;
         this.attBtn[1].state = 0;
         this.attBtn[2].state = 0;
@@ -405,7 +386,7 @@ computed: {
         this.attBtn[6].state = 0;
         this.attBtn[7].state = 0;
       }
-      if (this.attCount > 0) {
+      if (this.attBtn.filter(item => item.state != 0).length > 1) {
         this.attBtn[0].state = 0;
       }
     }
@@ -630,7 +611,6 @@ computed: {
         border-radius: 3px;
         margin-left: 5px;
       }
-      
     }
     th,
     td {
@@ -646,7 +626,6 @@ computed: {
       color: black !important;
       font-size: 13px !important;
       background-color: #eee;
-      
     }
   }
 }
