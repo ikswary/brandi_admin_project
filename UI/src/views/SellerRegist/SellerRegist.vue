@@ -26,40 +26,25 @@
                 <td>{{baseInfo.seller_status}}</td>
               </tr>
             </tbody>
-           
-             <!-- 관리자면 생성되고 셀러면 사라지는 테이블 -->
-             <tbody v-if="role === 1">
+            <tbody v-if="role === 1">
               <tr>
                 <th>셀러 속성</th>
                 <td>
-                  <div class="seller_att" > 
+                  <div class="seller_att"
+                  v-for="attributeList in baseInfo.seller_attributes.list"
+                  :key="attributeList.id"> 
                     <input
                       v-model="baseInfo.seller_attributes.selected"
+                      :value="attributeList.id"
                       type="radio"
-                      value="1"
-                      name="shoppingStatus"
+                      name="attributeList.name"
                     />
-                    <label for="shoppinglabel">쇼핑몰</label>
-                    <input
-                      v-model="baseInfo.seller_attributes.selected"
-                      type="radio"
-                      value="2"
-                      name="marketStatus"
-                    />
-                    <label for="marketlabel">마켓</label>
-                      <input
-                      v-model="baseInfo.seller_attributes.selected"
-                      type="radio"
-                      value="3"
-                      name="roadshopStatus"
-                    />
-                    <label for="roadshoplabel">로드샵</label>
+                    <label for="shoppinglabel">{{attributeList.name}}</label>
                   </div>
                    </td>
               </tr>
-            </tbody> 
-
-             <tbody>
+            </tbody>
+            <tbody>
               <tr>
                 <th>셀러 한글명</th>
                 
@@ -75,7 +60,9 @@
 
               </tr>
             </tbody>
-         
+
+
+            <!-- 셀러 영문명 -->
             <tbody>
               <tr>
                 <th>셀러 영문명</th>
@@ -91,7 +78,7 @@
                 
               </tr>
             </tbody>
-          
+            <!-- 셀러 계정 -->
             <tbody>
               <tr>
                 <th>셀러 계정</th>
@@ -401,23 +388,61 @@
                 v-for="history in detailInfo.seller_status_history"
                 :key="history.account"
                 >
-                <tr class="historyTr">
+                <tr>
                     <td>{{history.startdate}}</td>
                 </tr>
-                <tr class="historyTr">
+                <tr>
                     <td>{{history.name}}</td>
                 </tr>
-                <tr class="historyTr2">
+                <tr>
                     <td>{{history.account}}</td>
                 </tr>
                 </td>
-              
+              </td>
             </tbody>
           </template>
         </v-simple-table>
       </div>
     </div>
-  
+    <!-- 배달 정보 시작 영역 -->
+    <div class="cmpWrap">
+      <!-- <div class="cmpTitle">
+        <i class="xi-user">배송정보 및 교환/환불 정보</i>
+      </div> -->
+      <!-- <div class="cmpTable"> -->
+        <!-- <v-simple-table> -->
+          <!-- 테이블 시작 영역 -->
+          <!-- <tbody>
+            <TextAreaBox
+              v-model="infoDatas.data.shipping_information"
+              placeholder="ex) 도서산간 지역은 배송비가 추가비용이 발생할 수 있습니다. 결제 완료 후 1~3일 후 출고됩니다."
+            >
+              <template #thName>
+                배송 정보
+                <i class="xi-pen" />
+              </template>
+              <template #infoText01>
+                <i class="xi-info">문장이 끝나면 엔터로 줄바꿈을 해주세요.</i>
+              </template>
+            </TextAreaBox>
+          </tbody> -->
+          <!-- <tbody>
+            <TextAreaBox
+              v-model="infoDatas.data.refund_information"
+              placeholder="ex) 브랜디는 소비자보호법 및 전자상거래법을 기반한 환불보장제를 운영 중에 있습니다. 정당하지 않은 사유로 인한 환불 거부 등은 제재 사유가 될 수 있는 점 참고 부탁드립니다."
+            >
+              <template #thName>
+                교환/환불 정보
+                <i class="xi-pen" />
+              </template>
+              <template #infoText01>
+                <i class="xi-info">문장이 끝나면 엔터로 줄바꿈을 해주세요.</i>
+              </template>
+            </TextAreaBox>
+          </tbody> -->
+        <!-- </v-simple-table> -->
+      <!-- </div> -->
+    </div>
     <!-- 관리브랜드 정보 -->
     <div class="cmpWrap">
       <div class="cmpTitle">
@@ -576,6 +601,7 @@ export default {
         this.feed= response.data.feed
         this.tableCount = this.detailInfo.managers.length;
       });
+      console.log(this.feed)
   },
 
   methods: {
@@ -649,7 +675,8 @@ export default {
                 weekend_end_time: this.detailInfo.weekend_end_time,
                 bank: this.detailInfo.bank,
                 bank_account_name: this.detailInfo.bank_account_name,
-                bank_account_number: this.detailInfo.bank_account_number
+                bank_account_number: this.detailInfo.bank_account_number,
+                feed: this.feed
               },
               model_size:{
                 height: Number(this.modelSize.height),
@@ -657,7 +684,7 @@ export default {
                 bottom_size: Number(this.modelSize.bottom_size),
                 foot_size: Number(this.modelSize.foot_size),
               },
-              feed: this.detailInfo.feed
+              
             },
             {
               headers: {
@@ -668,7 +695,7 @@ export default {
           .then(res => {
             if (res.status === 200) {
               alert("셀러정보가 정상적으로 수정되었습니다.");
-              // window.location.reload();
+              window.location.reload();
             }
           })
           .catch(error => {
@@ -732,8 +759,6 @@ export default {
     }
     td:first-of-type {
       border-top: 1px solid lightgray;
-      border-right: 1px solid lightgray;
-
     }
 
     input {
@@ -792,34 +817,12 @@ export default {
     width: 100%;
     th,
     td {
-    width: 149px;
-    border: 1px solid lightgray;
+      border: 1px solid lightgray;
     }
     th {
       background-color: #eee;
     }
-   
-    
   }
-  .historyTr {
-    width : 150px;
-   border-left: 1px solid lightgray;
-
- }
- .historyTr2 {
-   width : 149px;
-   border-bottom: 1px solid lightgray;
- }
- .seller_att {
-
-      display: flex;
-      input {
-        margin-top : 3px;
-      }
-       label {
-      width:80px;
-    }
-    }
 }
 
 .addressBox {
