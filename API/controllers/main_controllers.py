@@ -18,6 +18,8 @@ main_dao = MainDao()
 @login_required
 def category(**kwargs):
     """사이드바 예시 API
+    API 작성:
+        최진아
 
     Args:
         role_id : user의 권한 확인

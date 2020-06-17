@@ -321,6 +321,14 @@ def save_product(**kwargs):
             else:
                 option_duplicate_check.append((option['color_name'],option['size_name']))
 
+        # 최소 판매 수량이 20개를 초과한 경우 에러
+        if data['min_sales_unit'] > 20:
+            return jsonify(message="DATA_ERROR"), 400
+
+        # 최대 판매 수량이 20개를 초과한 경우 에러
+        if data['max_sales_unit'] > 20:
+            return jsonify(message="DATA_ERROR"), 400
+
         # required가 아닌 항목이 Null값으로도 들어오지 않은 경우 처리
         if 'description_short' not in data:
             data['descriotion_short'] = None
@@ -553,6 +561,14 @@ def change_product_information(**kwargs):
                 if (option_details['size_id'],option_details['color_id']) !=  (product_dao.get_option_size_id(db,option['size_id']),product_dao.get_option_color_id(db, option['color_id'])):
                     return jsonify(message = "DATA_ERROR"), 400
 
+        # 최소 판매 수량이 20개를 초과한 경우 에러
+        if data['min_sales_unit'] > 20:
+            return jsonify(message="DATA_ERROR"), 400
+
+        # 최대 판매 수량이 20개를 초과한 경우 에러
+        if data['max_sales_unit'] > 20:
+            return jsonify(message="DATA_ERROR"), 400
+
         # required가 아닌 항목이 Null값으로도 들어오지 않은 경우 처리
         if 'description_short' not in data:
             data['descriotion_short'] = None
@@ -620,9 +636,9 @@ def change_product_information(**kwargs):
     except ValidationError as e:
         error_path = str(e.path)[8:-3]
         return jsonify(message=f"{error_path.upper()}_VALIDATION_ERROR"), 400
-    #except Exception as e:
-    #    db.rollback()
-    #    return jsonify(message=f"{e}"), 500
+    except Exception as e:
+        db.rollback()
+        return jsonify(message=f"{e}"), 500
     finally:
         if db:
             db.close()
