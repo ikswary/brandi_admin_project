@@ -50,7 +50,7 @@
           <div
             v-bind:class="{ btn: !attBtn[3].state, clickedBtn: attBtn[3].state}"
             @click="() => attClickCheck(3)"
-          >로드샾</div>
+          >로드샵</div>
           <div
             v-bind:class="{ btn: !attBtn[4].state, clickedBtn: attBtn[4].state}"
             @click="() => attClickCheck(4)"
@@ -438,11 +438,6 @@ export default {
     margin-bottom: 20px;
     background-color: #fafafa;
   }
-  .select-button{
-    width : 96%;
-    display: flex;
-    justify-content: flex-end;
-  }
   .count {
     margin-left: 10px;
   }
@@ -514,7 +509,8 @@ export default {
     font-weight: bold;
     }
   }
-  .seller_name_input {
+
+  input {
     border: 1px solid lightgray;
     border-radius: 3px;
     width: 180px;
@@ -523,21 +519,7 @@ export default {
     font-weight: 500;
     color: #333333;
     margin-right: 40px;
-    background-color: white;    
-    }
-  input {
-    border: 1px solid lightgray;
-    border-radius: 3px;
-    width: 30px;
-    font-size: 12px;
-    font-weight: 500;
-    color: #333333;
     background-color: white;
-  
-    
-  }
-  .enrollday-width{
-    width : 100%;
   }
   input:focus {
     outline: 1px solid #eee;
