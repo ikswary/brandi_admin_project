@@ -1,0 +1,474 @@
+﻿-- 테이블 순서는 관계를 고려하여 한 번에 실행해도 에러가 발생하지 않게 정렬되었습니다.
+
+-- roles Table Create SQL
+CREATE TABLE roles
+(
+    `id`          INT            NOT NULL    AUTO_INCREMENT, 
+    `name`        VARCHAR(20)    NOT NULL, 
+    `is_deleted`  TINYINT        NOT NULL, 
+    PRIMARY KEY (id)
+);
+
+
+-- roles Table Create SQL
+CREATE TABLE users
+(
+    `id`          INT            NOT NULL    AUTO_INCREMENT, 
+    `role_id`     INT            NOT NULL    COMMENT '셀러/마스터', 
+    `is_deleted`  TINYINT        NOT NULL    COMMENT '소프트딜리트', 
+    `account`     VARCHAR(50)    NOT NULL, 
+    `created_at`  DATETIME       NOT NULL, 
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE users
+    ADD CONSTRAINT FK_users_role_id_roles_id FOREIGN KEY (role_id)
+        REFERENCES roles (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- roles Table Create SQL
+CREATE TABLE attribute_group
+(
+    `id`          INT            NOT NULL    AUTO_INCREMENT, 
+    `is_deleted`  TINYINT        NOT NULL    COMMENT '소프트딜리트', 
+    `name`        VARCHAR(20)    NOT NULL    COMMENT '샵, 브랜드, 뷰티', 
+    PRIMARY KEY (id)
+);
+
+
+-- roles Table Create SQL
+CREATE TABLE first_categories
+(
+    `id`                  INT            NOT NULL    AUTO_INCREMENT, 
+    `attribute_group_id`  INT            NOT NULL, 
+    `is_deleted`          TINYINT        NOT NULL    COMMENT '소프트 딜리트', 
+    `name`                VARCHAR(50)    NOT NULL, 
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE first_categories
+    ADD CONSTRAINT FK_first_categories_attribute_group_id_attribute_group_id FOREIGN KEY (attribute_group_id)
+        REFERENCES attribute_group (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- roles Table Create SQL
+CREATE TABLE second_categories
+(
+    `id`                 INT            NOT NULL    AUTO_INCREMENT, 
+    `first_category_id`  INT            NOT NULL, 
+    `is_deleted`         TINYINT        NOT NULL    COMMENT '소프트 딜리트', 
+    `name`               VARCHAR(50)    NOT NULL, 
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE second_categories
+    ADD CONSTRAINT FK_second_categories_first_category_id_first_categories_id FOREIGN KEY (first_category_id)
+        REFERENCES first_categories (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- roles Table Create SQL
+CREATE TABLE countries
+(
+    `id`          INT            NOT NULL    AUTO_INCREMENT, 
+    `is_deleted`  TINYINT        NOT NULL    COMMENT '소프트 딜리트', 
+    `name`        VARCHAR(20)    NOT NULL, 
+    PRIMARY KEY (id)
+);
+
+
+-- roles Table Create SQL
+CREATE TABLE color_filters
+(
+    `id`          INT             NOT NULL    AUTO_INCREMENT, 
+    `is_deleted`  TINYINT         NOT NULL    COMMENT '소프트 딜리트', 
+    `name`        VARCHAR(20)     NOT NULL, 
+    `name_eng`    VARCHAR(10)     NOT NULL, 
+    `image_url`   VARCHAR(300)    NOT NULL, 
+    PRIMARY KEY (id)
+);
+
+
+-- roles Table Create SQL
+CREATE TABLE style_filters
+(
+    `id`          INT            NOT NULL    AUTO_INCREMENT, 
+    `is_deleted`  TINYINT        NOT NULL    COMMENT '소프트 딜리트', 
+    `name`        VARCHAR(20)    NULL, 
+    PRIMARY KEY (id)
+);
+
+
+-- roles Table Create SQL
+CREATE TABLE products
+(
+    `id`          INT            NOT NULL    AUTO_INCREMENT, 
+    `user_id`     INT            NOT NULL, 
+    `is_deleted`  TINYINT        NOT NULL    COMMENT '소프트딜리트', 
+    `code`        VARCHAR(45)    NOT NULL, 
+    `created_at`  DATETIME       NOT NULL, 
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE products
+    ADD CONSTRAINT FK_products_user_id_users_id FOREIGN KEY (user_id)
+        REFERENCES users (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- roles Table Create SQL
+CREATE TABLE product_details
+(
+    `id`                      INT              NOT NULL    AUTO_INCREMENT, 
+    `product_id`              INT              NOT NULL, 
+    `first_category_id`       INT              NOT NULL    COMMENT '1차 카테고리', 
+    `second_category_id`      INT              NULL        COMMENT '2차 카테고리', 
+    `manufacture_country_id`  INT              NULL        COMMENT '원산지', 
+    `style_filter_id`         INT              NULL        COMMENT '스타일 필터', 
+    `color_filter_id`         INT              NULL        COMMENT '색상 필터', 
+    `modifier_id`             INT              NOT NULL    COMMENT '수정자', 
+    `is_deleted`              TINYINT          NOT NULL    COMMENT '소프트 딜리트', 
+    `on_sale`                 TINYINT          NOT NULL    COMMENT '판매 여부', 
+    `on_list`                 TINYINT          NOT NULL    COMMENT '진열 여부', 
+    `manufacturer`            VARCHAR(50)      NULL        COMMENT '제조사', 
+    `manufacture_date`        DATE             NULL        COMMENT '제조 일자', 
+    `name`                    VARCHAR(100)     NOT NULL    COMMENT '상품명', 
+    `description_short`       VARCHAR(2000)    NULL        COMMENT '한줄 상품설명', 
+    `description_detail`      TEXT             NOT NULL    COMMENT '상세 상품정보', 
+    `min_sales_unit`          INT              NOT NULL    COMMENT '최소판매수량', 
+    `max_sales_unit`          INT              NOT NULL    COMMENT '최대판매수량', 
+    `price`                   INT              NOT NULL    COMMENT '판매가', 
+    `discount_rate`           INT              NULL        COMMENT '할인율', 
+    `discount_price`          INT              NULL        COMMENT '할인판매가', 
+    `discount_start`          DATETIME         NOT NULL    COMMENT '할인 시작일', 
+    `discount_end`            DATETIME         NOT NULL    COMMENT '할인 종료일', 
+    `startdate`               DATETIME         NOT NULL    COMMENT '생성날짜', 
+    `enddate`                 DATETIME         NOT NULL    COMMENT '수정날짜', 
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE product_details
+    ADD CONSTRAINT FK_product_details_first_category_id_first_categories_id FOREIGN KEY (first_category_id)
+        REFERENCES first_categories (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE product_details
+    ADD CONSTRAINT FK_product_details_second_category_id_second_categories_id FOREIGN KEY (second_category_id)
+        REFERENCES second_categories (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE product_details
+    ADD CONSTRAINT FK_product_details_manufacture_country_id_countries_id FOREIGN KEY (manufacture_country_id)
+        REFERENCES countries (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE product_details
+    ADD CONSTRAINT FK_product_details_color_filter_id_color_filters_id FOREIGN KEY (color_filter_id)
+        REFERENCES color_filters (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE product_details
+    ADD CONSTRAINT FK_product_details_style_filter_id_style_filters_id FOREIGN KEY (style_filter_id)
+        REFERENCES style_filters (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE product_details
+    ADD CONSTRAINT FK_product_details_product_id_products_id FOREIGN KEY (product_id)
+        REFERENCES products (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE product_details
+    ADD CONSTRAINT FK_product_details_modifier_id_users_id FOREIGN KEY (modifier_id)
+        REFERENCES users (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- roles Table Create SQL
+CREATE TABLE statuses
+(
+    `id`          INT            NOT NULL    AUTO_INCREMENT, 
+    `is_deleted`  TINYINT        NOT NULL    COMMENT '소프트딜리트', 
+    `name`        VARCHAR(20)    NOT NULL, 
+    PRIMARY KEY (id)
+);
+
+
+-- roles Table Create SQL
+CREATE TABLE seller_attributes
+(
+    `id`                  INT            NOT NULL    AUTO_INCREMENT, 
+    `attribute_group_id`  INT            NOT NULL, 
+    `is_deleted`          TINYINT        NOT NULL    COMMENT '소프트딜리트', 
+    `name`                VARCHAR(20)    NOT NULL    COMMENT '마켓, 디자이너 브랜드, 뷰티', 
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE seller_attributes
+    ADD CONSTRAINT FK_seller_attributes_attribute_group_id_attribute_group_id FOREIGN KEY (attribute_group_id)
+        REFERENCES attribute_group (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- roles Table Create SQL
+CREATE TABLE managers
+(
+    `id`          INT             NOT NULL    AUTO_INCREMENT, 
+    `is_deleted`  TINYINT         NOT NULL    COMMENT '소프트딜리트', 
+    `name`        VARCHAR(20)     NULL        COMMENT '담당자 이름', 
+    `phone`       VARCHAR(45)     NOT NULL    COMMENT '담당자 번호', 
+    `email`       VARCHAR(300)    NULL        COMMENT '담당자 이메일', 
+    PRIMARY KEY (id)
+);
+
+
+-- roles Table Create SQL
+CREATE TABLE images
+(
+    `id`          INT             NOT NULL    AUTO_INCREMENT, 
+    `is_deleted`  TINYINT         NOT NULL    COMMENT '소프트 딜리트', 
+    `large_url`   VARCHAR(300)    NOT NULL    COMMENT '큰 이미지의 S3 URL', 
+    `medium_url`  VARCHAR(300)    NOT NULL    COMMENT '중간 이미지의 S3 URL', 
+    `small_url`   VARCHAR(300)    NOT NULL    COMMENT '작은 이미지의 S3 URL', 
+    PRIMARY KEY (id)
+);
+
+
+-- roles Table Create SQL
+CREATE TABLE colors
+(
+    `id`          INT            NOT NULL    AUTO_INCREMENT, 
+    `is_deleted`  TINYINT        NOT NULL    COMMENT '소프트 딜리트', 
+    `name`        VARCHAR(20)    NULL, 
+    PRIMARY KEY (id)
+);
+
+
+-- roles Table Create SQL
+CREATE TABLE tags
+(
+    `id`          INT             NOT NULL    AUTO_INCREMENT, 
+    `is_deleted`  TINYINT         NOT NULL    COMMENT '소프트 딜리트', 
+    `name`        VARCHAR(100)    NOT NULL, 
+    PRIMARY KEY (id)
+);
+
+
+-- roles Table Create SQL
+CREATE TABLE actions
+(
+    `id`          INT            NOT NULL    AUTO_INCREMENT, 
+    `is_deleted`  TINYINT        NOT NULL    COMMENT '소프트딜리트', 
+    `name`        VARCHAR(45)    NOT NULL, 
+    PRIMARY KEY (id)
+);
+
+
+-- roles Table Create SQL
+CREATE TABLE sidebar
+(
+    `id`          INT            NOT NULL    AUTO_INCREMENT, 
+    `role_id`     INT            NOT NULL, 
+    `is_deleted`  TINYINT        NOT NULL, 
+    `name`        VARCHAR(30)    NOT NULL, 
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE sidebar
+    ADD CONSTRAINT FK_sidebar_role_id_roles_id FOREIGN KEY (role_id)
+        REFERENCES roles (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- roles Table Create SQL
+CREATE TABLE sizes
+(
+    `id`          INT            NOT NULL    AUTO_INCREMENT, 
+    `is_deleted`  TINYINT        NOT NULL, 
+    `name`        VARCHAR(10)    NOT NULL, 
+    PRIMARY KEY (id)
+);
+
+
+-- roles Table Create SQL
+CREATE TABLE seller_details
+(
+    `id`                   INT              NOT NULL    AUTO_INCREMENT, 
+    `user_id`              INT              NOT NULL    COMMENT '아이디', 
+    `modifier_id`          INT              NOT NULL    COMMENT '수정자', 
+    `seller_attribute_id`  INT              NOT NULL    COMMENT '셀러 속성', 
+    `is_deleted`           TINYINT          NOT NULL    COMMENT '소프트딜리트', 
+    `password`             VARCHAR(60)      NOT NULL    COMMENT '비밀번호', 
+    `seller_name`          VARCHAR(100)     NOT NULL    COMMENT '셀러 한글명', 
+    `seller_name_eng`      VARCHAR(100)     NOT NULL    COMMENT '셀러 영문명', 
+    `cs_phone`             VARCHAR(30)      NOT NULL    COMMENT '고객센터 번호', 
+    `site_url`             VARCHAR(500)     NOT NULL    COMMENT '사이트 주소', 
+    `profile_image`        VARCHAR(50)      NULL        COMMENT '프로필 이미지', 
+    `introduction_short`   VARCHAR(2000)    NULL        COMMENT '셀러 한줄 소개', 
+    `introduction_detail`  TEXT             NULL        COMMENT '셀러 상세 소개', 
+    `background_image`     VARCHAR(45)      NULL        COMMENT '배경이미지', 
+    `zip_code`             VARCHAR(10)      NULL        COMMENT '우편번호', 
+    `address`              VARCHAR(300)     NULL        COMMENT '택배주소', 
+    `address_detail`       VARCHAR(300)     NULL        COMMENT '상세주소', 
+    `weekday_start_time`   TIME             NULL        COMMENT '고객센터 운영 주중 시작', 
+    `weekday_end_time`     TIME             NULL        COMMENT '고객센터 운영 주중 끝', 
+    `weekend_start_time`   TIME             NULL        COMMENT '고객센터 운영 주말 시작', 
+    `weekend_end_time`     TIME             NULL        COMMENT '고객센터 운영 주말 끝', 
+    `bank`                 VARCHAR(50)      NULL        COMMENT '정산은행', 
+    `bank_account_name`    VARCHAR(50)      NULL        COMMENT '계좌주', 
+    `bank_account_number`  VARCHAR(50)      NULL        COMMENT '계좌번호', 
+    `height`               INTEGER          NULL        COMMENT '모델 키', 
+    `top_size`             INTEGER          NULL        COMMENT '상의 사이즈', 
+    `bottom_size`          INTEGER          NULL        COMMENT '하의 사이즈', 
+    `foot_size`            INTEGER          NULL        COMMENT '발 사이즈', 
+    `feed`                 VARCHAR(1000)    NULL        COMMENT '쇼핑 피드', 
+    `startdate`            DATETIME         NOT NULL    COMMENT '생성 날짜', 
+    `enddate`              DATETIME         NOT NULL    COMMENT '수정 날짜', 
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE seller_details
+    ADD CONSTRAINT FK_seller_details_seller_attribute_id_seller_attributes_id FOREIGN KEY (seller_attribute_id)
+        REFERENCES seller_attributes (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE seller_details
+    ADD CONSTRAINT FK_seller_details_user_id_users_id FOREIGN KEY (user_id)
+        REFERENCES users (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE seller_details
+    ADD CONSTRAINT FK_seller_details_modifier_id_users_id FOREIGN KEY (modifier_id)
+        REFERENCES users (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- roles Table Create SQL
+CREATE TABLE options
+(
+    `id`          INT        NOT NULL    AUTO_INCREMENT, 
+    `product_id`  INT        NULL, 
+    `color_id`    INT        NOT NULL, 
+    `size_id`     INT        NOT NULL, 
+    `is_deleted`  TINYINT    NOT NULL    COMMENT '소프트 딜리트', 
+    `stock`       INT        NULL, 
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE options
+    ADD CONSTRAINT FK_options_color_id_colors_id FOREIGN KEY (color_id)
+        REFERENCES colors (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE options
+    ADD CONSTRAINT FK_options_product_id_product_details_id FOREIGN KEY (product_id)
+        REFERENCES product_details (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE options
+    ADD CONSTRAINT FK_options_size_id_sizes_id FOREIGN KEY (size_id)
+        REFERENCES sizes (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- roles Table Create SQL
+CREATE TABLE product_tags
+(
+    `id`          INT        NOT NULL    AUTO_INCREMENT, 
+    `product_id`  INT        NOT NULL, 
+    `tag_id`      INT        NOT NULL, 
+    `is_deleted`  TINYINT    NOT NULL    COMMENT '소프트 딜리트', 
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE product_tags
+    ADD CONSTRAINT FK_product_tags_product_id_product_details_id FOREIGN KEY (product_id)
+        REFERENCES product_details (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE product_tags
+    ADD CONSTRAINT FK_product_tags_tag_id_tags_id FOREIGN KEY (tag_id)
+        REFERENCES tags (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- roles Table Create SQL
+CREATE TABLE product_images
+(
+    `id`          INT        NOT NULL    AUTO_INCREMENT, 
+    `product_id`  INT        NOT NULL, 
+    `image_id`    INT        NOT NULL, 
+    `is_deleted`  TINYINT    NOT NULL, 
+    `list_order`  INT        NOT NULL, 
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE product_images
+    ADD CONSTRAINT FK_product_images_product_id_product_details_id FOREIGN KEY (product_id)
+        REFERENCES product_details (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE product_images
+    ADD CONSTRAINT FK_product_images_image_id_images_id FOREIGN KEY (image_id)
+        REFERENCES images (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- roles Table Create SQL
+CREATE TABLE user_managers
+(
+    `id`          INT        NOT NULL    AUTO_INCREMENT, 
+    `user_id`     INT        NOT NULL, 
+    `manager_id`  INT        NOT NULL, 
+    `list_order`  INT        NOT NULL    COMMENT '~3', 
+    `is_deleted`  TINYINT    NOT NULL, 
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE user_managers
+    ADD CONSTRAINT FK_user_managers_manager_id_managers_id FOREIGN KEY (manager_id)
+        REFERENCES managers (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE user_managers
+    ADD CONSTRAINT FK_user_managers_user_id_users_id FOREIGN KEY (user_id)
+        REFERENCES users (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- roles Table Create SQL
+CREATE TABLE status_actions
+(
+    `id`                  INT        NOT NULL    AUTO_INCREMENT, 
+    `seller_statuses_id`  INT        NOT NULL, 
+    `actions_id`          INT        NOT NULL, 
+    `is_deleted`          TINYINT    NOT NULL    COMMENT '소프트딜리트', 
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE status_actions
+    ADD CONSTRAINT FK_status_actions_actions_id_actions_id FOREIGN KEY (actions_id)
+        REFERENCES actions (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE status_actions
+    ADD CONSTRAINT FK_status_actions_seller_statuses_id_statuses_id FOREIGN KEY (seller_statuses_id)
+        REFERENCES statuses (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- roles Table Create SQL
+CREATE TABLE user_status
+(
+    `id`           INT         NOT NULL    AUTO_INCREMENT, 
+    `user_id`      INT         NOT NULL, 
+    `status_id`    INT         NOT NULL, 
+    `modifier_id`  INT         NOT NULL, 
+    `is_deleted`   TINYINT     NOT NULL    COMMENT '소프트딜리트', 
+    `startdate`    DATETIME    NOT NULL, 
+    `enddate`      DATETIME    NOT NULL, 
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE user_status
+    ADD CONSTRAINT FK_user_status_status_id_statuses_id FOREIGN KEY (status_id)
+        REFERENCES statuses (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE user_status
+    ADD CONSTRAINT FK_user_status_user_id_users_id FOREIGN KEY (user_id)
+        REFERENCES users (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE user_status
+    ADD CONSTRAINT FK_user_status_modifier_id_users_id FOREIGN KEY (modifier_id)
+        REFERENCES users (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- roles Table Create SQL
+CREATE TABLE sidebar_detail
+(
+    `id`          INT            NOT NULL    AUTO_INCREMENT, 
+    `sidebar_id`  INT            NOT NULL, 
+    `is_deleted`  TINYINT        NOT NULL, 
+    `name`        VARCHAR(30)    NOT NULL, 
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE sidebar_detail
+    ADD CONSTRAINT FK_sidebar_detail_sidebar_id_sidebar_id FOREIGN KEY (sidebar_id)
+        REFERENCES sidebar (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
