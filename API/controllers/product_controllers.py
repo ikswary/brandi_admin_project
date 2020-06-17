@@ -802,21 +802,21 @@ def product_list(**kwargs):
 
         product_list = {
             "quantity": quantity,
-            "product" : [{
-            "created_at": product['create_at'],
-            "image": product_dao.find_first_image(db, product['id']),
-            "product_name": product['name'],
-            "product_code": product['code'],
-            "product_id" : product['product_id'],
-            "seller_attribute": product_dao.find_seller_attribute(db, product['seller_attribute_id']),
-            "seller_name": product['seller_name'],
-            "price": product['price'],
-            "discount_price": product['discount_price'] if product['discount_price'] else product['price'],
-            "discount_rate": product['discount_rate'],
-            "on_sale": product['on_sale'],
-            "on_list": product['on_list'],
-    	    "discount": 0 if product['discount_rate'] == 0 else 1
-                }   for product in products_data]}
+            "product": [{
+                "created_at": product['create_at'],
+                "image": product_dao.find_first_image(db, product['id']),
+                "product_name": product['name'],
+                "product_code": product['code'],
+                "product_id" : product['product_id'],
+                "seller_attribute": product_dao.find_seller_attribute(db, product['seller_attribute_id']),
+                "seller_name": product['seller_name'],
+                "price": product['price'],
+                "discount_price": product['discount_price'] if product['discount_price'] else product['price'],
+                "discount_rate": product['discount_rate'],
+                "on_sale": product['on_sale'],
+                "on_list": product['on_list'],
+    	        "discount": 0 if product['discount_rate'] == 0 else 1
+                        } for product in products_data]}
 
         return jsonify(data = product_list), 200
 

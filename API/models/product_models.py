@@ -623,7 +623,9 @@ class ProductDao:
             with db.cursor(pymysql.cursors.DictCursor) as cursor:
                 query = """
                 SELECT user_id, seller_name, profile_image FROM seller_details
-                WHERE seller_name LIKE %s
+                INNER JOIN users ON  users.id = seller_details.user_id
+                WHERE enddate = "9999-12-31 23:59:59" AND users.role_id = 2
+                AND seller_name LIKE %s 
                 """
 
                 affected_row = cursor.execute(query, "%" + seller_name + "%")
@@ -799,5 +801,3 @@ class ProductDao:
                 return cursor.fetchone()['name']
         except Exception as e:
             raise e
-
-
