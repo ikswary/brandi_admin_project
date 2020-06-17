@@ -130,7 +130,7 @@
         <div class="Btn resetBtn" @click="reset()">초기화</div>
       </div>
     </div>
-    <div class="select-button">
+    <!-- <div class="select-button">
          <div>
     <b-form-select v-model="saled" :options="saleproduct" style="width:100px"></b-form-select>
          </div>
@@ -139,7 +139,7 @@
   </div>
             <div><b-button variant="warning">적용</b-button>
             </div>
-          </div>
+          </div> -->
 
     <div class="count">전체 조회건 수 : {{infoDatas.quantity}}</div>
     <div class="tableBox">
@@ -300,6 +300,7 @@ export default {
         })
         .then(response => {
           this.infoDatas = response.data.data;
+          this.maxPage = Math.ceil(this.infoDatas.quantity/10)
         });
       console.log("url=",`${JH_URL}/product/list?limit=10&offset=0&${queryString.join("")}`);
     },
@@ -313,8 +314,6 @@ export default {
         .then(response => {
           this.infoDatas = response.data.data;
           this.maxPage = Math.ceil(this.infoDatas.quantity/10)
-          console.log(this.infoDatas.quantity)
-          console.log(this.maxPage)
         });
     },
     reset: function() {
