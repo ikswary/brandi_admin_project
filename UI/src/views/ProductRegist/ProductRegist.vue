@@ -1,1676 +1,1724 @@
 <template>
-  <div id="app">
-    <div class="ProductRegist">
-      <div class="page_content">
-        <!-- 상품등록 테이블 -->
-        <h3 class="page_title">
-          상품등록
-          <small>상품 정보 등록</small>
-        </h3>
-        <div class="page_bar">
-          <ul class="page_ul">
-            <div class="h2 mb-0">
-              <i class="xi-home-o"  />
-            </div>
-            <li class="li-tag">상품관리 ></li>
-            <li class="li-tag">상품 관리 ></li>
-            <li class="li-tag">상품 등록</li>
-          </ul>
-        </div>
-        <div class="portlet">
-          <div class="portlet-title">
-            <div class="caption">
-              <i class="xi-pen-o" />
-              <span>기본정보</span>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-12">
-              <table class="table-in-portlet">
-                <tbody>
-                  <!-- 셀러선택 테이블 -->
-                  <tr>
-                    <td class="default-info-left td-border" width="15%">
-                      셀러선택
-                      <span class="font-color-red">*</span>
-                    </td>
-                    <td class="seller-search td-border">
-                      <b-form-input                    
-                        placeholder="셀러를 검색해주세요"
-                        class="seller-search2"
-                      />
-                      <!-- 셀 러 검 색   모 달 창  시작하는곳 -->
-                      <v-app id="inspire" >
-                        <v-row>
-                          <v-dialog v-model="dialog" persistent max-width="500">
-                            <template v-slot:activator="{ on }">
-                              <v-btn color="green" dark v-on="on" >셀러 검색</v-btn>
-                            </template>
-                            <v-card>
-                              <v-card-title class="headline">셀러 선택</v-card-title>
-                            </v-card>
-                            <v-card-text class="modal-color"
-                            >상품을 등록할 셀러를 선택해주세요. (검색 10건)</v-card-text>
-                            <form class="modal-form"
-                            >
-                            <!-- 셀러 검색 인풋라인 -->
-                              <v-card-text class="seller-search-input">
-                                <span>셀러 검색</span>
-                              </v-card-text>
-                              <!-- 모달 내 셀러 검색 인풋태그 창 -->
-                              <v-card-text>
-                                <input type="text" v-model="seller_id" class="modal-input" />
-                              </v-card-text>
-                            </form>
-                            <v-card-actions class="modal-color">
-                              <v-spacer></v-spacer>
-                              <v-btn color="outline-dark" text @click="dialog = false">닫기</v-btn>
-                              <b-button variant="primary" text @click="dialog = false">셀러 선택하기</b-button>
-                            </v-card-actions>
-                          </v-dialog>
-                        </v-row>
-                      </v-app>
-                    </td>
-                  </tr>
-                  <!-- 판매 여부-->
-                  <tr>
-                    <td class="sold-status default-info-left td-border">판매여부</td>
-                    <td class="td-border" >
-
-                    <div class="radio-list">
-                        <label>
-                          <div class="radio">
-                            <button>
-                              <input
-                                v-model="on_sale"
-                                type="radio"
-                                value="1"
-                                 v-on:click="thisisHidden = true"
-                              />
-                             판매
-                            </button>
-                          </div>
-                        </label>
-
-                        <label>
-                          <button>
-                            <input
-                              type="radio"
-                              v-model="on_sale"
-                               value="0"
-                              v-on:click="thisisHidden = !thisisHidden"
-                            />
-                            미판매
-                          </button>
-                        </label>
-                      </div>
-                   
-                      <span class="font-color-blue style-filter-span" >
-                        <i class="xi-caret-up"></i> 미판매 선택시 앱에서 Sold Out으로 표시됩니다.
-                      </span>
-                    </td>
-                  </tr>
-                  <!-- 진열 여부 -->
-                  <tr>
-                    <td class="display-status default-info-left">진열여부</td>
-                    <td>
-                      <div class="radio-list">
-                        <label >
-                          <div class="radio">
-                            <span class="checked">
-                              <input v-model="on_list" type="radio" value="1"  checked="checked" />
-                            </span>
-                          </div>판매
-                        </label>
-                        <label >
-                          <div class="radio">
-                            <span>
-                              <input v-model="on_list" type="radio"  value="0" />
-                            </span>
-                          </div>미판매
-                        </label>
-                      </div>
-                      <span class="font-color-blue style-filter-span">
-                        <i class="xi-caret-up"></i> 미판매 선택시 앱에서 Sold Out으로 표시됩니다.
-                      </span>
-                    </td>
-                  </tr>
-
-                  <!-- 카테 고리 -->
-                  <tr>
-                    <td class="default-info-left">
-                      카테고리
-                      <span class="font-color-red">*</span>
-                    </td>
-                    <td>
-                      <table class="table-category seller-search" />
-                      <thead>
-                        <tr>
-                          <th width=" 40%">1차 카테고리</th>
-                          <th width=" 40%">2차 카테고리</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>
-                            <input
-                              type="hidden"
-                              name="categoryNoArr"
-                              value="NOT_SELECTED"
-                            />
-                            <div>
-                              <b-form-select
-                                v-model="first_category_id"
-                                :options="options"
-                                size="sm"
-                                class="mt-3"
-                              ></b-form-select>
-                            </div>
-                          </td>
-                          <td>
-                                <b-form-select 
-                                size="sm"
-                                class="mt-3"
-                                v-model="second_category_id" 
-                                :options="secondOptions">
-                                </b-form-select>
-                          </td>
-                        </tr>
-                      </tbody>
-                      <span class="font-color-blue style-filter-span">
-                        <i class="xi-caret-up"></i> 카테고리 변경 시 입력한 실측 사이즈 정보는 초기화 됩니다.
-                      </span>
-                    </td>
-                  </tr>
-                  <!-- 상품 정보 고시 -->
-                  <tr>
-                    <td class="product-info-explain default-info-left">상품 정보 고시</td>
-                    <td >
-                      <div class="radio-list">
-                        <label>
-                          <div class="radio">
-                            <button>
-                              <input
-                                type="radio"
-                                name="information"
-                                value="Y"
-                                checked
-                                v-on:click="isHidden = false"
-                              />
-                              상품 상세 참조
-                            </button>
-                          </div>
-                        </label>
-
-                        <label>
-                          <button>
-                            <input
-                              type="radio"
-                              name="information"
-                              v-on:click="isHidden = !isHidden"
-                            />
-                            직접 입력
-                          </button>
-                        </label>
-                      </div>
-                      <div class="input-directly" v-if="isHidden">
-                        <div>
-                          제조사(수입사) :
-                          <input v-model="manufacturer" type="text" class="company-name" />
-                        </div>
-                        <br />
-                        <div class="manufacture-day">
-                          <span>제조일자 :</span>
-                          <span>
-                            <b-form-datepicker id="example-datepicker" v-model="manufacture_date" class="mb-2"></b-form-datepicker>
-                          </span>
-                        </div>
-                        <br />
-                        <span>원산지 :</span>
-                        <span>
-                          <b-form-select v-model="manufacture_country_id" :options="conturys" size="sm" class="mt-3"></b-form-select>
-                        </span>
-                      </div>
-                    </td>
-                  </tr>
-                  <!-- 상품명 테이블 -->
-                  <tr>
-                    <td class="product-name default-info-left">
-                      상품명
-                      <span class="font-color-red">*</span>
-                    </td>
-                    <td class="product-name">
-                      <input
-                        type="text"
-                        name="product_name"
-                        class="form-control"
-                        v-model="name"
-                        maxlength="200"
-                      />
-                         <span class="font-color-blue style-filter-span">
-                          <i class="xi-caret-up"></i> 상품명에는 쌍따옴표(") 또는 홑따옴표(')를 포함할 수 없습니다.
-                        </span>
-                        <br>
-                        <span class="font-color-blue style-filter-span">
-                          <i class="xi-caret-up"></i> 상품명에는 4byte 이모지를 포함할 수 없습니다.
-                        </span>
-                      
-                    </td>
-                  </tr>
-                  <!-- 한줄 상품 설명 테이블 -->
-                  <tr>
-                    <td class="oneline-explain default-info-left">
-                      한줄 상품 설명
-                      <span class="font-color-red">*</span>
-                    </td>
-                    <td class="oneline-explain">
-                      <input v-model="description_short" type="text" class="form-control" />
-                    </td>
-                  </tr>
-                  <!-- 이미지 등록 테이블 -->
-                  <tr>
-                    <td class="image-upload default-info-left">
-                      이미지 등록
-                      <span class="font-color-red">*</span>
-                    </td>
-                    <td class="image-upload" >
-                      <div id="preview">
-                        <img v-if="url" :src="url" />
-                      </div>
-                      <input type="file" @change="onFileChange" accept="image/*" multiple />
-                      <div class="font-color-blue style-filter-span">
-                        <i class="xi-caret-up"></i> 640 * 720 사이즈 이상 등록 가능하며 확장자는 jpg 만 등록 가능합니다.
-                      </div>
-
-                      <div id="image_container"></div>
-                    </td>
-                  </tr>
-
-                  <!-- 색상필터(썸네일 이미지) -->
-                  <tr>
-                    <td class="default-info-left">
-                      색상필터(썸네일 이미지)
-                      <span class="font-color-red">*</span>
-                    </td>
-                    <td>
-                      <div class="col-md-12">
-                        <div class="radio-list">
-                          <label>
-                            <div class="radio">
-                              <span class="checked">
-                                <input type="radio" name="colorCode" class="ui-control" checked />
-                              </span>
-                            </div>사용안함
-                          </label>
-                          <label >
-                            <div class="radio">
-                              <span>
-                                <input type="radio" name="colorCode" class="ui-control" />
-                              </span>
-                            </div>사용함
-                          </label>
-                          <div class="picker-box">
-                            <input type="text" class="color-filter" />
-                            <span class="color-box"></span>
-                          </div>
-                          <v-row justify="center">
-                            <v-dialog v-model="colordialog" scrollable max-width="450px">
-                              <template v-slot:activator="{ on }">
-                                <v-btn color="primary" dark v-on="on">적용 할 색상 찾기</v-btn>
-                              </template>
-                              <v-card>
-                                <!-- 색상 선택 modal  -->
-                                <v-card-title>색상 선택</v-card-title>
-                                <v-divider></v-divider>
-                                <v-card-text style="width:100%; height: 300px;">
-                                  <tr>
-                                    <td>
-                                      <img
-                                        style="width:35px; height:35px; border-radius:20px;"
-                                        src="https://dbscthumb-phinf.pstatic.net/2512_000_1/20130825213031822_DAT75UGRE.jpg/i-c-18.jpg?type=m4500_4500_fst_n&wm=Y"
-                                      />
-                                      <br />
-                                      <span>빨강</span>
-                                      <br />
-                                      <span>(Red)</span>
-                                    </td>
-                                    <td>
-                                      <img
-                                        style="width:35px; height:35px; border-radius:20px;"
-                                        src="https://dthumb-phinf.pstatic.net/?src=%22https%3A%2F%2Fdbscthumb-phinf.pstatic.net%2F2512_000_1%2F20130825213048883_MOHWHB1G3.jpg%2Fi-c-30.jpg%3Ftype%3Dm4500_4500_fst_n%26wm%3DY%22&twidth=352&theight=80&opts=17"
-                                      />
-                                      <br />
-                                      <span>주황</span>
-                                      <br />
-                                      <span>(Orange)</span>
-                                    </td>
-                                    <td>
-                                      <img
-                                        style="width:35px; height:35px; border-radius:20px;"
-                                        src="https://dthumb-phinf.pstatic.net/?src=%22https%3A%2F%2Fdbscthumb-phinf.pstatic.net%2F2512_000_1%2F20130825213141805_R5CXRESO9.jpg%2Fi-c-68.jpg%3Ftype%3Dm4500_4500_fst_n%26wm%3DY%22&twidth=354&theight=80&opts=17"
-                                      />
-                                      <br />
-                                      <span>노랑</span>
-                                      <br />
-                                      <span>(Yellow)</span>
-                                    </td>
-                                    <td>
-                                      <img
-                                        style="width:35px; height:35px; border-radius:20px;"
-                                        src="https://dthumb-phinf.pstatic.net/?src=%22https%3A%2F%2Fdbscthumb-phinf.pstatic.net%2F2512_000_1%2F20190711160628123_BB7XII6S4.jpg%2Fi-c-55.jpg%3Ftype%3Dm4500_4500_fst_n%26wm%3DY%22&twidth=500&theight=62&opts=17"
-                                      />
-                                      <br />
-                                      <span>베이지</span>
-                                      <br />
-                                      <span>(Beige)</span>
-                                    </td>
-                                    <td>
-                                      <img
-                                        style="width:35px; height:35px; border-radius:20px;"
-                                        src="https://dthumb-phinf.pstatic.net/?src=%22https%3A%2F%2Fdbscthumb-phinf.pstatic.net%2F2512_000_1%2F20130825213102693_IKNCISY3I.jpg%2Fi-c-38.jpg%3Ftype%3Dm4500_4500_fst_n%26wm%3DY%22&twidth=352&theight=83&opts=17"
-                                      />
-                                      <br />
-                                      <span>갈색</span>
-                                      <br />
-                                      <span>(Brown)</span>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <button>
-                                      <td>
-                                        <img
-                                          style="width:35px; height:35px; border-radius:20px;"
-                                          src="https://dbscthumb-phinf.pstatic.net/2512_000_1/20130825213031822_DAT75UGRE.jpg/i-c-18.jpg?type=m4500_4500_fst_n&wm=Y"
-                                        />
-                                        <br />
-                                        <span>빨강</span>
-                                        <br />
-                                        <span>(Red)</span>
-                                      </td>
-                                    </button>
-                                    <td>
-                                      <img
-                                        style="width:35px; height:35px; border-radius:20px;"
-                                        src="https://dthumb-phinf.pstatic.net/?src=%22https%3A%2F%2Fdbscthumb-phinf.pstatic.net%2F2512_000_1%2F20130825213048883_MOHWHB1G3.jpg%2Fi-c-30.jpg%3Ftype%3Dm4500_4500_fst_n%26wm%3DY%22&twidth=352&theight=80&opts=17"
-                                      />
-                                      <br />
-                                      <span>주황</span>
-                                      <br />
-                                      <span>(Orange)</span>
-                                    </td>
-                                    <td>
-                                      <img
-                                        style="width:35px; height:35px; border-radius:20px;"
-                                        src="https://dthumb-phinf.pstatic.net/?src=%22https%3A%2F%2Fdbscthumb-phinf.pstatic.net%2F2512_000_1%2F20130825213141805_R5CXRESO9.jpg%2Fi-c-68.jpg%3Ftype%3Dm4500_4500_fst_n%26wm%3DY%22&twidth=354&theight=80&opts=17"
-                                      />
-                                      <br />
-                                      <span>노랑</span>
-                                      <br />
-                                      <span>(Yellow)</span>
-                                    </td>
-                                    <td>
-                                      <img
-                                        style="width:35px; height:35px; border-radius:20px;"
-                                        src="https://dthumb-phinf.pstatic.net/?src=%22https%3A%2F%2Fdbscthumb-phinf.pstatic.net%2F2512_000_1%2F20190711160628123_BB7XII6S4.jpg%2Fi-c-55.jpg%3Ftype%3Dm4500_4500_fst_n%26wm%3DY%22&twidth=500&theight=62&opts=17"
-                                      />
-                                      <br />
-                                      <span>베이지</span>
-                                      <br />
-                                      <span>(Beige)</span>
-                                    </td>
-                                    <td>
-                                      <img
-                                        style="width:35px; height:35px; border-radius:20px;"
-                                        src="https://dthumb-phinf.pstatic.net/?src=%22https%3A%2F%2Fdbscthumb-phinf.pstatic.net%2F2512_000_1%2F20130825213102693_IKNCISY3I.jpg%2Fi-c-38.jpg%3Ftype%3Dm4500_4500_fst_n%26wm%3DY%22&twidth=352&theight=83&opts=17"
-                                      />
-                                      <br />
-                                      <span>갈색</span>
-                                      <br />
-                                      <span>(Brown)</span>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <button>
-                                      <td>
-                                        <img
-                                          style="width:35px; height:35px; border-radius:20px;"
-                                          src="https://dbscthumb-phinf.pstatic.net/2512_000_1/20130825213031822_DAT75UGRE.jpg/i-c-18.jpg?type=m4500_4500_fst_n&wm=Y"
-                                        />
-                                        <br />
-                                        <span>빨강</span>
-                                        <br />
-                                        <span>(Red)</span>
-                                      </td>
-                                    </button>
-                                    <td>
-                                      <img
-                                        style="width:35px; height:35px; border-radius:20px;"
-                                        src="https://dthumb-phinf.pstatic.net/?src=%22https%3A%2F%2Fdbscthumb-phinf.pstatic.net%2F2512_000_1%2F20130825213048883_MOHWHB1G3.jpg%2Fi-c-30.jpg%3Ftype%3Dm4500_4500_fst_n%26wm%3DY%22&twidth=352&theight=80&opts=17"
-                                      />
-                                      <br />
-                                      <span>주황</span>
-                                      <br />
-                                      <span>(Orange)</span>
-                                    </td>
-                                    <td>
-                                      <img
-                                        style="width:35px; height:35px; border-radius:20px;"
-                                        src="https://dthumb-phinf.pstatic.net/?src=%22https%3A%2F%2Fdbscthumb-phinf.pstatic.net%2F2512_000_1%2F20130825213141805_R5CXRESO9.jpg%2Fi-c-68.jpg%3Ftype%3Dm4500_4500_fst_n%26wm%3DY%22&twidth=354&theight=80&opts=17"
-                                      />
-                                      <br />
-                                      <span>노랑</span>
-                                      <br />
-                                      <span>(Yellow)</span>
-                                    </td>
-                                    <td>
-                                      <img
-                                        style="width:35px; height:35px; border-radius:20px;"
-                                        src="https://dthumb-phinf.pstatic.net/?src=%22https%3A%2F%2Fdbscthumb-phinf.pstatic.net%2F2512_000_1%2F20190711160628123_BB7XII6S4.jpg%2Fi-c-55.jpg%3Ftype%3Dm4500_4500_fst_n%26wm%3DY%22&twidth=500&theight=62&opts=17"
-                                      />
-                                      <br />
-                                      <span>베이지</span>
-                                      <br />
-                                      <span>(Beige)</span>
-                                    </td>
-                                    <td>
-                                      <img
-                                        style="width:35px; height:35px; border-radius:20px;"
-                                        src="https://dthumb-phinf.pstatic.net/?src=%22https%3A%2F%2Fdbscthumb-phinf.pstatic.net%2F2512_000_1%2F20130825213102693_IKNCISY3I.jpg%2Fi-c-38.jpg%3Ftype%3Dm4500_4500_fst_n%26wm%3DY%22&twidth=352&theight=83&opts=17"
-                                      />
-                                      <br />
-                                      <span>갈색</span>
-                                      <br />
-                                      <span>(Brown)</span>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <button>
-                                      <td>
-                                        <img
-                                          style="width:35px; height:35px; border-radius:20px;"
-                                          src="https://dbscthumb-phinf.pstatic.net/2512_000_1/20130825213031822_DAT75UGRE.jpg/i-c-18.jpg?type=m4500_4500_fst_n&wm=Y"
-                                        />
-                                        <br />
-                                        <span>빨강</span>
-                                        <br />
-                                        <span>(Red)</span>
-                                      </td>
-                                    </button>
-                                    <td>
-                                      <img
-                                        style="width:35px; height:35px; border-radius:20px;"
-                                        src="https://dthumb-phinf.pstatic.net/?src=%22https%3A%2F%2Fdbscthumb-phinf.pstatic.net%2F2512_000_1%2F20130825213048883_MOHWHB1G3.jpg%2Fi-c-30.jpg%3Ftype%3Dm4500_4500_fst_n%26wm%3DY%22&twidth=352&theight=80&opts=17"
-                                      />
-                                      <br />
-                                      <span>주황</span>
-                                      <br />
-                                      <span>(Orange)</span>
-                                    </td>
-                                    <td>
-                                      <img
-                                        style="width:35px; height:35px; border-radius:20px;"
-                                        src="https://dthumb-phinf.pstatic.net/?src=%22https%3A%2F%2Fdbscthumb-phinf.pstatic.net%2F2512_000_1%2F20130825213141805_R5CXRESO9.jpg%2Fi-c-68.jpg%3Ftype%3Dm4500_4500_fst_n%26wm%3DY%22&twidth=354&theight=80&opts=17"
-                                      />
-                                      <br />
-                                      <span>노랑</span>
-                                      <br />
-                                      <span>(Yellow)</span>
-                                    </td>
-                                  </tr>
-                                </v-card-text>
-                                <v-divider></v-divider>
-                                <v-card-actions>
-                                  <v-btn class="apply-button">적용</v-btn>
-                                  <v-btn color="blue darken-1" text @click="colordialog = false">취소</v-btn>
-                                </v-card-actions>
-                              </v-card>
-                            </v-dialog>
-                          </v-row>
-                        </div>
-                        <br />
-                        <span class="font-color-blue">
-                          <i class="xi-caret-up"></i> 베스트 탭, 카테고리 페이지 및 검색페이지의 필터에 적용되며, 선택하지 않으실 경우 색상필터를 사용한 검색결과에 노출되지 않습니다.
-                          <br />
-                        </span>
-                        <span class="font-color-blue">
-                          <i class="xi-caret-up"></i> 썸네일 이미지의 1개 색상만 선택 가능하며, 뷰티 및 다이어트 카테고리의 상품의 경우 선택하실 수 없습니다.
-                        </span>
-                      </div>
-                    </td>
-                  </tr>
-
-                  <!-- 스타일필터 -->
-
-                  <tr>
-                    <td class="style-filter default-info-left">
-                      스타일필터
-                      <span class="font-color-red">*</span>
-                    </td>
-                    <div class="style-filter-label">
-                      <label>
-                        <div class="radio">
-                          <span class="checked">
-                            <input
-                              type="radio"
-                              name="styleCode"
-                              class="ui-control"
-                              disabled="disabled"
-                              checked
-                            />
-                          </span>
-                        </div>선택안함
-                      </label>
-                      <label>
-                        <div class="radio">
-                          <span class="checked">
-                            <input
-                              type="radio"
-                              name="styleCode"
-                              class="ui-control"
-                              disabled="disabled"
-                            />
-                          </span>
-                        </div>심플베이직
-                      </label>
-                      <label >
-                        <div class="radio">
-                          <span class="checked">
-                            <input
-                              type="radio"
-                              name="styleCode"
-                              class="ui-control"
-                              disabled="disabled"
-                            />
-                          </span>
-                        </div>러블리
-                      </label>
-                      <label >
-                        <div class="radio">
-                          <span class="checked">
-                            <input
-                              type="radio"
-                              name="styleCode"
-                              class="ui-control"
-                              disabled="disabled"
-                            />
-                          </span>
-                        </div>페미닌
-                      </label>
-                      <label >
-                        <div class="radio">
-                          <span class="checked">
-                            <input
-                              type="radio"
-                              name="styleCode"
-                              class="ui-control"
-                              disabled="disabled"
-                            />
-                          </span>
-                        </div>캐주얼
-                      </label>
-                      <label >
-                        <div class="radio">
-                          <span class="checked">
-                            <input
-                              type="radio"
-                              name="styleCode"
-                              class="ui-control"
-                              disabled="disabled"
-                            />
-                          </span>
-                        </div>섹시글램
-                      </label>
-                    </div>
-                    <span class="font-color-blue style-filter-span" >
-                      <i class="xi-caret-up"></i> 베스트 탭, 카테고리 페이지 및 검색페이지의 필터에 적용되며, 선택하지 않으실 경우 색상필터를 사용한 검색결과에 노출되지 않습니다.
-                    </span>
-                      <br />
-                        <span class="font-color-blue style-filter-span" >
-                      <i class="xi-caret-up"></i> 1개 스타일만 선택 가능하며, 브랜드 및 뷰티&다이어트 카테고리 상품의 경우 선택하실 수 없습니다.
-                    </span>
-                  </tr>
-                  <!-- 연령 필터 테이블 -->
-                  <tr>
-                    <td class="default-info-left">
-                      연령필터
-                      <span class="font-color-red">*</span>
-                    </td>
-                    <td>
-                      <div class="col-md-12">
-                        <button type="button" class="age-filter">--연령필터 데이터받을곳--</button>
-                        <br />
-                        <span class="font-color-blue">
-                          <i class="xi-caret-up"></i> 베스트 탭, 카테고리 페이지 및 검색페이지의 필터에 적용되며, 셀러 정보 셀러태그정보의 연령대가 자동으로 적용됩니다.
-                          <br />
-                          <i class="xi-caret-up"></i> 브랜드 및 뷰티 다이어트 카테고리 상품의 경우 적용되지 않습니다.
-                          <br />
-                          <i class="xi-caret-up"></i> 해당 정보는 상품단위로 적용이 불가능하며(셀러 단위로만 가능), 수정을 원하실 경우 카카오 플러스친구 '브랜디셀러'로 연락 부탁드립니다.
-                        </span>
-                      </div>
-                    </td>
-                  </tr>
-                  <!-- 상세 상품정보 테이블 -->
-                  <tr>
-                    <td class="default-info-left">
-                      상세 상품정보
-                      <span class="font-color-red">*</span>
-                    </td>
-                    <ckeditor
-                      :editor="editor"
-                      v-model="description_detail"
-                      :config="editorConfig"
-                      class="ckeditor"
-                    ></ckeditor>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- 옵션정보 옵션 테이블 -->
-          <div class="container">
-            <div class="box">
-              <div id="app">
-                <div class="ProductRegist">
-                  <div class="page_content">
-                    <div class="portlet">
-                      <div class="portlet-title">
-                        <div class="caption">
-                          <i class="xi-pen-o"></i>
-                          <span>옵션정보</span>
-                        </div>
-                      </div>
+  <div class="prWrap">
+    <div v-if="colorModal" class="wrap"></div>
+    <div v-if="sellersModal" class="wrap"></div>
+    <div class="slTitleBox">
+      <div class="slTitle">상품 등록</div>
+      <div class="slSubTitle">상품 정보 등록</div>
+    </div>
+    <div class="slCategory">
+      <i class="xi-home">
+        상품 관리
+        <i class="xi-angle-right-min">상품 관리</i>
+        <i class="xi-angle-right-min">상품 등록</i>
+      </i>
+    </div>
+    <div class="cmpWrap">
+      <div class="cmpTitle">
+        <i class="xi-user">기본 정보</i>
+      </div>
+      <div class="cmpTable">
+        <!-- 셀러검색모달 -->
+        <div v-if="sellersModal === true" class="sellersModal">
+          <div class="slTitleBox">
+            <div class="slTitle">셀러 선택</div>
+            <div class="titleLine"></div>
+            <i class="xi-info">상품을 등록할 셀러를 선택해주세요. (검색 10건)</i>
+            <div class="inputBox">
+              <div class="text">셀러검색</div>
+              <div>
+                <div @click="sellersInputModal = !sellersInputModal" class="inputSelect">
+                  {{sellerInfo.name? sellerInfo.name: "Select..."}}
+                  <input
+                    v-if="sellersInputModal === true"
+                    type="text"
+                    @input="searchSellerList($event.target.value)"
+                    @click="$event.stopPropagation()"
+                  />
+                  <div v-if="sellersInputModal === true" class="searchResult">
+                    <div v-for="seller in sellerList" :key="seller.id">
                       <div
-                        class="row"
-                      >
-                        <div class="col-md-12">
-                          <table
-                            class="table-in-portlet"
-                          >
-                            <tbody>
-                              <tr>
-                                <td width="15%" class="seller-choice default-info-left">
-                                  옵션 설정
-                                  <span class="font-color-red">*</span>
-                                </td>
-                                <td >
-                                  <div class="radio-list">
-                                    <label >
-                                      <div class="radio">
-                                        <span class="checked">
-                                          <input type="radio" name="sell" value="Y" />
-                                        </span>
-                                      </div>기본 옵션
-                                    </label>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td width="15%" class="seller-choice default-info-left">옵션 정보</td>
-                                <td colspan="3">
-                                  <div class="basic-option-wrap">
-                                    <table class="table table-bordered">
-                                      <thead>
-                                        <tr class="heading">
-                                          <th>옵션항목</th>
-                                          <th>상품옵션명</th>
-                                          <th>옵션값 추가/삭제</th>
-                                          
-                                        </tr>
-                                      </thead>
-                                      <tbody>
-                                        <tr class="option-group-1">
-                                          <td width="15%" rowspan="1">색상</td>
-                                          <td>
-                                                <b-form-select v-model="color_id" :options="optionColor" size="sm" class="mt-1"></b-form-select>
-
-                                          </td>
-
-                                          <td width="15%">
-                                            <div class="text-center">
-                                              <v-btn class="mx-2" fab dark small color="indigo">
-                                                <v-icon dark>mdi-plus</v-icon>
-                                              </v-btn>
-                                              <v-btn class="mx-2" fab dark small color="primary">
-                                                <v-icon dark>mdi-minus</v-icon>
-                                              </v-btn>
-                                            </div>
-                                          </td>
-                                        </tr>
-                                        <tr class="option-group-2">
-                                          <td width="15%" rowspan="1">사이즈</td>
-                                          <td>
-                                            <b-form-select v-model="size_id" :options="optionSize" size="sm" class="mt-1"></b-form-select>
-
-                                          </td>
-
-                                          <td width="15%">
-                                            <div class="text-center">
-                                              <v-btn class="mx-2" fab dark small color="indigo">
-                                                <v-icon dark>mdi-plus</v-icon>
-                                              </v-btn>
-                                              <v-btn class="mx-2" fab dark small color="primary">
-                                                <v-icon dark>mdi-minus</v-icon>
-                                              </v-btn>
-                                            </div>
-                                          </td>
-                                        </tr>
-                                      </tbody>
-                                      <tfoot>
-                                        <tr class="heading">
-                                          <td class="vertical-align-middle">재고관리여부</td>
-                                          <td colspan="6" class="vertical-align-middle">
-                                            <div class="stock-div">
-                                              <label>
-                                                <div class="radio">
-                                                  <span class="checked">
-                                                    <input
-                                                    v-model="stock"
-                                                    value="1"
-                                                      type="radio"
-                                                    />
-                                                  </span>
-                                                </div>재고 수량 관리 안함
-                                              </label>
-                                              <label class="stock-amount">
-                                                <div class="radio">
-                                                  <span>
-                                                    <input 
-                                                      v-model="stock"
-                                                    value="0" 
-                                                    type="radio" />
-                                                  </span>
-                                                </div>재고 수량 관리
-                                              </label>
-                                            </div>
-                                          </td>
-                                        </tr>
-                                      </tfoot>
-                                    </table>
-
-                                    <v-btn class="apply-button"  v-on="on">적용</v-btn>
-
-                                    <table class="table table-bordered">
-                                   <tr>
-                                      <td class="product-option-info"> 상품 옵션정보</td>
-                                         <td class="product-option-info" rowspan="2"> 일반재고 </td>
-                                     </tr>
-
-                                     <tr>
-                                      <td class="product-option-info"> 색상 / 사이즈 </td>
-                                     </tr>
-                                      <tbody>
-                                        <tr>
-                                          <td colspan="11">
-                                            <label>옵션정보를 입력 후 [적용] 버튼을 눌러주세요.</label>
-                                          </td>
-                                        </tr>
-                                      </tbody>
-                                    </table>
-
-                                    <div class="font-color-blue">
-                                      <i class="xi-caret-up"></i>
-                                      도매처옵션명 조합은 최대 100자까지 표시됩니다.
-                                      <br />
-                                    </div>
-                                  </div>
-                                </td>
-                                <span class="font-color-blue"></span>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
+                        class="sellerlist"
+                        @click="selectSeller(seller.id, seller.name)"
+                      >{{searchSeller.length ? seller.name : ""}}</div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <!-- 판매정보 옵션 테이블 -->
-          <div class="container">
-            <div class="box">
-              <div id="app">
-                <div class="ProductRegist">
-                  <div class="page_content">
-                    <div class="portlet">
-                      <div class="portlet-title">
-                        <div class="caption">
-                          <i class="xi-pen-o"></i>
-                          <span>판매정보</span>
-                        </div>
-                      </div>
-                      <div class="row sell-info">
-                        <div class="col-md-12">
-                          <table class="table-in-portlet sell-info">
-                            <tbody>
-                              <tr>
-                                <td
-                                  width="15%"
-                                  height="50px"
-                                  class="seller-choice default-info-left "
-                                >도매원가</td>
-                                <td class="td-wholesale">
-                                  <div class="input-group">
-                                    <input
-                                      class="wholesale seller-info-input"
-                                      type="text"
-                                      maxlength="8"
-                                      placeholder="0"
-                                    />
-                                  </div>
-                                  <span class="input-group-addon">원</span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td
-                                  width="15%"
-                                  height="50px"
-                                  class="seller-choice default-info-left"
-                                >
-                                  판매가
-                                  <span class="font-color-red">*</span>
-                                </td>
-                                <td class="td-wholesale">
-                                  <div class="input-group">
-                                    <input
-                                      v-model="price"
-                                      class="wholesale seller-info-input"
-                                      type="text"
-                                      maxlength="8"
-                                      placeholder="0"
-                                    />
-                                  </div>
-                                  <span class="input-group-addon">원</span>
-                                    <span class="font-color-blue">
-                                  <i class="xi-caret-up"></i>
-                                  판매가는 원화기준 10원 이상이며 가격 입력 시 10원 단위로 입력해 주세요.
-                                </span>
-                                </td>
-                              
-                              </tr>
-                              <tr>
-                                <td
-                                  width="15%"
-                                  height="50px"
-                                  class="seller-choice default-info-left"
-                                >
-                                  할인정보
-                                  <span class="font-color-red">*</span>
-                                </td>
-                                <td colspan="3">
-                                  <div class="col-md-6">
-                                    <table>
-                                      <tbody>
-                                        <tr >
-                                          <td >할인율</td>
-                                          <td >할인가</td>
-                                        </tr>
-                                        <tr >
-                                          <td class=" td-background">
-                                            <div class="discount-rate">
-                                              <input
-                                              v-model="discount_rate"
-                                                placeholder="0"
-                                                class="discount-input"
-                                                type="text"
-                                              />
-                                              <span class="discount-persent">%</span>
-                                            </div>
-                                          </td>
-                                          <td class=" td-background">
-                                            <div>
-                                              <input
-                                              v-model="discount_price"
-                                                class="discount-input"
-                                                type="text"
-                                                placeholder="0"
-                                                />원
-                                              <button class="discount-button" type="button">할인판매가적용</button>
-                                            </div>
-                                          </td>
-                                        </tr>
-
-                                     
-                                        <tr >
-                                          <td class=" td-background">
-                                           할인판매가
-                                          </td>
-                                          <td class=" td-background">
-                                            <div>
-                                              <input
-                                              v-model="discount_price"
-                                                class="discount-input"
-                                                type="text"
-                                                placeholder="0"
-                                                />원
-                                              
-                                            </div>
-                                          </td>
-                                        </tr>
-                                        <tr>
-                                          <td>할인기간</td>
-                                          <td class="product_info">
-                                            <div class="radio-list">
-                                              <label>
-                                                <div class="radio">
-                                                  <button>
-                                                    <input
-                                                      type="radio"
-                                                      name="informationNo2"
-                                                      value="Y"
-                                                      checked="checked"
-                                                      v-on:click="thatisHidden = false"
-                                                    />
-                                                    무기한
-                                                  </button>
-                                                </div>
-                                              </label>
-
-                                              <label>
-                                                <button>
-                                                  <input
-                                                    type="radio"
-                                                    name="informationNo2"
-                                                    v-on:click="thatisHidden = true"
-                                                  />
-                                                  기간설정
-                                                </button>
-                                              </label>
-                                            </div>
-                                            <div class="input-directly" v-if="thatisHidden">
-                                              <span>
-                                                 <div>
-                                                  <label for="datepicker-invalid"> 시작일 </label>
-                                                  <b-form-datepicker v-model="discount_start" id="datepicker-invalid" :state="false" class="mb-2"></b-form-datepicker>
-                                                  <label for="datepicker-valid"> 종료일 </label>
-                                                  <b-form-datepicker v-model="discount_end" id="datepicker-valid" :state="true"></b-form-datepicker>
-                                                </div>
-                                              </span>
-                                              <br>
-                                              <span class="font-color-red">
-                                                   * 할인기간을 설정시 기간만료되면 자동으로 정상가로 변경 됩니다. <br>
-                                                </span>
-                                            </div>
-                                          </td>
-                                        </tr>
-                                      </tbody>
-                                    </table>
-                                    <span class="font-color-blue">
-                                      <i class="xi-caret-up"></i> 할인판매가 = 판매가 * 할인율
-                                      <br />
-                                      <i class="xi-caret-up"></i> 할인 판매가 적용 버튼을 클릭 하시면 판매가 정보가 자동 계산되어집니다.
-                                      <br />
-                                      <i class="xi-caret-up"></i> 할인 판매가는 원화기준 10원 단위로 자동 절사됩니다.
-                                    </span>
-                                  </div>
-                                </td>
-                              </tr>
-
-                              <tr class="tr-wholesale default-info-left">
-                                <td
-                                  width="15%"
-                                  class="seller-choice default-info-left"
-                                >
-                                  최소판매수량
-                                  <span class="font-color-red">*</span>
-                                </td>
-                                <td>
-                                  <div class="radio-list">
-                                    <label>
-                                      <div class="radio">
-                                        <span class="checked">
-                                          <input v-model="min_sales_unit" value ="1" type="radio"/>
-                                        </span>
-                                      </div>상
-                                    </label>
-                                    <label>
-                                      <div class="radio">
-                                        <span>
-                                          <input class type="radio" disabled />
-                                        </span>
-                                      </div>
-                                    </label>
-                                    <input type="text" class="minimum-amount" /> 개 이상
-                                    <span class="font-color-blue">(20개를 초과하여 설정하실 수 없습니다)</span>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr class="tr-wholesale default-info-left">
-                                <td
-                                  width="15%"
-                                  height="50px"
-                                  class="seller-choice default-info-left"
-                                >
-                                  최대판매수량
-                                  <span class="font-color-red">*</span>
-                                </td>
-                                <td>
-                                  <div class="radio-list">
-                                    <label>
-                                      <div class="radio">
-                                        <span class="checked">
-                                          <input v-model="max_sales_unit" value="20" type="radio"  />
-                                        </span>
-                                      </div>20개
-                                    </label>
-                                    <label>
-                                      <div class="radio">
-                                        <span>
-                                          <input class type="radio"  />
-                                        </span>
-                                      </div>
-                                    </label>
-                                    <input type="text" v-model="max_sales_unit" value="0" /> 개 이상
-                                    <span class="font-color-blue">(20개를 초과하여 설정하실 수 없습니다)</span>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr class="tr-wholesale default-info-left">
-                                <td
-                                  class="seller-choice default-info-left"
-                                >
-                                  상품 태그 관리
-                                  <span class="font-color-red">*</span>
-                                </td>
-                                <td>
-                                  <b-form-tags
-                                    input-id="tags-separators"
-                                    v-model="tag"
-                                    separator=" ,;"
-                                    placeholder="입력해 주세요"
-                                    class="mb-2"
-                                  ></b-form-tags>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div class="titleLine02"></div>
+            <div class="sellersBtn">
+              <div class="cancel" @click="sellersModal = !sellersModal">닫기</div>
+              <div class="selected" @click="sellersModal = !sellersModal">셀러 선택하기</div>
             </div>
           </div>
-          <!-- 등록 취소 버튼 -->
-          <v-col class="text-center">
-            <div class="my-2">
-              <v-btn class="enroll-button" @click="postProduct()">등록</v-btn>
-            </div>
-            <div class="my-2">
-              <v-btn class="cancle-button">취소</v-btn>
-            </div>
-          </v-col>
         </div>
+        <!-- 컬러필터모달 -->
+        <div v-if="colorModal === 1" class="colorModal">
+          <div class="slTitle">색상 선택</div>
+          <div class="titleLine"></div>
+          <div class="colorBox" v-for="color in colors" :key="color.id">
+            <div @click="selectColor(color.id, color.image, color.name)">
+              <img :src="color.image_url" />
+              <div v-model="productDatas.color_filter_id">{{color.name}}</div>
+              <div>({{color.name_eng}})</div>
+
+              <div
+                v-if="productDatas.color_filter_id === color.id && color.id != 13 || productDatas.color_filter_id === color.id &&  color.id != 16 || productDatas.color_filter_id === color.id &&  color.id != 17 || productDatas.color_filter_id === color.id &&  color.id != 18"
+              >
+                <i class="xi-check" style="color: white"></i>
+              </div>
+
+              <div
+                v-if="productDatas.color_filter_id === color.id && productDatas.color_filter_id === color.id &&  color.id === 13 || productDatas.color_filter_id === color.id &&  color.id === 16 || productDatas.color_filter_id === color.id &&  color.id === 17 || productDatas.color_filter_id === color.id &&  color.id === 18"
+              >
+                <i class="xi-check" style="color: black"></i>
+              </div>
+            </div>
+          </div>
+          <div class="titleLine"></div>
+          <div style="text-align:center">
+            <div class="selected" @click="colorModal = 0">적용</div>
+            <div class="cancel" @click="colorModal = 0; productDatas.color_filter_id = 0">취소</div>
+          </div>
+        </div>
+        <v-simple-table>
+          <template>
+            <!-- 테이블 시작 영역 -->
+            <!-- 셀러 상태 테이블 -->
+
+            <tr class="sellerSelect">
+              <th>
+                셀러 선택
+                <i class="xi-pen" />
+              </th>
+              <td>
+                <input
+                  type="text"
+                  placeholder="셀러검색을 해주세요."
+                  v-model="sellerInfo.name"
+                  style="cursor: not-allowed !important;"
+                  disabled
+                />
+                <div @click="sellersModal = !sellersModal" class="btn">셀러검색</div>
+              </td>
+            </tr>
+
+            <!-- 판매여부 -->
+
+            <tr>
+              <th>판매여부</th>
+              <td class="onSaleBox">
+                <div>
+                  <input
+                    v-model="productDatas.on_sale"
+                    type="radio"
+                    id="onSale"
+                    :value="1"
+                    name="saleStatus"
+                  />
+                  <label for="onSale">판매</label>
+                  <input
+                    v-model="productDatas.on_sale"
+                    type="radio"
+                    id="noSale"
+                    :value="0"
+                    name="saleStatus"
+                  />
+                  <label for="noSale">미판매</label>
+                </div>
+                <div>
+                  <i class="xi-info">미판매 선택시 앱에서 Sold Out으로 표시됩니다.</i>
+                </div>
+              </td>
+            </tr>
+
+            <!--진열 여부 -->
+
+            <tr>
+              <th>진열여부</th>
+              <td class="onSaleBox">
+                <div>
+                  <input
+                    v-model="productDatas.on_list"
+                    type="radio"
+                    id="displayed"
+                    :value="1"
+                    name="displayStatus"
+                  />
+                  <label for="displayed">진열</label>
+                  <input
+                    v-model="productDatas.on_list"
+                    type="radio"
+                    id="nodisplayed"
+                    :value="0"
+                    name="displayStatus"
+                  />
+                  <label for="nodisplayed">미진열</label>
+                </div>
+                <div>
+                  <i class="xi-info">미진열 선택시 앱에서 노출되지 않습니다.</i>
+                </div>
+              </td>
+            </tr>
+
+            <!-- 카테고리 -->
+
+            <tr>
+              <th>
+                카테고리
+                <i class="xi-pen" />
+              </th>
+              <td class="categoryBox">
+                <tr>
+                  <th>1차 카테고리</th>
+                  <td>
+                    <select
+                      v-model="firstCateSelected"
+                      @change="getSecondCategory(firstCateSelected)"
+                    >
+                      <option value="0">1차 카테고리를 선택해 주세요.</option>
+                      <option
+                        :value="index"
+                        v-for="(list,index) in firstCate"
+                        :key="list.id"
+                      >{{list.name}}</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <th>2차 카테고리를 선택해 주세요.</th>
+                  <td>
+                    <select 
+                    v-model="secondCateId"
+                    >
+                      <option>2차 카테고리</option>
+                      <option
+                        :value="list.id"
+                        v-for="list in secondCate"
+                        :key="list.id"
+                      >{{list.name}}</option>
+                    </select>
+                  </td>
+                </tr>
+              </td>
+            </tr>
+
+            <!-- 상품 정보 고시 -->
+
+            <tr>
+              <th>
+                상품 정보 고시
+                <i class="xi-pen" />
+              </th>
+              <td class="onSaleBox">
+                <div>
+                  <input
+                    v-model="productDatas.is_detail_reference"
+                    type="radio"
+                    id="detailInfo"
+                    :value="1"
+                    name="infoState"
+                    @click="productInforClick()"
+                  />
+                  <label for="detailInfo">상품상세 참조</label>
+                  <input
+                    v-model="productDatas.is_detail_reference"
+                    type="radio"
+                    id="writeInfo"
+                    :value="0"
+                    name="infoState"
+                  />
+                  <label for="writeInfo">직접입력</label>
+                  <div v-if="productDatas.is_detail_reference === 0" class="detailBox">
+                    <div class="inputBox">
+                      <div class="inputTitle">제조사(수입사):</div>
+                      <input v-model="productDatas.manufacture.manufacturer" type="text" />
+                    </div>
+                    <div class="inputBox">
+                      <div class="inputTitle">제조일자:</div>
+                      <!-- <input v-model="productDatas.manufacture.manufacture_date" type="text" /> -->
+                          <b-form-datepicker
+                            id="datepicker-placeholder"
+                            v-model="productDatas.manufacture.manufacture_date"
+                            placeholder="클릭해주세요"
+                            local="kr"
+                            style="width:250px">
+                            </b-form-datepicker>
+                    </div>
+                    <div class="inputBox">
+                        <div class="inputTitle">원산지:</div>
+                          <select
+                          v-model="manufacture_country_id"
+                          >
+                            <!-- <option value="0">원산지</option> -->
+                            <option
+
+                              :value="list.id"
+                              v-for="list in informs[0].country"
+                              :key="list.id"
+                            >{{list.name}}</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- 상품명 -->
+
+            <tr>
+              <th>
+                상품명
+                <i class="xi-pen" />
+              </th>
+              <td>
+                <div class="box">
+                  <input type="text" v-model="productDatas.name" />
+                  <div>
+                    <i class="xi-info">미진열 선택시 앱에서 노출되지 않습니다.</i>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- 한줄 상품 설명 -->
+
+            <tr>
+              <th>한줄 상품 설명</th>
+              <td>
+                <input type="text" v-model="productDatas.simple_description" />
+              </td>
+            </tr>
+            <!-- 이미지 등록 -->
+              <!-- <tr>
+                <th>이미지 등록</th>
+                <td>
+                  <input type="text" placeholder="이미지 url" v-model="productDatas.description_short" />
+                </td>
+              </tr> -->
+            <!-- 상세 상품 설명 -->
+            <tr>
+              <th>
+                상세 상품 정보
+                <i class="xi-pen" />
+              </th>
+              <td class="editorBox">
+                <vue-editor v-model="productDatas.description_detail"></vue-editor>
+              </td>
+            </tr>
+            <!-- 색상필터(썸네일 이미지) -->
+          </template>
+        </v-simple-table>
       </div>
     </div>
+    <div class="cmpWrap">
+      <div class="cmpTitle">
+        <i class="xi-user">태그 정보</i>
+      </div>
+      <div class="cmpTable">
+        <!-- 셀러검색모달 -->
+        <!-- 컬러필터모달 -->
+        <v-simple-table>
+          <template>
+            <tr>
+              <th>
+                색상필터(썸네일 이미지)
+                <i class="xi-pen" />
+              </th>
+              <td class="onSaleBox">
+                <div style="width: 100%">
+                  <input
+                    v-model="colorModal"
+                    :value="0"
+                    type="radio"
+                    id="unuse"
+                    name="colorFilter"
+                    checked
+                  />
+                  <label for="unuse">사용안함</label>
+                  <input
+                    @click="getColors()"
+                    v-model="colorModal"
+                    :value="1"
+                    type="radio"
+                    id="using"
+                    name="colorFilter"
+                  />
+                  <label @click="getColors()" for="using">사용</label>
+                  <input class="colorInput" type="text" disabled :value="selectedColor[2]" />
+                  <div>
+                    <i
+                      class="xi-info"
+                    >베스트 탭, 카테고리 페이지 및 검색페이지의 필터에 적용되며, 선택하지 않으실 경우 색상필터를 사용한 검색결과에 노출되지 않습니다.</i>
+                  </div>
+                  <div>
+                    <i class="xi-info">썸네일 이미지의 1개 색상만 선택 가능하며, 뷰티 및 다이어트 카테고리의 상품의 경우 선택하실 수 없습니다.</i>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <!-- 색상필터 -->
+            <!-- 스타일필터 -->            
+              <tr>
+                <th>
+                  스타일필터
+                  <i class="xi-pen" />
+                </th>
+                <td class="onSaleBox">
+                  <div>
+                    <input
+                      v-model="productDatas.style_filter_id"
+                      type="radio"
+                      id="displayed"
+                      @click="styleFilter()"
+                    />
+                    
+                    <label for="displayed">선택안함</label>
+                    <input
+                      v-model="productDatas.style_filter_id"
+                      type="radio"
+                      id="nodisplayed"
+                      v-bind:value="1"
+                    />
+                    <label for="nodisplayed">심플베이직</label>
+                    <input
+                      v-model="productDatas.style_filter_id"
+                      type="radio"
+                      id="nodisplayed"
+                      v-bind:value="2"
+                    />
+                    <label for="nodisplayed">러블리</label>
+                    <input
+                      v-model="productDatas.style_filter_id"
+                      type="radio"
+                      id="nodisplayed"
+                      v-bind:value="3"
+                    />
+                    <label for="nodisplayed">페미닌</label> 
+                    <input
+                      v-model="productDatas.style_filter_id"
+                      type="radio"
+                      id="nodisplayed"
+                      v-bind:value="4"
+                    />
+                    <label for="nodisplayed">캐주얼</label>  
+                    <input
+                      v-model="productDatas.style_filter_id"
+                      type="radio"
+                      id="nodisplayed"
+                      v-bind:value="5"
+                    />
+                    <label for="nodisplayed">섹시글램</label>                                                                                
+                  </div>
+                  <div>
+                    <i class="xi-info">베스트 탭, 카테고리 페이지 및 검색페이지의 필터에 적용되며, 선택하지 않으실 경우 스타일필터를 사용한 검색결과에 노출되지 않습니다.</i>
+                  </div>
+                </td>
+              </tr>           
+            <!-- 상품 태그 관리 -->
+              <tr>
+                <th>상품 태그 관리</th>
+                <td>
+                  <div class="box">
+                    <b-form-tags
+                      value="value"
+                      input-id="tags-separators"
+                      v-model="tag"
+                      @input="inputTag()"
+                      separator=","
+
+                      placeholder="입력해 주세요"
+                      class="mb-2"
+                      tag-variant="primary"
+                      ></b-form-tags> 
+                  </div>           
+                </td>           
+              </tr>          
+          </template>
+        </v-simple-table>
+      </div>
+    </div>
+    <div class="cmpWrap">
+      <div class="cmpTitle">
+        <i class="xi-user">옵션 정보</i>
+      </div>
+      <div class="cmpTable">
+        <v-simple-table>
+          <template v-slot:default>
+            <tr>
+              <th>
+                옵션설정
+                <i class="xi-pen" />
+              </th>
+              <td>
+                <input style="width: 10px; margin-right: 10px" type="radio" id="option" checked />
+                <label for="option">기본옵션</label>
+              </td>
+            </tr>
+
+            <!-- 옵션정보 테이블 시작 -->
+
+            <tr class="optionTable" style="background-color: white !important">
+              <th>옵션정보</th>
+              <td class="tdBox">
+                <v-simple-table>
+                  <template v-slot:default>
+                    <thead>
+                      <tr class="headColor">
+                        <th class="headTh" style="width: 20%;">옵션 항목</th>
+                        <th class="headTh">상품 옵션명</th>
+                        <th class="headTh" style="width: 20%;">옵션값 추가/삭제</th>
+                      </tr>
+                    </thead>
+
+                    <tr class="thColor" style="background-color: white !important">
+                      <th class="thLine">색상</th>
+                      <td v-for="(color, index) in invenColorsCount" :key="color.id">
+                        <div class="optionModal">
+                          <div class="textDiv" @click="colorModalHandle(index)">
+                            <div
+                              class="textBox"
+                            >{{allOptions.color[index]?allOptions.color[index] : "색상 옵션을 선택해 주세요."}}</div>
+                            <input
+                              @click=" $event.stopPropagation()"
+                              v-if="invenColorsCount[index].state === true"
+                              type="text"
+                            />
+                            <div v-if="invenColorsCount[index].state === true" class="optionList">
+                              <p
+                                class="listText"
+                                @click="selectOptionColor(optionColor.name,'color',index)"
+                                v-for="optionColor in informs[0].option_color"
+                                :key="optionColor.id"
+                              >{{optionColor.name}}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <th class="thLine">
+                        <div
+                          v-if="invenColorsCount.length > 1"
+                          class="icon"
+                          @click="minusColorOption()"
+                        >
+                          <i class="xi-minus"></i>
+                        </div>
+                        <div class="icon" @click="plusColorOption()">
+                          <i class="xi-plus"></i>
+                        </div>
+                      </th>
+                    </tr>
+                    <tr class="thColor" style="background-color: white !important">
+                      <th>사이즈</th>
+                      <td
+                        style="border-bottom: 1px solid lightgray; border-top-width: 0;"
+                        v-for="(size, index) in invenSizesCount"
+                        :key="size.id"
+                      >
+                        <div class="optionModal">
+                          <div class="textDiv" @click="sizeModalHandle(index)">
+                            <div
+                              class="textBox"
+                            >{{allOptions.size[index]?allOptions.size[index] : "사이즈 옵션을 선택해 주세요."}}</div>
+                            <input v-if="invenSizesCount[index].state === true" type="text" />
+                            <div v-if="invenSizesCount[index].state === true" class="optionList">
+                              <p
+                                class="listText"
+                                @click="selectOptionColor(optionSize.name,'size',index)"
+                                v-for="optionSize in informs[0].option_size"
+                                :key="optionSize.id"
+                              >{{optionSize.name}}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <th>
+                        <div
+                          class="icon"
+                          v-if="invenSizesCount.length > 1"
+                          @click="minusSizeOption()"
+                        >
+                          <i class="xi-minus"></i>
+                        </div>
+                        <div class="icon" @click="plusSizeOption()">
+                          <i class="xi-plus"></i>
+                        </div>
+                      </th>
+                    </tr>
+                  </template>
+                </v-simple-table>
+              </td>
+              <!-- <td>
+                    <tr>
+                      <th>재고관리여부</th>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input
+                          v-model="productDatas.is_displayed"
+                          type="radio"
+                          id="noinventory"
+                          :value="1"
+                          name="inventory"
+                        />
+                        <label for="noinventory">재고 수량 관리 안함</label>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input
+                          v-model="productDatas.is_displayed"
+                          type="radio"
+                          id="inventroy"
+                          :value="1"
+                          name="inventory"
+                        />
+                        <label for="inventroy">재고 수량 관리</label>
+                      </td>
+                    </tr>
+              </td>-->
+              <div class="optionSelected" @click="makingOptions()">
+                <i class="xi-check">적용</i>
+              </div>
+              <v-simple-table class="reusltTableWrap">
+                <template v-slot:default>
+                  <tr class="resultTable">
+                    <th class="resultTableTh">
+                      <v-simple-table>
+                        <template v-slot:default>
+                          <tr>
+                            <th class="headTh" style="background-color:#eee;" colspan="2">상품 정보 옵션</th>
+                            <th class="headTh" style="background-color:#eee;" rowspan="2">일반 재고</th>
+                            <th class="headTh" style="background-color:#eee;" rowspan="2"></th>
+                          </tr>
+                          <tr>
+                            <th class="headTh">색상</th>
+                            <th class="headTh">사이즈</th>
+                          </tr>
+                          <tr
+                            style="background-color:#eee"
+                            v-for="(option, index) in makingOptionsData"
+                            :key="option.id"
+                          >
+                            <th>{{option.color_name}}</th>
+                            <th>{{option.size_name}}</th>
+                            <th class="invenControl">
+                              <input :name="`inven${index}`" id="noInven" type="radio" />
+                              <label :for="`inven${index}`">재고관리 안함</label>
+
+                              <input :name=" `inven${index}`" id="inven" type="radio" />
+
+                              <label :for="`inven${index}`">
+                                <input v-model="makingOptionsData[index].stock" type="text" />개
+                              </label>
+                            </th>
+                            <th class="optionMinusBox">
+                              <div class="optionMinus" @click="minusMakingOptions(index)">
+                                <i class="xi-minus"></i>
+                              </div>
+                            </th>
+                          </tr>
+                        </template>
+                      </v-simple-table>
+                    </th>
+                  </tr>
+                  <div style="background-color:white;">
+                    <i class="xi-info">도매처옵션명 조합은 최대 100자까지 표시됩니다.</i>
+                  </div>
+                </template>
+              </v-simple-table>
+            </tr>
+          </template>
+        </v-simple-table>
+      </div>
+    </div>
+    <div class="cmpWrap">
+      <div class="cmpTitle">
+        <i class="xi-user">판매 정보</i>
+      </div>
+      <div class="cmpTable">
+        <v-simple-table>
+          <template>
+            <tr class="originPriceTable">
+              <th>
+                판매가
+                <i class="xi-pen" />
+              </th>
+              <td>
+                <input v-model="productDatas.price" type="text" />
+                <div class="wonBox">원</div>
+              </td>
+              <div>
+                <i class="xi-info">판매가는 원화기준 10원 이상이며 가격 입력 시 10원 단위로 입력해 주세요.</i>
+              </div>
+            </tr>
+
+            <tr class="originPriceTable">
+              <th>할인 정보</th>
+
+              <td class="discountTable">
+                <v-simple-table>
+                  <template>
+                    <tr>
+                      <th>할인율</th>
+                      <th>할인가</th>
+                    </tr>
+                    <tr>
+                      <th>
+                        <input
+                          class="discountInput"
+                          v-model="productDatas.discount_rate"
+                          type="text"
+                        />
+                        <div class="wonBox">%</div>
+                      </th>
+                      <th>
+                        <div>{{discountPrice > 0 ? discountPrice : ""}}</div>
+                        <div class="discountBtn" @click="discountClick">할인 판매가 적용</div>
+                      </th>
+                    </tr>
+                    <tr>
+                      <th>할인판매가</th>
+                      <th>{{changedPrice > 0 ? changedPrice : ""}}</th>
+                    </tr>
+                    <tr>
+                      <th>할인기간</th>
+                      <th>
+              <td class="onSaleBox">
+                <div>
+                  <input
+                    v-model="productDatas.is_detail_reference_2"
+                    type="radio"
+                    id="detailInfo"
+                    :value="1"
+                    name="infoState"
+                    @click="discountDateClick()"
+                  />
+                  <label for="detailInfo">무기한</label>
+                  <input
+                    v-model="productDatas.is_detail_reference_2"
+                    type="radio"
+                    id="writeInfo"
+                    :value="0"
+                    name="infoState"
+                  />
+                  <label for="writeInfo">기간설정</label>
+                  <div v-if="productDatas.is_detail_reference_2 === 0" class="detailBox"
+                  >
+                    <div class="inputBox">
+                        <div class="inputTitle"></div>
+                            <b-form-datepicker
+                              id="datepicker-placeholder2"
+                              v-model="discount_start"
+                              placeholder="클릭해주세요"
+                              local="kr"
+                              ></b-form-datepicker>
+                            <span class="span-input-group"> ~ </span>
+                            <b-form-datepicker
+                              id="datepicker-placeholder3"
+                              v-model="discount_end"
+                              placeholder="클릭해주세요"
+                              local="kr"
+                              >
+                            </b-form-datepicker>                        
+                    </div>
+                  </div>
+                </div>
+              </td>
+                      </th>
+                    </tr>
+                  </template>
+                </v-simple-table>
+              </td>
+              <div>
+                <i class="xi-info">할인판매가 = 판매가 * 할인율</i>
+              </div>
+              <div>
+                <i class="xi-info">할인 판매가 적용 버튼을 클릭 하시면 판매가 정보가 자동 계산되어집니다.</i>
+              </div>
+              <div>
+                <i class="xi-info">할인 판매가는 원화기준 10원 단위로 자동 절사됩니다.</i>
+              </div>
+            </tr>
+            <tr class="originPriceTable test">
+              <th>최소 판매 수량</th>      
+              <td>
+                <input v-model="min_sales_unit" name="minQuantity" class="radioBtn" :value ="1" type="radio"/>
+                <label class="radioLabel">1개 이상</label>
+                <input class="radioBtn" name="minQuantity" type="radio" />
+                <label class="radioLabel">
+                  <input v-model="min_sales_unit" type="text" class="radioInput" /> 
+                  개 이상</label>
+                <span>(20개를 초과하여 설정하실 수 없습니다)</span>
+              </td>
+            </tr>
+            <tr class="originPriceTable test">
+              <th>최대 판매 수량</th>
+              <td>
+                <input v-model="max_sales_unit" class="radioBtn" name="maxQuantity" :value="20" type="radio">
+                <label class="radioLabel">20개</label>
+                <input class="radioBtn" name="maxQuantity" type="radio" />
+                <label class="radioLabel">
+                  <input v-model="max_sales_unit" class="radioInput" type="text" />
+                  개 이하</label>
+                <span>(20개를 초과하여 설정하실 수 없습니다)</span>
+              </td>
+            </tr>
+
+          </template>
+        </v-simple-table>
+      </div>
+    </div>
+
+    <!-- 판매정보 시작 -->
+
+    <!-- 등록 취소 버튼 -->
+    <v-col class="text-center">
+      <div class="my-2">
+        <v-btn
+          class="enroll-button"
+          @click="test01()"
+          >등록</v-btn>
+      </div>
+      <div class="my-2">
+        <v-btn class="cancle-button">취소</v-btn>
+      </div>
+    </v-col>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-import { JH_URL } from "../../config/urlConfig";
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import Datepicker from 'vuejs-datepicker';
+import axios from "axios";
+import { VueEditor } from "vue2-editor";
+import { URL, JA_URL } from "../../config/urlConfig";
 
 export default {
-  el: `#app`,
-  components: {},
+  components: {
+    VueEditor
+  },
   data() {
-    return {      
-      text: '',
-      colordialog: false,
-      dialog: false,
-      message: 'Default Message',
-      isHidden: false,
-      thatisHidden: false,
-      thisisHidden : false,
-      key: '',
-      selected: null,
-      // ----------상품등록 post 데이터----------------
-      seller_id: "",      
-      on_sale: "1",
-      on_list: "1",
-      first_category_id: "",
-      second_category_id: "",
-      manufacturer: "",
-      manufacture_date: "",
-      manufacture_country_id: "",
-      name: "",
-      description_short: "",
-      description_detail:"",
-      option: [
-        {
-          color_id: "",
-          size_id: "",
-          stock: "",
+    return {
+      infoDatas: [],
+      content: "",
+
+      sellersModal: false,
+      sellersInputModal: false,
+      sellerList: [],
+      sellerInfo: { id: "", name: "" },
+      searchSeller: "",
+
+      firstCate: [],
+      firstCateSelected: "",
+      firstCateId: "",
+
+      secondCate: [],
+      secondCateId: "", 
+
+      colorModal: 0,
+      colors: [],
+      selectedColor: [],
+
+      invenColorsCount: [{ state: false }],
+      invenSizesCount: [{ state: false }],
+
+      informs: [],
+
+      optionColorModal: false,
+      optionColors: [],
+      optionSizes: [],
+      allOptions: { color: [], size: [] },
+      makingOptionsData: [],
+      invenState: null,
+      test: 0,
+
+      discountPrice: "",
+      changedPrice: "",
+
+      manufacture_country_id: null,
+
+      max_sales_unittag: [],
+      postTag: [],
+      min_sales_unit: "",
+      max_sales_unit: "",
+      discount_start : "",
+      discount_end : "",
+      productDatas: {
+        seller_id: "",
+        on_sale: 1,
+        on_list: 1,
+        first_category_id: "0",
+        second_category_id: "",
+        is_detail_reference: 1,
+        manufacture: {
+          manufacturer: null,
+          manufacture_date: null
         },
-      ],
-      price: "",
-      discount_rate: null,
-      discount_price: null,
-      discount_start: null,
-      discount_end: null,
-      min_sales_unit : "1",
-      max_sales_unit : "20",
-      tag : [],
-      options: [
-        { value: null, text: '1차 카테고리를 선택해주세요' },
-        { value: '아우터', text: '아우터' },
-        { value: '상의', text: '상의' },
-        { value: '스커트', text: '스커트' },
-        { value: '바지', text: '바지' },
-        { value: '원피스', text: '원피스' },
-        { value: '신발', text: '신발' },
-        { value: '가방', text: '가방' },
-        { value: '잡화', text: '잡화' },
-        { value: '주얼리', text: '주얼리' },
-        { value: '라이프웨어', text: '라이프웨어' },
-        { value: '빅사이즈', text: '빅사이즈' },
-      ],
-        secondOptions: [
-        { value: null, text: '2차 카테고리를 선택해주세요' },
-        { value: '자켓', text: '자켓' },
-        { value: '가디건', text: '가디건' },
-        { value: '코트', text: '코트' },
-        { value: '점퍼', text: '점퍼' },
-        { value: '패딩', text: '패딩' },
-        { value: '무스탕/퍼', text: '무스탕/퍼' },
-        { value: '기타', text: '기타' },
-      
-      ],
-      conturys: [
-          { value: null, text: '국가를 선택해 주세요' },
-          { value: '대한민국', text: '대한민국' },
-          { value: '베트남', text: '베트남' },
-          { value: '중국', text: '중국' },
-          { value: '기타', text: '기타' },
-        ]
-      ,
-        optionColor: [
-          { value: null, text: '색상을 선택해 주세요' },
-          { value: '검정', text: '검정' },
-          { value: '초록', text: '초록' },
-          { value: '노랑', text: '노랑' },
-          { value: '기타', text: '기타' },
-        ],
-          optionSize: [
-          { value: null, text: '사이즈을 선택해 주세요' },
-          { value: 's', text: 's' },
-          { value: 'm', text: 'm' },
-          { value: 'l', text: 'l' },
-          { value: '기타', text: '기타' },
-        ],
-      url: null,
-      editor: ClassicEditor,
-      editorConfig: {
-      },
-      date: null,
-      date1: null,
-      dateFormatted: null,
-      value: [] ,
-      // color_filter_id: "",
-      // style_filter_id: "",
-     };
+        name: "",
+        description_short: "",
+        color_filter_id: 0,
+        style_filter_id: "",
+        description_detail: "",
+        options: this.makingOptionsData,
+        wholesale_price: "",
+        price: "",
+        dismax_sales_unitcount_rate: "",
+        // discount_start: "2020-06-01 08:30:00",
+        // discount_end: "2020-06-03 23:59:59",
+        // max_sales_unit: "",
+        // min_sales_unit: ""
+        // tags: ["태그88", "태그97", "태그94"]
+      }
+    };
   },
-  computed: {
-    computedDateFormatted() {
-      return this.formatDate(this.date);
-    },
-      
-  },
-  watch: {
-    date(val) {
-      this.dateFormatted = this.formatDate(this.date);
-    },
+  mounted: function() {
+    // this.getListDatas();
+    // this.getOptionColors();
+    this.getInformations();
   },
   methods: {
-    onChange(event) {
-      console.log(event.target.value);
-    },
-    onFileChange(e) {
-      const file = e.target.files[0];
-      this.url = URL.createObjectURL(file);
-    },
-    formatDate(date) {
-      if (!date) return null;
-
-      const [year, month, day] = date.split('-');
-      return `${month}/${day}/${year}`;
-    },
-    parseDate(date) {
-      if (!date) return null;
-
-      const [month, day, year] = date.split('/');
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    },
-    // 상품 등록 post 보내는 함수
-    postProduct: function() {
-      if (confirm('상품을 등록 하시겠습니까?') == true) {
-        axios
-          .post(`${JH_URL}/product`, {
-            seller_id: this.seller_id,
-            on_sale: this.on_sale,
-            on_list: this.on_list,
-            first_category_id: this.first_category_id,
-            second_category_id: this.second_category_id,
-            manufacturer: this.manufacturer,
-            manufacture_date: this.manufacture_date,
+    test01: function() {
+      axios
+        .post(
+          `${JA_URL}/product`,
+          {
+            seller_id: this.productDatas.seller_id,
+            on_sale: this.productDatas.on_sale,
+            on_list: this.productDatas.on_list,
+            first_category_id: Number(this.firstCateId),
+            second_category_id: Number(this.secondCateId),
+            manufacturer: this.productDatas.manufacture.manufacturer,
+            manufacture_date: this.productDatas.manufacture.manufacture_date,
             manufacture_country_id: this.manufacture_country_id,
-            name: this.name,
-            description_short: this.description_short,
-            // color_filter_id: this.color_filter_id,
-            // style_filter_id: this.style_filter_id,
-            // images: [
-            //   {
-            //     url: 'url',
-            //   },
-            // ],
-            description_detail: this.description_detail,
-            option: [
-              {
-                color_id: this.color_id,
-                size_id: this.size_id,
-                stock: this.stock,
-              },
-            ],
-            price: this.price,
-            discount_rate: this.discount_rate,
-            discount_price: this.discount_price,
+            name: this.productDatas.name,
+            images: [{
+                    "url": "url"}],
+            description_short: this.productDatas.description_short,
+            description_detail: this.productDatas.description_detail,
+            color_filter_id: this.productDatas.color_filter_id,
+            style_filter_id: this.productDatas.style_filter_id,
+            option: this.makingOptionsData,
+            price: Number(this.productDatas.price),
+            // max_sales_unitdiscount_rate: Numbermax_sales_unit(this.productDatas.discount_rate),
+            discount_rate : Number(this.productDatas.discount_rate),
             discount_start: this.discount_start,
             discount_end: this.discount_end,
-            min_sales_unit  :this.min_sales_unit,
-            max_sales_unit : this.max_sales_unit,
-            tag : this.tag,
+            max_sales_unit: this.max_sales_unit,
+            min_sales_unit: this.min_sales_unit,
+            tag: this.postTag
           },
           {
             headers: {
-              Authorization: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlX2lkIjoyLCJ1c2VyX2lkIjoxMCwiZXhwIjoxNTkxOTAxMzI3fQ.vmFzC4RWoBZhSCn58i5C4UUc8gFb5gP2l1L9O1L8LVs"
-              }
-          })
-          .then(res => {
-            if (res.status === 200) {
-              alert('상품이 정상적으로 등록되었습니다.');
+              Authorization: localStorage.token
             }
-          })
-          .catch(error => console.log("err", error.response.data))
+          }
+        )
+        .then(response => {
+          console.log(response);
+        })
+        .catch(error => {
+          console.log(error.response.data.message);
+        });
+    },
+    inputTag: function() {
+      let index = (this.tag.length-1);
+      this.postTag.push({name:this.tag[index]})
+    },
+    styleFilter: function() {
+      this.productDatas.style_filter_id = null
+    },
+    discountDateClick: function() {
+      this.discount_start = null,
+      this.discount_end = null
+    },
+    productInforClick: function() {
+      this.productDatas.manufacture.manufacturer = null,
+      this.productDatas.manufacture.manufacture_date = null,
+      this.manufacture_country_id = null
+    },
+    discountClick: function() {
+      this.discountPrice =
+       Math.floor(this.productDatas.price * (this.productDatas.discount_rate/100));
+      this.changedPrice = Math.floor(this.productDatas.price * ((100-this.productDatas.discount_rate)/100)/10)*10;
+    },
+    minusMakingOptions: function(index) {
+      this.makingOptionsData.splice(this.makingOptionsData[index], 1);
+    },
+    sellersModalHandle: function() {
+      this.sellersInputModal
+        ? (this.sellersMdaol = false)
+        : (this.sellersInputModal = false);
+    },
+    makingOptions: function() {
+      this.makingOptionsData = [];
+      for (let i = 0; i <= this.allOptions.color.length - 1; i++) {
+        for (let j = 0; j <= this.allOptions.size.length - 1; j++) {
+          this.makingOptionsData.push({
+            color_name: this.allOptions.color[i],
+            size_name: this.allOptions.size[j],
+            stock: null
+          });
+        }
       }
     },
-  
-  },
+    selectOptionColor: function(name, option, index) {
+      if (option === "color" && this.allOptions.color.length === 0) {
+        this.allOptions.color.push(name);
+      } else if (option === "color" && this.allOptions.color[index]) {
+        const colorCheck = this.allOptions.color.filter(colorInfo => {c
+          return colorInfo === name;
+        });
+        colorCheck.length != 0
+          ? alert(`이미 선택된 옵션입니다.`)
+          : (this.allOptions.color[index] = name);
+      } else if (option === "color" && this.allOptions.color.length != 0) {
+        const colorCheck = this.allOptions.color.filter(colorInfo => {
+          return colorInfo === name;
+        });
+        colorCheck.length != 0
+          ? alert(`이미 선택된 옵션입니다.`)
+          : this.allOptions.color.push(name);
+      }
+
+      if (option === "size" && this.allOptions.size.length === 0) {
+        this.allOptions.size.push(name);
+      } else if (option === "size" && this.allOptions.size[index]) {
+        const sizeCheck = this.allOptions.size.filter(sizeInfo => {
+          return sizeInfo === name;
+        });
+        sizeCheck.length != 0
+          ? alert(`이미 선택된 옵션입니다.`)
+          : (this.allOptions.size[index] = name);
+      } else if (option === "size" && this.allOptions.size.length != 0) {
+        const sizeCheck = this.allOptions.size.filter(sizeInfo => {
+          return sizeInfo === name;
+        });
+        sizeCheck.length != 0
+          ? alert(`이미 선택된 옵션입니다.`)
+          : this.allOptions.size.push(name);
+      }
+      // option === "color"
+      //   ? this.allOptions.color.push(name)
+      //   : this.allOptions.size.push(name);
+    },
+    colorModalHandle: function(index) {
+      this.invenColorsCount[index].state = !this.invenColorsCount[index].state;
+    },
+    sizeModalHandle: function(index) {
+      this.invenSizesCount[index].state = !this.invenSizesCount[index].state;
+    },
+    // getOptionColors: function() {
+    //   // axios
+    //   //   .get(`${YE_URL}/product-options`, {
+    //   //     headers: {
+    //   //       Authorization: localStorage.token
+    //   //     }
+    //   //   })
+    //   //   .then(response => {
+    //   //     this.optionColors = response.data.option_color;
+    //   //     this.optionSizes = response.data.option_size;
+    //   //   });
+    //   axios.get(`${URL}/test.json`).then(response => {
+    //     console.log("here is test Data >>>>", response);
+    //     this.optionSizes = response.data.size;
+    //     this.optionColors = response.data.color;
+    //   });
+    // },
+    minusSizeOption: function() {
+      this.invenSizesCount.splice(this.invenSizesCount.length - 1, 1);
+    },
+    plusSizeOption: function() {
+      this.invenSizesCount.push({ state: false });
+    },
+    minusColorOption: function() {
+      this.invenColorsCount.splice(this.invenColorsCount.length - 1, 1);
+    },
+    plusColorOption: function() {
+      this.invenColorsCount.push({ state: false });
+    },
+
+    selectColor: function(id, img, name) {
+      this.productDatas.color_filter_id = id;
+      this.selectedColor.push(id, img, name);
+    },
+    getInformations: function() {
+      axios
+        .get(`${JA_URL}/product/information`, {
+          headers: {
+            Authorization: localStorage.token
+          }
+        })
+        .then(response => {
+          this.informs = response.data.data;
+        });
+    },  
+    getColors: function() {
+      axios
+        .get(`${JA_URL}/product/information`, {
+          headers: {
+            Authorization: localStorage.token
+          }
+        })
+        .then(response => {
+          this.colors = response.data.data[0].color_filter;
+        });
+    },
+
+    //셀러 검색창에서 검색결과의 아이디를 클릭하면, 해당 아이디의 텍스트와 고유 id를 data에 저장합니다.
+    //getFirstCategory라는 카테고리 리스트를 수신하는 함수에 셀러의 고유 id를 인자로 보내며 실행합니다.
+    selectSeller: function(id, name) {
+      this.sellerInfo.name = name;
+      this.productDatas.seller_id = id;
+      this.getFirstCategory(id);
+      // event.stopPropagation();
+    },
+    //1차 카테고리를 선택하면 해당 옵션에 2차카테고리를 받아옵니다.
+    getSecondCategory: function(index) {
+      this.secondCate = this.firstCate[index].second_category;
+      this.firstCateId = this.firstCate[index].id
+     
+    },
+    //셀러 검색 후, 선택된 셀러의 속성에 따라 1차카테고리 리스트가 달라지므로,
+    //selectSeller함수에서 셀러 고유 id를 받아 1차 카테고리 리스트를 받아옵니다.
+    getFirstCategory: function(id) {
+      axios
+        .get(`${JA_URL}/product/category?seller_id=${id}`, {
+          headers: {
+            Authorization: localStorage.token
+          }
+        })
+        .then(response => {
+          this.firstCate = response.data.data;
+        });
+    },
+    //셀러 검색창에 입력된 텍스트들을 실시간으로 받아, 해당 텍스트가 포함된 셀러 리스트를 받아옵니다.
+    searchSellerList: function(e) {
+      this.searchSeller = e;
+      axios
+        .get(`${JA_URL}/product/seller-name?seller_name=${this.searchSeller}`, {
+          headers: {
+            Authorization: localStorage.token
+          }
+        })
+        .then(response => {
+          this.sellerList = response.data.data;
+        })
+        .catch(error => {
+          error.respons.status === 500 ? (this.sellerList = "") : "";
+        });
+    },
+    //상품 수정페이지로 진입시, 기존의 상품 정보들을 받아옵니다.
+    getListDatas: function() {
+      axios
+        .get(`${JA_URL}/product?code=${this.code}`, {
+          headers: {
+            Authorization: localStorage.token
+          }
+        })
+        .then(response => {
+          this.infoDatas = response.data.data;
+        });
+    }
+  }
 };
 </script>
+
 <style lang="scss" scoped>
-.ProductRegist {
-  
-   tr th{
-    // border : 1px solid #ddd;
-    text-align: center;
-   }
-   td {
-     padding : 10px;
-     border:  0.3px solid #ddd;
-     background-color: white;
+.prWrap {
+  padding-top: 35px;
 
-    }
-    .td-border {
-      // border:  0.3px solid #ddd;
-    }
-
-  .page_content {
-    width: 100%;
-    height: 100%;
+  .editorBox {
+    display: block !important;
+  }
+  .quillWrapper {
     background-color: white;
+  }
+  td {
+    padding: 20px !important;
+  }
+  .wrap {
+    position: absolute;
+    top: -100px;
+    left: 0;
+    width: 100vw;
+    height: 200vh;
+    opacity: 50%;
+    background-color: gray;
+    z-index: 5;
+  }
+
+  .v-data-table {
+    background-color: #fafafa;
+  }
+
+  .sellersModal {
+    position: fixed;
+    background-color: white;
+    top: 40%;
+    left: 40%;
+    z-index: 10;
+    width: 450px;
+    height: 240px;
+    border-radius: 5px;
+
+    .cancel {
+      border: 1px solid lightgray;
+      cursor: pointer;
+      &:hover {
+        background-color: lightgray;
+      }
+    }
+    .selected {
+      color: #fff;
+      background-color: #5bc0de;
+      border-color: #46b8da;
+      cursor: pointer;
+      &:hover {
+        background-color: #46b8da;
+      }
+    }
+
+    .slTitleBox {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .slTitle {
+      margin: 20px 0;
+      font-size: 18px !important;
+      color: black !important;
+    }
+    .titleLine {
+      border: 1px solid lightgray;
+      width: 100%;
+      height: 1px;
+    }
+
+    .inputBox {
+      display: flex;
+      margin: 20px 0 0 0;
+      width: 100%;
+      height: 30px;
+      z-index: 30;
+      .text {
+        display: inline-block;
+        color: black;
+        margin-right: 100px;
+        font-size: 13px;
+      }
+      input {
+        margin-top: 0px;
+        width: 100%;
+        z-index: 40;
+      }
+    }
+    .v-data-table table {
+      width: 100%;
+    }
+
+    .inputSelect {
+      width: 240px;
+      padding: 10px;
+      border: 1px solid lightgray;
+      border-radius: 5px;
+      color: gray;
+      background-color: white;
+      z-index: 15;
+    }
+    .searchResult {
+      height: 130px;
+      border: 1px solid lightgray;
+      overflow: auto;
+      .sellerlist {
+        &:hover {
+          background-color: lightgray;
+        }
+      }
+    }
+  }
+  .titleLine02 {
     margin-top: 20px;
-
-    .page_title {
-      background-color: #eee;
-      padding: 10px 10px 2px 10px;
-      font-size: 20px;
-      small {
-        font-size: 14px;
-        letter-spacing: 0px;
-        font-weight: 300;
-        color: #888;
-      }
-    }
-    .page_bar {
-      border: 0;
-      padding: 0px;
-      background-color: #eee;
-      margin-bottom: 25px;
-      padding-left: 10px;
-      padding-right: 20px;
-    }
-    .page_ul {
-      display: flex;
-      justify-content: flex-start;
-      padding: 8px;
-      margin: 0;
-      list-style: none;
-    }
-
-    .portlet {
-     
-
-      .portlet-title {
-        background-color: #eee;
-        border-radius: 4px 4px 0 0;
-        padding: 10px 10px 2px 10px;
-        height: 50px;
-      }
-
-      .caption {
-        color: #333;
-        display: flex;
-        justify-content: flex-start;
-        font-size: 16px;
-        line-height: 16px;
-        font-weight: 400;
-        margin: 0;
-        padding: 0;
-        margin-top: 1px;
-      }
-    
-    }
-
-  .modal-color{
-    background-color: white;
-    color : red;
+    margin-bottom: 20px;
+    border: 1px solid lightgray;
+    width: 100%;
+    height: 1px;
   }
-
-  .modal-form {
+  .sellersBtn {
+    width: 100%;
     display: flex;
-    justify-content:center; 
-    background-color: white;
-
+    justify-content: flex-end;
+    font-size: 13px;
+    font-weight: 600;
+    div {
+      margin: 0 15px;
+      padding: 8px 10px;
+      border-radius: 5px;
+    }
   }
-    
- 
+
+  .colorModal {
+    position: fixed;
+    top: 20%;
+    left: 40%;
+    width: 500px;
+    height: 500px;
+    background-color: white;
+    padding: 40px;
+    z-index: 10;
+    .cancel {
+      display: inline-block;
+      border-radius: 5px;
+      border: 1px solid lightgray;
+      margin-top: 10px;
+      padding: 8px 10px;
+      cursor: pointer;
+      &:hover {
+        background-color: lightgray;
+      }
+    }
+    .selected {
+      display: inline-block;
+      border-radius: 5px;
+      color: #fff;
+      background-color: #5bc0de;
+      border-color: #46b8da;
+      margin-top: 10px;
+      padding: 8px 10px;
+      margin-right: 10px;
+      cursor: pointer;
+      &:hover {
+        background-color: #46b8da;
+      }
+    }
+
+    .colorBox {
+      position: relative;
+      display: inline-block;
+      width: 80px;
+      text-align: center;
+      margin: 1px;
+      &:hover {
+        background-color: lightgray;
+      }
+    }
+    .slTitle {
+      margin: 20px 0;
+      font-size: 18px !important;
+      color: gray !important;
+    }
+    .titleLine {
+      border: 1px solid lightgray;
+      width: 100%;
+      height: 1px;
+    }
+    .xi-check {
+      position: absolute;
+      top: 10px;
+      left: 32px;
+    }
+  }
+
+  .categoryBox {
+    margin-bottom: 10px;
+    tr {
+      width: 100%;
+      height: 100%;
+      border: 1px solid lightgray;
+    }
+    th {
+      background-color: white;
+      width: 100vw;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 600;
+      border: unset;
+    }
+    select {
+      background-color: white;
+      border: 1px solid lightgray;
+      padding-left: 3px;
+      border-radius: 3px;
+      width: 100%;
+      height: 34px;
+    }
+  }
+
+  .slTitleBox {
+    padding: 0 20px;
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 20px;
+
+    .slTitle {
+      font-size: 28px;
+      color: #666;
+      margin-right: 10px;
+      font-weight: 300;
+    }
+    .slSubTitle {
+      font-size: 14px;
+      color: #666;
+      font-weight: 300;
+    }
+  }
+  .slCategory {
+    width: 100%;
+    height: 44px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    background-color: #eee;
+    padding-left: 20px;
+    margin-bottom: 10px;
+  }
+  .cmpWrap {
+    border: 1px solid lightgray;
+    border-radius: 3px;
+    margin: 10px;
+
+    .cmpTitle {
+      height: 39px;
+      background-color: #eee;
+      color: #333;
+      font-size: 18px;
+      line-height: 16px;
+      font-weight: 400;
+      padding: 10px 20px;
+    }
+  }
+
+  .sellerSelect {
+    .btn {
+      margin-left: 20px;
+    }
+  }
+  .optionSelected {
+    display: inline-block;
+
+    color: #fff;
+    background-color: #5bc0de;
+    border-color: #46b8da;
+    font-weight: 900;
+    font-size: 15px;
+    cursor: pointer;
+    &:hover {
+      background-color: #46b8da;
+    }
+    border-radius: 3px;
+    padding: 8px 12px;
+    margin-left: 20px;
+    margin-bottom: 10px;
+  }
+
+  .onSaleBox {
+    display: flex;
+    flex-direction: column;
+    div:first-child {
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 10px;
+      margin-right: 10px;
+    }
     label {
+      margin-right: 10px;
+    }
+    i {
+      color: #1e90ff;
+      display: block;
+    }
+    .colorInput {
+      width: 30%;
+    }
+  }
+
+  .detailBox {
+    .inputBox {
       display: flex;
-      margin: 10px;
+      margin: 20px 0;
+      .inputTitle {
+        width: 100px;
+      }
+      input,
+      select {
+        width: 250px;
+      }
+      select {
+        background-color: white;
+        border: 1px solid lightgray;
+        border-radius: 3px;
+        padding-left: 5px;
+      }
     }
-    .seller-search {
-      display: flex;
-    
-       
-    .seller-search-input{
-    background-color:white; 
-    width:150px; 
-    margin:auto;
+  }
+  .btn {
+    color: #fff;
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+  }
+
+  input:focus {
+    outline: 1px solid gray;
+  }
+  select:focus {
+    outline: 1px solid gray;
+  }
+  .box {
+    width: 100%;
+    .xi-info {
+      font-size: 12px;
+      margin-top: 10px;
+      color: #1e90ff;
     }
+  }
+  .xi-info {
+    font-size: 12px;
+    margin-top: 10px;
+    color: #1e90ff;
+  }
 
-      .seller-search2 {
-       cursor: not-allowed;
-       background-color: #eeeeee;
-       width:250px; 
-       border:none;
-
-     }
+  .optionTable {
+    border: 1px solid lightgray;
+    .tdBox {
+      .v-data-table {
+        border: 1px solid lightgray;
+        border-radius: 3px;
+      }
+      .headTh:nth-child(2) {
+        border: 1px solid lightgray !important;
+        border-top-width: 0 !important;
+        border-bottom-width: 0 !important;
+      }
+      .thColor {
+        background-color: white;
+        td {
+          border: 1px solid lightgray !important;
+          border-bottom-width: 0 !important;
+        }
+        .icon {
+          display: inline-block;
+          width: 25px;
+          padding: 5px;
+          text-align: center;
+          margin-right: 20px;
+          border: 1px solid lightgray;
+          border-radius: 3px;
+        }
+        i {
+          color: black;
+          font-weight: 900;
+          font-size: 13px;
+          cursor: pointer;
+          &:hover {
+            color: gray;
+          }
+        }
+      }
+      .thLine {
+        border: 1px solid lightgray !important;
+        border-left-width: 0 !important;
+        border-right-width: 0 !important;
+      }
+      th {
+        border: 0 !important;
+      }
+      td {
+        border: 0 !important;
+      }
     }
-
-   
-    .row {
-      margin-right: -15px;
-      margin-left: -15px;
-
-  
-      .table-in-portlet {
+    .optionModal {
+      .textBox {
+        text-align: center;
+        width: 80%;
+        margin: 0 !important;
+        cursor: pointer;
+      }
+      input {
         width: 100%;
       }
-      .align-middle {
-        background-color: #f9f9f9;
-        .font-color-red {
-          color: red !important;
+      .optionList {
+        margin: 0;
+        display: inline-block;
+        width: 100%;
+        height: 100px;
+        background-color: white;
+        overflow: scroll;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 400;
+        .listText {
+          margin-top: 8px;
+          height: 20px;
+          cursor: pointer;
+          &:hover {
+            background-color: #eee;
+          }
         }
-        input[type='button'] {
-          -webkit-appearance: button;
+      }
+      .textBox {
+        text-align: center;
+        width: unset;
+        font-size: 14px;
+        margin-bottom: 10px !important;
+      }
+      .textDiv {
+        border: 1px solid lightgray;
+        padding: 10px;
+        text-align: left;
+        font-size: 13px;
+      }
+    }
+
+    .reusltTableWrap {
+      .v-data-table {
+        margin: 20px 0;
+        border: 1px solid lightgray !important;
+      }
+      .xi-info {
+        margin-left: 20px;
+
+        background-color: white;
+      }
+    }
+    .resultTable {
+      .resutlTableTh {
+        border: 0 !important;
+      }
+      th {
+        background-color: white;
+      }
+      .headTh {
+        background-color: #eee;
+      }
+      .invenControl {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        input {
+          width: unset;
+          margin-right: 5px;
+        }
+        label {
+          margin: 0 30px 0 10px;
+        }
+      }
+      .optionMinusBox {
+        text-align: center;
+        width: 20%;
+
+        .optionMinus {
+          margin-left: 43%;
+          text-align: center;
+          justify-self: center;
+          width: 30px;
+          height: 30px;
+          font-size: 30px;
+          font-weight: 900;
+          color: #fff;
+          background-color: #d9534f;
+          border-color: #d43f3a;
+          border-radius: 3px;
           cursor: pointer;
         }
       }
+    }
 
-      .radio-list {
-        display: flex;
-        align-items: center;
-      
-      }
-
-      .font-color-blue {
-        font-size: 13px;
-        color: #1e90ff !important;
-        margin-top: 5px;
-      }
-      .font-color-red {
-        color: red !important;
-      }
-      .table-category {
-        zoom: 1;
-        position: static;
-        width: 500px;
-        background-color: #f9f9f9;
-      }
-      .radio {
-        display: flex;
-      }
-      .input-directly {
-        height: 300px;
-      }
-      .manufacture-day {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-      }
-      
-      .company-name {
-        margin-top: 10px;
-        background-color: white;
-        border: 1px solid #888;
-        width: 400px;
-        background-color: white;
-        border: 1px solid #888;
-      }
-      .origin {
-        width: 400px;
-      }
-      .form-selectd {
-        border: 1px solid #888;
-        background-color: white;
-        width: 300px;
-      }
-      .form-control {
-        border: 1px solid #888;
-      }
-      .color-filter {
-        // border: 1px solid #ddd;
-        width: 200px;
-      }
-      .one-line {
-        width: 100%;
-        background-color: white;
-        border: 1px solid #888;
-      }
-      #preview {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-
-      #preview img {
-        max-width: 100%;
-        max-height: 500px;
-      }
-
-      .picker-box {
-        margin-right: 30px;
-      }
-    }
-    .li-tag {
-      margin-top: 15px;
-    }
-    .age-filter {
-      background-color: white;
-      width: 200px;
-      height: 12px;
-      border-radius: 15px;
-    }
-    .ckeditor {
-      display: block;
-      // border: 1px solid #ddd;
-      border-radius: 4px;
-      padding: 0 3px;
-      background: #eee;
-    }
-    .vertical-align-middle {
-      height: unset;
-      background-color: #eee !important;
-    }
-    .bd-top {
+    .headTh {
       font-size: 14px;
       font-weight: 600;
-      background-color: #eee !important;
+      color: black;
     }
-
-    .style-filter-label {
-      display: flex;
-      justify-content: flex-start;
-    }
-
-    .default-info-left {
-      background-color: #eee;
-      text-align: center;
-    }
-
-    .td-wholesale {
-      display: flex;
-    }
-
-    .tr-wholesale {
-      border: 1px solid rgb(221, 221, 221);
-    }
-
-    .input-group {
-      width: 240px !important;
-      background-color: white;
-      border-radius: 10px;     
-      margin-left : 10px 
-    }
-
-    .wholesale {
-      position: relative;
-      z-index: 2;
-      float: left;
+    div:first-child {
       width: 100%;
-      margin-left: 10px;
     }
-
-    .input-group-addon {
-      margin-left: 10px;
-      border-color: #e5e5e5;
-      min-width: 39px;
-      margin-top: 10px;
+    .headColor {
+      background-color: #eee;
     }
-
-    .seller-info-input {
-      border: 1px solid #eee;
+  }
+  .originPriceTable {
+    // border: 1px solid red;
+    input {
+      width: 15% !important;
+      border-top-right-radius: 0px !important;
+      border-bottom-right-radius: 0px !important;
     }
-
-    .td-background {
-      background-color: white;
+    .radioBtn {
+      width: unset !important;
+      margin-right: 20px;
     }
-
-    .discount-label {
-      width: 120px;
+    .radioLabel {
+      margin-right: 20px;
     }
-    .discount-div {
-      background-color: #f9f9f9;
+    .radioInput {
+      margin-right: 20px;
+      width: 35% !important;
+      border-radius: 3px !important;
     }
-
-    .discount-persent {
+    span {
+      color: #1e90ff;
+    }
+    .wonBox {
+      width: 40px;
+      height: 34px;
       background-color: #e5e5e5;
-      }
+      border-top-right-radius: 3px;
+      border-bottom-right-radius: 3px;
 
-    .discount-button {
-      color: #fff;
-      background-color: #3071a9;
-      border-color: #285e8e;
-      border-radius: 10px;
-      width: 124px;
-      height: 34px;
-      margin: 15px;
-    }
-
-    .discount-input {
-      width: 100px;
-      margin-left: 10px;
-       border: 1px solid #ddd;
-    }
-
-    .discount-rate {
-      display: flex;
-    
-     
-    }
-
-    .minimum-amount {
-      cursor: not-allowed;
-      background-color: #eeeeee;
-      width: 100px;
-      height: 34px;
-    }
-    .stock-div{
-      display: flex;
-    }
-    .stock-amount {
-      margin-left: 20px;
-    }
-
-    .text-center {
-      display: flex;
-      justify-content: center;
-    }
-    
-
-     .inspire {
-       height : 50px;
-     }
-    .modal-input{
-      border: 1px solid red;
-    }
-
-    .enroll-button {
-      background-color: #5cb85c !important;
-      color : white
-    }
-    .cancle-button {
-      margin-left: 5px;
-      background-color: #d9534f !important;
-      color: white;
-    }
-
-    .apply-button{
-      background-color: #5bc0de !important;
-      color : white;
-      margin-bottom: 10px;
-    }
-
-    .product-option-info{
       text-align: center;
+      padding: 8px;
     }
+    .xi-info {
+      padding-left: 20px;
+    }
+  }
+  .discountTable {
+    text-align: left;
+    .discountInput {
+      width: 40% !important;
+    }
+    .v-data-table {
+      width: 70%;
+      border-left: 1px solid lightgray;
+      border-bottom: 1px solid lightgray;
+    }
+    .wonBox {
+      display: inline;
+      vertical-align: middle;
+    }
+    .discountBtn {
+      font-size: 14px;
+      padding: 6px 12px;
+      display: inline-block;
+      border-radius: 3px;
+      margin-top: 5px;
+      color: #fff;
+      background-color: #428bca;
+      border-color: #357ebd;
+      cursor: pointer;
+    }
+  }
 
-    .style-filter-span {
-      margin-left: 20px;
-    }
-    // .seller_tr {
-    //   height: 20px !important;
-    // }
-    // .seller_choice {
-    //   height: 20px !important;
-    //   margin: 0 10px;
-    // }
-    
+  * {
+    // border: 1px solid red;
   }
 }
 </style>
