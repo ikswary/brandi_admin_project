@@ -31,6 +31,8 @@ SELLER_ROLE_ID = 2
 @login_required
 def seller(**kwargs):
     """셀러 리스트 불러오는 API
+        API 작성:
+            최진아
 
         Args:
             role_id : user의 권한 확인
@@ -93,6 +95,8 @@ def seller(**kwargs):
 @login_required
 def product_category(**kwargs):
     """상품 등록시 카테고리 정보 전달 API
+        API 작성:
+            최진아
 
         Args:
              user_id: 접속 아이디,
@@ -163,6 +167,8 @@ def product_category(**kwargs):
 @login_required
 def product_information(**kwargs):
     """상품 등록시 옵션 및 필터 정보 전달 API
+        API 작성:
+            최진아
 
         Returns:
              {data : information_data}, http status code
@@ -233,6 +239,8 @@ def product_information(**kwargs):
 @login_required
 def save_product(**kwargs):
     """ 상품등록 API
+        API 작성:
+            최진아
 
         Args:
            "seller_id": 판매자 id,
@@ -409,6 +417,8 @@ def save_product(**kwargs):
 @login_required
 def get_product_information(**kwargs):
     """ 상품 수정시 기본 정보 보내주는 API
+        API 작성:
+            최진아
 
         URL params:
             <string:product_code>: 상품 코드
@@ -471,7 +481,10 @@ def get_product_information(**kwargs):
 @product_app.route('', methods=['PUT'])
 @login_required
 def change_product_information(**kwargs):
-    """
+    """상품 수정 API
+        API 작성:
+            최진아
+
         Args:
             "product_code": 상품코드,
             "on_sale": 판매여부,
@@ -648,6 +661,8 @@ def change_product_information(**kwargs):
 @login_required
 def history(**kwargs):
     """상품 수정의 수정 이력 API
+        API 작성:
+            최진아
 
         Args:
              code : 상품 코드
@@ -719,6 +734,8 @@ def history(**kwargs):
 @login_required
 def product_list(**kwargs):
     """상품관리 리스트 및 필터
+        API 작성:
+            최진아
 
         Header:
             Authorizaion: jwt
@@ -862,6 +879,8 @@ def product_list(**kwargs):
 @login_required
 def change_product_status(**kwargs):
     """상품 상태 변경 API
+        API 작성:
+            최진아
 
         Args:
             code : 상품 코드
@@ -976,7 +995,10 @@ def change_product_status(**kwargs):
 @product_app.route('/seller-name', methods=['GET'])
 @login_required
 def find_seller_name(**kwargs):
-    """
+    """ 셀러 리스트 목록 찾는 API
+    API 작성:
+        최진아
+
     Args:
         seller_name : 셀러 한글 이름
 
@@ -1034,4 +1056,3 @@ def find_seller_name(**kwargs):
     finally:
         if db:
             db.close()
-

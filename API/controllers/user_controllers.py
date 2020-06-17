@@ -45,6 +45,8 @@ class User(MethodView):
 
     def post(self):
         """회원가입 API
+        API 작성:
+            손진현
 
         Args:
             account: 계정명
@@ -117,6 +119,8 @@ class User(MethodView):
     @login_required
     def get(self, **kwargs):
         """회원정보 수정 페이지의 값을 뿌려주는 API
+            API 작성:
+                손진현
 
             Header:
                 Authorizaion: jwt
@@ -189,6 +193,8 @@ class User(MethodView):
     @login_required
     def put(self, **kwargs):
         """회원정보 수정 페이지에서 입력받은 값으로 회원정보를 수정하는 API
+            API 작성:
+                손진현
 
             Header:
                 Authorizaion: jwt
@@ -263,27 +269,27 @@ class User(MethodView):
 
             return jsonify(''), 200
 
-        # except pymysql.err.InternalError:
-        #     db.rollback()
-        #     return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
-        # except pymysql.err.OperationalError:
-        #     db.rollback()
-        #     return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
-        # except pymysql.err.ProgrammingError:
-        #     db.rollback()
-        #     return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
-        # except pymysql.err.IntegrityError:
-        #     db.rollback()
-        #     return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
-        # except pymysql.err.DataError:
-        #     db.rollback()
-        #     return jsonify(message="DATA_ERROR"), 400
-        # except KeyError:
-        #     db.rollback()
-        #     return jsonify(message="KEY_ERROR"), 400
-        # except Exception as e:
-        #     db.rollback()
-        #     return jsonify(message=f"{e}"), 500
+        except pymysql.err.InternalError:
+            db.rollback()
+            return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
+        except pymysql.err.OperationalError:
+            db.rollback()
+            return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
+        except pymysql.err.ProgrammingError:
+            db.rollback()
+            return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
+        except pymysql.err.IntegrityError:
+            db.rollback()
+            return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
+        except pymysql.err.DataError:
+            db.rollback()
+            return jsonify(message="DATA_ERROR"), 400
+        except KeyError:
+            db.rollback()
+            return jsonify(message="KEY_ERROR"), 400
+        except Exception as e:
+            db.rollback()
+            return jsonify(message=f"{e}"), 500
         finally:
             if db:
                 db.close()
@@ -292,6 +298,8 @@ class User(MethodView):
 @user_app.route('sign-in', methods=['POST'])
 def sign_in():
     """로그인 API
+        API 작성:
+            손진현
 
         Args:
             account: 계정명,
@@ -368,6 +376,8 @@ def sign_in():
 @login_required
 def user_list(**kwargs):
     """마스터 유저의 셀러 정보 수정 페이지의 리스트를 리턴하는 API
+                API 작성:
+                    손진현
 
                 Header:
                     Authorizaion: jwt
@@ -414,27 +424,27 @@ def user_list(**kwargs):
 
         return jsonify(**lists), 200
 
-    # except pymysql.err.INVALID_REQUESTternalError:
-    #     db.rollback()
-    #     return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
-    # except pymysql.err.OperationalError:
-    #     db.rollback()
-    #     return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
-    # except pymysql.err.ProgrammingError:
-    #     db.rollback()
-    #     return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
-    # except pymysql.err.IntegrityError:
-    #     db.rollback()
-    #     return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
-    # except pymysql.err.DataError:
-    #     db.rollback()
-    #     return jsonify(message="DATA_ERROR"), 400
-    # except KeyError:
-    #     db.rollback()
-    #     return jsonify(message="KEY_ERROR"), 400
-    # except Exception as e:
-    #     db.rollback()
-    #     return jsonify(message=f"{e}"), 500
+    except pymysql.err.INVALID_REQUESTternalError:
+        db.rollback()
+        return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
+    except pymysql.err.OperationalError:
+        db.rollback()
+        return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
+    except pymysql.err.ProgrammingError:
+        db.rollback()
+        return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
+    except pymysql.err.IntegrityError:
+        db.rollback()
+        return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
+    except pymysql.err.DataError:
+        db.rollback()
+        return jsonify(message="DATA_ERROR"), 400
+    except KeyError:
+        db.rollback()
+        return jsonify(message="KEY_ERROR"), 400
+    except Exception as e:
+        db.rollback()
+        return jsonify(message=f"{e}"), 500
     finally:
         if db:
             db.close()
@@ -444,6 +454,8 @@ def user_list(**kwargs):
 @login_required
 def user_status(**kwargs):
     """마스터 유저의 셀러 정보 수정 페이지의 액션 버튼을 통해 셀러의 상태를 조정하는 API
+                API 작성:
+                    손진현
 
                 Headers:
                     Authorizaion: jwt
@@ -496,33 +508,33 @@ def user_status(**kwargs):
 
         return jsonify(''), 200
 
-    # except pymysql.err.InternalError:
-    #     db.rollback()
-    #     return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
-    # except pymysql.err.OperationalError:
-    #     db.rollback()
-    #     return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
-    # except pymysql.err.ProgrammingError:
-    #     db.rollback()
-    #     return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
-    # except pymysql.err.IntegrityError:
-    #     db.rollback()
-    #     return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
-    # except pymysql.err.DataError:
-    #     db.rollback()
-    #     return jsonify(message="DATA_ERROR"), 400
-    # except UserNotExistError:
-    #     db.rollback()
-    #     return jsonify(message="USER_DOES_NOT_EXIST"), 400
-    # except WrongActionError:
-    #     db.rollback()
-    #     return jsonify(message="USER_DOES_NOT_SUPPORT_THIS_ACTION"), 400
-    # except KeyError:
-    #     db.rollback()
-    #     return jsonify(message="KEY_ERROR"), 400
-    # except Exception as e:
-    #     db.rollback()
-    #     return jsonify(message=f"{e}"), 500
+    except pymysql.err.InternalError:
+        db.rollback()
+        return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
+    except pymysql.err.OperationalError:
+        db.rollback()
+        return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
+    except pymysql.err.ProgrammingError:
+        db.rollback()
+        return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
+    except pymysql.err.IntegrityError:
+        db.rollback()
+        return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
+    except pymysql.err.DataError:
+        db.rollback()
+        return jsonify(message="DATA_ERROR"), 400
+    except UserNotExistError:
+        db.rollback()
+        return jsonify(message="USER_DOES_NOT_EXIST"), 400
+    except WrongActionError:
+        db.rollback()
+        return jsonify(message="USER_DOES_NOT_SUPPORT_THIS_ACTION"), 400
+    except KeyError:
+        db.rollback()
+        return jsonify(message="KEY_ERROR"), 400
+    except Exception as e:
+        db.rollback()
+        return jsonify(message=f"{e}"), 500
     finally:
         if db:
             db.close()
