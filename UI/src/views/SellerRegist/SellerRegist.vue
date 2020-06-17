@@ -10,15 +10,6 @@
         <v-simple-table>
           <template>
             <!-- 테이블 시작 영역 -->
-            <tbody>
-              <!-- 이미지박스 컨테이너 컴포넌트 생성 후 재사용 중, slot 이용 해당 내용 전달 -->
-              <ImageBox>
-                <template #thName>셀러프로필</template>
-                <template #infoText01>
-                  <i class="xi-info">셀러 프로필 확장자는 jpg, jpeg, png 만 가능하며, 허용 가능한 최대 파일사이즈 크기는 5MB 입니다.</i>
-                </template>
-              </ImageBox>
-            </tbody>
             <!-- 셀러 상태 테이블 -->
             <tbody>
               <tr>
@@ -98,21 +89,6 @@
         <v-simple-table>
           <template>
             <!-- 테이블 시작 영역 -->
-            <tbody>
-              <!-- 셀러페이지 배경이미지 -->
-              <ImageBox>
-                <template #thName>셀러페이지 배경 이미지</template>
-                <template #infoText01>
-                  <i class="xi-info">셀러 프로필 확장자는 jpg, jpeg, png 만 가능하며, 허용 가능한 최대 파일사이즈 크기는 5MB 입니다.</i>
-                </template>
-                <template #infoText02>
-                  <i class="xi-info">배경이미지는 1200 * 850 사이즈 이상으로 등록해주세요.</i>
-                </template>
-                <template #infoText03>
-                  <i class="xi-info">확장자는 jpg, jpeg, png 만 가능하며, 허용 가능한 최대 파일사이즈 크기는 5MB 입니다.</i>
-                </template>
-              </ImageBox>
-            </tbody>
             <!-- 셀러 한줄 소개 -->
             <tbody>
               <InputBox v-model="detailInfo.introduction_short" placeholder="셀러 한줄 소개">
@@ -442,23 +418,6 @@
           </tbody> -->
         <!-- </v-simple-table> -->
       <!-- </div> -->
-    </div>
-    <!-- 관리브랜드 정보 -->
-    <div class="cmpWrap">
-      <div class="cmpTitle">
-        <i class="xi-user">관리브랜드 정보</i>
-      </div>
-      <div class="cmpTable">
-        <v-simple-table>
-          <!-- 테이블 시작 영역 -->
-          <tbody>
-            <tr>
-              <th>관리 브랜드</th>
-              <td></td>
-            </tr>
-          </tbody>
-        </v-simple-table>
-      </div>
     </div>
     <!-- 셀러 모델 사이즈 정보 -->
     <div class="cmpWrap">
