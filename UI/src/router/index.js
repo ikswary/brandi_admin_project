@@ -1,27 +1,27 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-import Login from '../views/Login/Login.vue';
-import SignUp from '../views/SignUp/SignUp.vue';
-import Main from '../views/Main.vue';
-import Product from '../components/Product.vue';
-import ProductList from '../components/Product/ProductList.vue';
-import ProductRegist from '../components/Product/ProductRegist.vue';
-import Seller from '../components/Seller.vue';
-import SellerList from '../components/Seller/SellerList.vue';
-import SellerRegist from '../components/Seller/SellerRegist.vue';
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+import Login from '../views/Login/Login.vue'
+import SignUp from '../views/SignUp/SignUp.vue'
+import Main from '../views/Main.vue'
+import Product from '../components/Product'
+import ProductList from '../views/ProductList/ProductList'
+import ProductRegist from '../views/ProductRegist/ProductRegist'
+import Seller from '../components/Seller'
+import SellerList from '../views/SellerList/SellerList'
+import SellerRegist from '../views/SellerRegist/SellerRegist'
 
-Vue.use(VueRouter);
+Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/login',
+    path: '/',
     name: 'Login',
-    component: Login,
+    component: Login
   },
   {
     path: '/signUp',
     name: 'SignUp',
-    component: SignUp,
+    component: SignUp
   },
   {
     path: '/main',
@@ -41,7 +41,7 @@ const routes = [
             path: 'productRegist',
             component: ProductRegist,
           },
-        ],
+        ]
       },
       {
         path: 'seller',
@@ -51,21 +51,24 @@ const routes = [
           {
             path: 'sellerlist',
             component: SellerList,
+            name: 'sellerlist'
           },
           {
-            path: 'sellerregist',
+            path: ':id',
             component: SellerRegist,
+            name: 'sellerregist'
           },
-        ],
+        ]
       },
     ],
-  },
-];
+  }
+
+]
 
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes,
-});
+  routes
+})
 
-export default router;
+export default router

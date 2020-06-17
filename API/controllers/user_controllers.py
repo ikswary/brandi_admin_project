@@ -325,9 +325,9 @@ def sign_in():
 
         result = user_dao.get_id_role_password_status_from_account(db, data['account'])
         if not result:
-            return jsonify(message="ACCOUNT_DOES_NOT_EXIST"), 404
+            return jsonify(message="ACCOUNT_DOES_NOT_EXIST"), 400
         if not bcrypt.checkpw(data['password'].encode('utf-8'), result['password'].encode('utf-8')):
-            return jsonify(message="PASSWORD_MISMATCH"), 403
+            return jsonify(message="PASSWORD_MISMATCH"), 400
         if (result['role_id'] == User.SELLER_ROLE_ID
                 and result['status_id'] == User.BASIC_STATUS_ID):
             return jsonify(message="NOT_AUTHORIZED_USER"), 403
@@ -406,7 +406,7 @@ def user_list(**kwargs):
             return jsonify(message="DATABASE_INIT_ERROR"), 500
 
         # 마스터 권한 전용 메뉴이므로 마스터 토큰이 아닐 경우 요청 drop
-        if kwargs['role_id'] == USER_DATA_MODIFY_SELLER:
+        if kwargs['role_id'] != User.MASTER_ROLE_ID:
             return jsonify(message="NOT_AUTHORIZED_USER"), 403
 
         filter_validation_service(request.args)

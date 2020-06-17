@@ -10,10 +10,7 @@
           v-bind:class="{ defaultInput: loginState, warningInput: !loginState }"
           @keyup="idKeyHandler()"
         />
-        <span
-          v-bind:class="{ defaultText: loginState, warningText: !loginState }"
-          >아이디를 입력해 주세요.</span
-        >
+        <span v-bind:class="{ defaultText: loginState, warningText: !loginState }">아이디를 입력해 주세요.</span>
       </div>
 
       <div class="inputBox">
@@ -22,24 +19,16 @@
           v-model="passwordValue"
           class="defaultInput"
           placeholder="셀러 비밀번호"
-          v-bind:class="{
-            defaultInput: passwordState,
-            warningInput: !passwordState,
-          }"
+          v-bind:class="{ defaultInput: passwordState, warningInput: !passwordState }"
           @keyup="pwKeyHandler()"
         />
         <span
-          v-bind:class="{
-            defaultText: passwordState,
-            warningText: !passwordState,
-          }"
-          >비밀번호를 입력해 주세요.</span
-        >
+          v-bind:class="{ defaultText: passwordState, warningText: !passwordState }"
+        >비밀번호를 입력해 주세요.</span>
       </div>
       <div class="loginOption">
         <label>
-          <input type="checkbox" name="color" value="blue" /> 아이디/비밀번호
-          기억하기
+          <input type="checkbox" name="color" value="blue" /> 아이디/비밀번호 기억하기
         </label>
         <i class="xi-search">비밀번호 찾기</i>
       </div>
@@ -56,59 +45,79 @@
 </template>
 
 <script>
+import axios from "axios";
+import { JH_URL } from "../../config/urlConfig";
 export default {
   data() {
     return {
       loginState: true,
       passwordState: true,
-      loginValue: '',
-      passwordValue: '',
+      loginValue: "",
+      passwordValue: ""
     };
   },
   mounted: function() {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth',
+      behavior: "smooth"
     });
   },
   methods: {
     // 로그인 클릭시 실행되는 함수 : 아이디, 비밀번호 문자열 확인 후 0 이면 state false 리턴
     // 이 곳에 아이디, 비밀번호가 맞으면 백으로 아이디, 비밀번호 API POST 할 예정
     inputHandler: function() {
-      if (this.loginValue.length === 0) {
-        this.loginState = false;
-      }
-      if (this.passwordValue.length === 0) {
-        this.passwordState = false;
+      this.loginValue.length ? "" : (this.loginState = false);
+      this.passwordValue.length ? "" : (this.passwordState = false);
+
+      if (this.passwordState && this.loginState) {
+        axios
+          .post(`${JH_URL}/user/sign-in`, {
+            method: "POST",
+            account: this.loginValue,
+            password: this.passwordValue
+          })
+          .then(response => {
+            if (response.data.token) {
+              localStorage.setItem("Authorization", response.data.token);
+              this.$router.push("/main/seller/sellerlist");
+            }
+          })
+          .catch(error => {
+            if (error.response.data.message === "NOT_AUTHORIZED_USER") {
+              alert("승인 전이니 담당자가 승인 후 로그인 가능 합니다.");
+            }
+            if (error.response.data.message === "PASSWORD_MISMATCH"
+            || error.response.data.message === "ACCOUNT_DOES_NOT_EXIST"
+            || error.response.data.message === "ACCOUNT_VALIDATION_ERROR") {
+              alert("아이디와 비밀번호를 다시 확인해주세요.");
+            }
+            }
+            );
       }
     },
 
     // 이이디 인풋창 입력시 실행되는 함수 : 문자열 길이가 0 보다 크거나 작음을 확인 후 state 변경
     idKeyHandler: function() {
-      if (this.loginState === false && this.loginValue.length > 0) {
+      if (!this.loginState && this.loginValue.length) {
         this.loginState = true;
-      } else if (this.loginState === true && this.loginValue.length === 0) {
+      } else if (this.loginState && !this.loginValue.length) {
         this.loginState = false;
       }
     },
 
     // 이이디 인풋창 입력시 실행되는 함수 : 문자열 길이가 0 보다 크거나 작음을 확인 후 state 변경
     pwKeyHandler: function() {
-      const { passwordState, passwordValue } = this;
-      if (this.passwordState === false && this.passwordValue.length > 0) {
+      if (!this.passwordState && this.passwordValue.length) {
         this.passwordState = true;
-      } else if (
-        this.passwordState === true &&
-        this.passwordValue.length === 0
-      ) {
+      } else if (this.passwordState && !this.passwordValue.length) {
         this.passwordState = false;
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .loginBox {
   width: 360px;
   height: 543px;
@@ -116,6 +125,7 @@ export default {
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
+
   .loginContainer {
     padding: 0px 30px 15px 30px;
   }
@@ -125,7 +135,7 @@ export default {
   p {
     margin: 20px 0;
     font-size: 24px;
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     background-color: #ffffff;
     font-weight: 300 !important;
     padding: 20px 30px 0px 30px;
@@ -133,6 +143,9 @@ export default {
   .inputBox {
     display: flex;
     flex-direction: column;
+  }
+  input:focus {
+    outline: 1px solid #eee;
   }
 
   .loginOption {
@@ -174,6 +187,9 @@ export default {
         background-color: lightgrey;
         border-color: gray;
       }
+      a:visited {
+        color: black;
+      }
     }
     .loginBtn {
       padding: 10px;
@@ -195,7 +211,7 @@ export default {
     width: 100%;
     margin-top: 20px;
     height: 120px;
-    background-image: url('http://sadmin.brandi.co.kr/include/img/admin_mainbn_helpi.png');
+    background-image: url("http://sadmin.brandi.co.kr/include/img/admin_mainbn_helpi.png");
     background-size: contain;
     cursor: pointer;
   }

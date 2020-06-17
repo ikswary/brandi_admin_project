@@ -165,7 +165,7 @@ def filter_query_generator(filter_options):
 
     query = ''
     if filters['id']:
-        query = query + f" AND user.id = {filters['id']}"
+        query = query + f" AND user.id = '{filters['id']}'"
     if filters['account']:
         query = query + f" AND user.account LIKE '%%{filters['account']}%%'"
     if filters['seller_name_eng']:
