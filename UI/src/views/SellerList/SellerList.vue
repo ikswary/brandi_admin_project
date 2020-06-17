@@ -32,14 +32,14 @@
           <input 
             type="text"
             name="page"
-            v-model="searchDatas[10].value"/>
+            v-model="searchDatas[1].value"/>
           <button @click="pageForward">
             <i class="xi-angle-right-min"></i>
           </button>
           <span>of {{pagesData}} | View</span>
           <select 
             name="view"
-            v-model="searchDatas[9].value">
+            v-model="searchDatas[0].value">
             <option value="10">10</option>
             <option value="20">20</option>
             <option value="50">50</option>
@@ -74,22 +74,6 @@
                   <tr>
                     <td>
                       <input
-                        @keydown="() => lengthCheck(0)"
-                        v-on:keyup.enter="search()"
-                        v-model="searchDatas[0].value"
-                        type="text"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        @keydown="() => lengthCheck(1)"
-                        v-on:keyup.enter="search()"
-                        v-model="searchDatas[1].value"
-                        type="text"
-                      />
-                    </td>
-                    <td>
-                      <input
                         @keydown="() => lengthCheck(2)"
                         v-on:keyup.enter="search()"
                         v-model="searchDatas[2].value"
@@ -113,18 +97,12 @@
                       />
                     </td>
                     <td>
-                      <select
-                        class="sellerStatus"
-                        @click="() => lengthCheck(5)"
+                      <input
+                        @keydown="() => lengthCheck(5)"
+                        v-on:keyup.enter="search()"
                         v-model="searchDatas[5].value"
-                      >
-                        <option value>선택</option>
-                        <option value="입점대기">입점대기</option>
-                        <option value="입점">입점</option>
-                        <option value="퇴점">퇴점</option>
-                        <option value="퇴점대기">퇴점대기</option>
-                        <option value="휴점">휴점</option>
-                      </select>
+                        type="text"
+                      />
                     </td>
                     <td>
                       <input
@@ -134,20 +112,42 @@
                         type="text"
                       />
                     </td>
+                    <td>
+                      <select
+                        class="sellerStatus"
+                        @click="() => lengthCheck(7)"
+                        v-model="searchDatas[7].value"
+                      >
+                        <option value="">선택</option>
+                        <option value="입점대기">입점대기</option>
+                        <option value="입점">입점</option>
+                        <option value="퇴점">퇴점</option>
+                        <option value="퇴점대기">퇴점대기</option>
+                        <option value="휴점">휴점</option>
+                      </select>
+                    </td>
+                    <td>
+                      <input
+                        @keydown="() => lengthCheck(8)"
+                        v-on:keyup.enter="search()"
+                        v-model="searchDatas[8].value"
+                        type="text"
+                      />
+                    </td>
 
                     <td>
                       <input
-                        @keydown="() => lengthCheck(7)"
+                        @keydown="() => lengthCheck(9)"
                         v-on:keyup.enter="search()"
-                        v-model="searchDatas[7].value"
+                        v-model="searchDatas[9].value"
                         type="text"
                       />
                     </td>
                     <td>
                       <select
                         class="sellerStatus"
-                        @click="() => lengthCheck(8)"
-                        v-model="searchDatas[8].value"
+                        @click="() => lengthCheck(10)"
+                        v-model="searchDatas[10].value"
                       >
                         <option value>선택</option>
                         <option value="쇼핑몰">쇼핑몰</option>
@@ -224,21 +224,26 @@
         </template>
         <div class="pageContainer">
           <span>Page</span>
-          <button>
+          <button @click="pageBackward">
             <i class="xi-angle-left-min"></i>
           </button>
-          <input type="text" />
-          <button>
+          <input 
+            type="text"
+            name="page"
+            v-model="searchDatas[1].value"/>
+          <button @click="pageForward">
             <i class="xi-angle-right-min"></i>
           </button>
           <span>of {{pagesData}} | View</span>
-          <select name id>
-            <option value="volvo">10</option>
-            <option value="saab">20</option>
-            <option value="opel">50</option>
-            <option value="audi">150</option>
+          <select 
+            name="view"
+            v-model="searchDatas[0].value">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="150">150</option>
           </select>
-          <span>records Found total {{usersData}} records</span>
+          <span>records | Found total {{usersData}} records</span>
         </div>
       </div>
     </div>
@@ -260,6 +265,8 @@ export default {
       usersData: null,
       pagesData: null,
       searchDatas: [
+        { key: "view", value: 10, state: true },
+        { key: "page", value: 1, state: true },
         { key: "id", value: "", state: false },
         { key: "account", value: "", state: false },
         { key: "seller_name_eng", value: "", state: false },
@@ -268,9 +275,7 @@ export default {
         { key: "seller_status", value: "", state: false },
         { key: "manager_phone", value: "", state: false },
         { key: "manager_email", value: "", state: false },
-        { key: "seller_attribute", value: "", state: false },
-        { key: "view", value: 10, state: true },
-        { key: "page", value: 1, state: true }
+        { key: "seller_attribute", value: "", state: false }
       ]
     };
   },
@@ -296,7 +301,7 @@ export default {
           console.log("here is response:", response.data);
           this.infoDatas = response.data
           this.pagesData = response.data.page
-          this.usersData = response.data.recordclick
+          this.usersData = response.data.record
         });
     },
     idClick: function(id) {
@@ -364,7 +369,12 @@ export default {
       // this.$router.push("sellers?seller_attributes.name=쇼핑몰");
       // axios.get(`${JH_URL}/sellers`);
       // alert(this.searchDatas.id);
-      console.log(this.searchDatas)
+
+      // page 객체가 integer가 아니거나 최대 페이지 수보다 많을 경우 page 객체의 값을 1로 만든다
+      if (!(Number.isInteger(this.searchDatas[1].value)) || this.searchDatas[1].value > this.pagesData)
+        this.searchDatas[1].value = 1
+        console.log("실행")
+
       this.searchDatas.filter(item => {
         item.state
           ? queryString.push(`${item.key}=${item.value}&`)
@@ -392,11 +402,11 @@ export default {
       this.searchDatas.filter(item => {
         item.value = ""
       });
-      this.searchDatas[9].value = 10
-      this.searchDatas[10].value = 1
+      this.searchDatas[0].value = 10
+      this.searchDatas[1].value = 1
 
       axios
-        .get(`${JH_URL}/user/list?view=${this.searchDatas[9].value}&page=${this.searchDatas[10].value}`, {
+        .get(`${JH_URL}/user/list?view=${this.searchDatas[0].value}&page=${this.searchDatas[1].value}`, {
           headers: {
             Authorization: localStorage.Authorization
             }
@@ -409,15 +419,15 @@ export default {
         });
     },
     pageForward: function() {
-      if(this.searchDatas[10].value < this.pagesData){
-        this.searchDatas[10].value += 1
+      if(this.searchDatas[1].value < this.pagesData){
+        this.searchDatas[1].value += 1
         this.search();
       }
       
     },
     pageBackward: function() {
-      if(this.searchDatas[10].value > 1){
-        this.searchDatas[10].value -= 1
+      if(this.searchDatas[1].value > 1){
+        this.searchDatas[1].value -= 1
         this.search();
       }
     },
