@@ -296,7 +296,7 @@ export default {
           console.log("here is response:", response.data);
           this.infoDatas = response.data
           this.pagesData = response.data.page
-          this.usersData = response.data.record
+          this.usersData = response.data.recordclick
         });
     },
     idClick: function(id) {

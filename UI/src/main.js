@@ -13,7 +13,6 @@ Vue.use(IconsPlugin);
 
 
 
-
 new Vue({
   router,
   store,
