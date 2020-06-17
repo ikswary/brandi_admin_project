@@ -27,70 +27,6 @@ MASTER_ROLE_ID = 1
 SELLER_ROLE_ID = 2
 
 
-@product_app.route('/seller', methods=['GET'])
-@login_required
-def seller(**kwargs):
-    """셀러 리스트 불러오는 API
-        API 작성:
-            최진아
-
-        Args:
-            role_id : user의 권한 확인
-
-        Returns:
-            {data : sellers}, http status code
-
-        Exceptions:
-            InternalError: DATABASE가 존재하지 않을 때 발생
-            OperationalError: DATABASE 접속이 인가되지 않았을 때 발생
-            ProgramingError: SQL syntax가 잘못되었을 때 발생
-            IntegrityError: Key의 무결성을 해쳤을 때 발생
-            DataError: 컬럼 타입과 매칭되지 않는 값이 DB에 전달되었을 때 발생
-            KeyError: 엔드포인트에서 요구하는 키값이 전달되지 않았을 때 발생
-    """
-    db = None
-    try:
-        db = get_db_connector()
-        if db is None:
-            return jsonify(message="DATABASE_INIT_ERROR"), 500
-        role_id = kwargs['role_id']
-
-        # 마스터 권한 전용이므로 셀러인 경우 요청 drop
-        if role_id == SELLER_ROLE_ID:
-            return jsonify(message="UNAUTHORIZED"), 401
-        # 권한 정보가 없는 경우 에러
-        if main_dao.role(db, role_id) is None:
-            return jsonify(message="DATA_DOES_NOT_EXIST"), 404
-
-        if role_id == MASTER_ROLE_ID:
-            seller_data = product_dao.seller_list(db)
-
-            sellers = [{
-                "id": seller.get('user_id'),
-                "image": seller.get('profile_image'),
-                "name": seller.get('seller_name')} for seller in seller_data]
-
-            return jsonify(data=sellers), 200
-
-    except pymysql.err.InternalError:
-        return jsonify(message="DATABASE_DOES_NOT_EXIST"), 500
-    except pymysql.err.OperationalError:
-        return jsonify(message="DATABASE_AUTHORIZATION_DENIED"), 500
-    except pymysql.err.ProgrammingError:
-        return jsonify(message="DATABASE_SYNTAX_ERROR"), 500
-    except pymysql.err.IntegrityError:
-        return jsonify(message="FOREIGN_KEY_CONSTRAINT_ERROR"), 500
-    except pymysql.err.DataError:
-        return jsonify(message="DATA_ERROR"), 400
-    except KeyError:
-        return jsonify(message="KEY_ERROR"), 400
-    except Exception as e:
-        return jsonify(message=f"{e}"), 500
-    finally:
-        if db:
-            db.close()
-
-
 @product_app.route('/category', methods=['GET'])
 @login_required
 def product_category(**kwargs):
@@ -992,7 +928,7 @@ def change_product_status(**kwargs):
             db.close()
 
 
-@product_app.route('/seller-name', methods=['GET'])
+@product_app.route('/seller', methods=['GET'])
 @login_required
 def find_seller_name(**kwargs):
     """ 셀러 리스트 목록 찾는 API
@@ -1032,9 +968,10 @@ def find_seller_name(**kwargs):
         if role_id == MASTER_ROLE_ID:
             seller_data = product_dao.similar_seller_name(db, seller_name)
 
-            seller_list = [{ "id" : seller['user_id'],
-                  "name": seller['seller_name'],
-                  "image": seller['profile_image']
+            seller_list = [{
+                    "id": seller['user_id'],
+                    "name": seller['seller_name'],
+                    "image": seller['profile_image']
                 }for seller in seller_data]
 
             return jsonify(data=seller_list), 200
