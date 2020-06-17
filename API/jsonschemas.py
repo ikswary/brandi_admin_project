@@ -2102,7 +2102,7 @@ FILTER_SCHEMA = {
             "examples": [
                 "입점"
             ],
-            "pattern": "^(입점대기|입점|휴점|퇴점대기|퇴점)$"
+            "pattern": "^(|입점대기|입점|휴점|퇴점대기|퇴점)$"
         },
         "manager_phone": {
             "$id": "#/properties/manager_phone",
@@ -2133,7 +2133,7 @@ FILTER_SCHEMA = {
             "examples": [
                 "뷰티"
             ],
-            "pattern": "^(쇼핑몰|마켓|로드샵|디자이너브랜드|제너럴브랜드|내셔널브랜드|뷰티)$"
+            "pattern": "^(|쇼핑몰|마켓|로드샵|디자이너브랜드|제너럴브랜드|내셔널브랜드|뷰티)$"
         },
         "view": {
             "$id": "#/properties/view",
