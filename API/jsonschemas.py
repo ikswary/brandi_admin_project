@@ -200,7 +200,6 @@ PRODUCT_SCHEMA = {
             ],
             "price": 100,
             "discount_rate": 10,
-            "discount_price": 90,
             "discount_start": "str",
             "discount_end": "date",
             "min_sales_unit": 1,
@@ -499,7 +498,7 @@ PRODUCT_SCHEMA = {
                             "stock": {
                                 "$id": "#/properties/option/items/anyOf/0/properties/stock",
                                 "type": [
-                                    "integer",
+                                    "string",
                                     "null"
                                 ],
                                 "title": "The stock schema",
@@ -533,19 +532,6 @@ PRODUCT_SCHEMA = {
             "default": 0,
             "examples": [
                 10
-            ]
-        },
-        "discount_price": {
-            "$id": "#/properties/discount_price",
-            "type": [
-                "integer",
-                "null"
-            ],
-            "title": "The discount_price schema",
-            "description": "An explanation about the purpose of this instance.",
-            "default": 0,
-            "examples": [
-                90
             ]
         },
         "discount_start": {
@@ -1517,7 +1503,6 @@ CHANGE_PRODUCT_SCHEMA = {
             ],
             "price": 20000,
             "discount_rate": 12,
-            "discount_price": 17600,
             "discount_start": "2020-06-02 14:37",
             "discount_end": "2020-06-26 14:37",
             "min_sales_unit": 1,
@@ -1827,7 +1812,7 @@ CHANGE_PRODUCT_SCHEMA = {
                             "stock": {
                                 "$id": "#/properties/option/items/anyOf/0/properties/stock",
                                 "type": [
-                                    "integer",
+                                    "string",
                                     "null"
                                 ],
                                 "title": "The stock schema",
@@ -1863,18 +1848,6 @@ CHANGE_PRODUCT_SCHEMA = {
                 12
             ]
         },
-        "discount_price": {
-            "$id": "#/properties/discount_price",
-            "type": [
-                "integer",
-                "null"
-            ],
-            "title": "The discount_price schema",
-            "description": "An explanation about the purpose of this instance.",
-            "default": 0,
-            "examples": [
-                17600
-            ]
         },
         "discount_start": {
             "$id": "#/properties/discount_start",
@@ -1971,7 +1944,7 @@ CHANGE_PRODUCT_SCHEMA = {
             }
         }
     }
-}
+
 
 USER_STATUS_UPDATE_SCHEMA = {
     "$schema": "http://json-schema.org/draft-07/schema",

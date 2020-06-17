@@ -620,9 +620,9 @@ def change_product_information(**kwargs):
     except ValidationError as e:
         error_path = str(e.path)[8:-3]
         return jsonify(message=f"{error_path.upper()}_VALIDATION_ERROR"), 400
-    except Exception as e:
-        db.rollback()
-        return jsonify(message=f"{e}"), 500
+    #except Exception as e:
+    #    db.rollback()
+    #    return jsonify(message=f"{e}"), 500
     finally:
         if db:
             db.close()
