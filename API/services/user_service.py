@@ -241,6 +241,7 @@ def get_seller_list_service(db, filter_options):
 
 
 def user_status_update_service(db, user_id, modifier_id, action):
+    # 액션버튼이 눌림에 따라 바뀌는 셀러 상태의 맵핑
     action_status_mapping = {
         1: 2,  # 입점 승인 -> 입점 상태
         2: 5,  # 입점 거절 -> 퇴점 상태
