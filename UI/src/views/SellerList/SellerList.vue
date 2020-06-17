@@ -224,21 +224,26 @@
         </template>
         <div class="pageContainer">
           <span>Page</span>
-          <button>
+          <button @click="pageBackward">
             <i class="xi-angle-left-min"></i>
           </button>
-          <input type="text" />
-          <button>
+          <input 
+            type="text"
+            name="page"
+            v-model="searchDatas[1].value"/>
+          <button @click="pageForward">
             <i class="xi-angle-right-min"></i>
           </button>
           <span>of {{pagesData}} | View</span>
-          <select name id>
-            <option value="volvo">10</option>
-            <option value="saab">20</option>
-            <option value="opel">50</option>
-            <option value="audi">150</option>
+          <select 
+            name="view"
+            v-model="searchDatas[0].value">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="150">150</option>
           </select>
-          <span>records Found total {{usersData}} records</span>
+          <span>records | Found total {{usersData}} records</span>
         </div>
       </div>
     </div>
