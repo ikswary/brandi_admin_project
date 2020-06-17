@@ -1,0 +1,78 @@
+{
+  "data": {
+    "id": 2,
+    "seller_key_id": 2,
+    "authorization": "master",
+    "is_deleted": 0,
+    "attribute": "쇼핑몰",
+    "profile": null,
+    "name": "입점대기",
+    "kor_name": "진성준",
+    "eng_name": "sungjun",
+    "user_id": "test1",
+    "background_image": null,
+    "simple_introduction": null,
+    "detail_introduction": null,
+    "site_url": "http://www.naver.com",
+    "service_number": "010-4086-8910",
+    "zip_code": null,
+    "address": null,
+    "detail_address": null,
+    "bank": null,
+    "account_owner": null,
+    "bank_account": null,
+    "shipping_information": null,
+    "refund_information": null,
+    "model_height": null,
+    "model_size_top": null,
+    "model_size_bottom": null,
+    "model_size_foot": null,
+    "feed_message": null,
+    "supervisors": [
+      {
+        "id": 2,
+        "seller_id": 2,
+        "is_deleted": 0,
+        "order": 1,
+        "name": "이원철",
+        "phone_number": "010-4086-8910",
+        "email": "lwc@lwc.co.kr"
+      },
+      {
+        "id": 2,
+        "seller_id": 2,
+        "is_deleted": 0,
+        "order": 1,
+        "name": "이원철",
+        "phone_number": "010-4086-8910",
+        "email": "lwc@lwc.co.kr"
+      },
+      {
+        "id": 2,
+        "seller_id": 2,
+        "is_deleted": 0,
+        "order": 1,
+        "name": "이원철",
+        "phone_number": "010-4086-8910",
+        "email": "lwc@lwc.co.kr"
+      }
+    ],
+    "buisness_hours": [
+      {
+        "id": 1,
+        "seller_id": 2,
+        "start_time": "9:00:00",
+        "end_time": "18:00:00",
+        "is_weekend": null,
+        "is_deleted": 0
+      }
+    ],
+    "seller_histories": [
+      {
+        "start_date": "Mon, 08 Jun 2020 20:04:59 GMT",
+        "name": "입점대기",
+        "editor": "test1"
+      }
+    ]
+  }
+}

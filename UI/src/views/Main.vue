@@ -9,16 +9,17 @@
 </template>
 
 <script>
-import Header from '../components/Header';
-import Layout from '../components/Layout';
-import MainFooter from '../components/MainFooter';
+import Header from "../components/Header";
+import Layout from "../components/Layout";
+import MainFooter from "../components/MainFooter";
 export default {
   components: {
     Header,
     Layout,
-    MainFooter,
-  },
+    MainFooter
+  }
 };
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+</style>
