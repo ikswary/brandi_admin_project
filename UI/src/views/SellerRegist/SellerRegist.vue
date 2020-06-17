@@ -360,7 +360,7 @@
               </tr>
             </tbody>
 
-            <!-- 셀러상태 변경기록 -->
+           <!-- 셀러상태 변경기록 -->
             <tbody>
               <th>셀러상태 변경기록</th>
               <td
@@ -388,61 +388,23 @@
                 v-for="history in detailInfo.seller_status_history"
                 :key="history.account" class="historyTr3"
                 >
-                <tr>
+                <tr class="historyTr">
                     <td>{{history.startdate}}</td>
                 </tr>
-                <tr>
+                <tr class="historyTr">
                     <td>{{history.name}}</td>
                 </tr>
-                <tr>
+                <tr class="historyTr2">
                     <td>{{history.account}}</td>
                 </tr>
                 </td>
-              </td>
+              
             </tbody>
           </template>
         </v-simple-table>
       </div>
     </div>
-    <!-- 배달 정보 시작 영역 -->
-    <div class="cmpWrap">
-      <!-- <div class="cmpTitle">
-        <i class="xi-user">배송정보 및 교환/환불 정보</i>
-      </div> -->
-      <!-- <div class="cmpTable"> -->
-        <!-- <v-simple-table> -->
-          <!-- 테이블 시작 영역 -->
-          <!-- <tbody>
-            <TextAreaBox
-              v-model="infoDatas.data.shipping_information"
-              placeholder="ex) 도서산간 지역은 배송비가 추가비용이 발생할 수 있습니다. 결제 완료 후 1~3일 후 출고됩니다."
-            >
-              <template #thName>
-                배송 정보
-                <i class="xi-pen" />
-              </template>
-              <template #infoText01>
-                <i class="xi-info">문장이 끝나면 엔터로 줄바꿈을 해주세요.</i>
-              </template>
-            </TextAreaBox>
-          </tbody> -->
-          <!-- <tbody>
-            <TextAreaBox
-              v-model="infoDatas.data.refund_information"
-              placeholder="ex) 브랜디는 소비자보호법 및 전자상거래법을 기반한 환불보장제를 운영 중에 있습니다. 정당하지 않은 사유로 인한 환불 거부 등은 제재 사유가 될 수 있는 점 참고 부탁드립니다."
-            >
-              <template #thName>
-                교환/환불 정보
-                <i class="xi-pen" />
-              </template>
-              <template #infoText01>
-                <i class="xi-info">문장이 끝나면 엔터로 줄바꿈을 해주세요.</i>
-              </template>
-            </TextAreaBox>
-          </tbody> -->
-        <!-- </v-simple-table> -->
-      <!-- </div> -->
-    </div>
+ 
     <!-- 관리브랜드 정보 -->
     <div class="cmpWrap">
       <div class="cmpTitle">
@@ -813,11 +775,12 @@ export default {
       }
     }
   }
-  .historyBox {
+ .historyBox {
     width: 100%;
     th,
     td {
-      border: 1px solid lightgray;
+    width: 149px;
+    border: 1px solid lightgray;
     }
     th {
       background-color: #eee;
@@ -835,6 +798,10 @@ export default {
  .historyTr2 {
    width : 149px;
    border-bottom: 1px solid lightgray;
+   border-left: 1px solid lightgray;
+   border-right: 1px solid lightgray;
+
+
      
  }
 
