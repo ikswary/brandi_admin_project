@@ -72,26 +72,27 @@ export default {
       if (this.passwordState && this.loginState) {
         axios
           .post(`${JH_URL}/user/sign-in`, {
-            method: "post",
+            method: "POST",
             account: this.loginValue,
             password: this.passwordValue
           })
           .then(response => {
             if (response.data.token) {
               localStorage.setItem("Authorization", response.data.token);
-              localStorage.setItem("id", this.loginValue);
               this.$router.push("/main/seller/sellerlist");
             }
           })
           .catch(error => {
-            if (error.response.data.message === "UNAUTHORIZED account") {
+            if (error.response.data.message === "NOT_AUTHORIZED_USER") {
               alert("승인 전이니 담당자가 승인 후 로그인 가능 합니다.");
             }
-            if (error.response.data.message === "INVALID ACCESS") {
+            if (error.response.data.message === "PASSWORD_MISMATCH"
+            || error.response.data.message === "ACCOUNT_DOES_NOT_EXIST"
+            || error.response.data.message === "ACCOUNT_VALIDATION_ERROR") {
               alert("아이디와 비밀번호를 다시 확인해주세요.");
             }
-            console.log(error.response.data.message);
-          });
+            }
+            );
       }
     },
 
