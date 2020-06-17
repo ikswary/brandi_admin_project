@@ -5,9 +5,10 @@ sys.path.extend([BASE_DIR])
 
 import pymysql
 import math
+import datetime
 from jsonschema import validate, ValidationError
-from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify
+from dateutil.parser import parse
 
 from jsonschemas import PRODUCT_SCHEMA, CHANGE_PRODUCT_SCHEMA, PRODUCT_FILTER_SCHEMA, PRODUCT_STATUS_SCHEMA
 from connections import get_db_connector
@@ -750,6 +751,12 @@ def product_list(**kwargs):
 
             for filter_key in filter_list:
                 filter_dict[filter_key] = request.args.get(filter_key, None)
+
+            if filter_dict['end_period']:
+                end_date = parse(filter_dict['end_period'])
+                add_date = datetime.timedelta(days = 1)
+                end_period = end_date + add_date
+                filter_dict['end_period'] = end_period
 
             # seller_attribute_id 값 리스트로 저장 / 잘못된 필터 데이터가 들어오면 에러 return
             seller_attribute_check_list = ['1','2','3','4','5','6','7']
