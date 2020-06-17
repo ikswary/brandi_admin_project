@@ -148,7 +148,7 @@
                   />
                   <label for="displayed">진열</label>
                   <input
-                    v-model="productDatas.on_list"
+                    v-model="produgitctDatas.on_list"
                     type="radio"
                     id="nodisplayed"
                     :value="0"
@@ -177,7 +177,7 @@
                       v-model="firstCateSelected"
                       @change="getSecondCategory(firstCateSelected)"
                     >
-                      <option value="0">1차 카테고리를 선택해 주세요.</option>
+                      <option value="">1차 카테고리를 선택해주세요.</option>
                       <option
                         :value="index"
                         v-for="(list,index) in firstCate"
@@ -185,14 +185,14 @@
                       >{{list.name}}</option>
                     </select>
                   </td>
-                </tr>
+                </tr>ㄴ
                 <tr>
-                  <th>2차 카테고리를 선택해 주세요.</th>
+                  <th>2차 카테고리</th>
                   <td>
                     <select 
                     v-model="secondCateId"
                     >
-                      <option>2차 카테고리</option>
+                      <option value="">1차 카테고리를 먼저 선택해 주세요.</option>
                       <option
                         :value="list.id"
                         v-for="list in secondCate"
@@ -203,9 +203,7 @@
                 </tr>
               </td>
             </tr>
-
             <!-- 상품 정보 고시 -->
-
             <tr>
               <th>
                 상품 정보 고시
@@ -251,7 +249,6 @@
                           <select
                           v-model="manufacture_country_id"
                           >
-                            <!-- <option value="0">원산지</option> -->
                             <option
 
                               :value="list.id"
@@ -274,7 +271,7 @@
               </th>
               <td>
                 <div class="box">
-                  <input type="text" v-model="productDatas.name" />
+                  <input type="text" v-model="productDatas.name"/>
                   <div>
                     <i class="xi-info">미진열 선택시 앱에서 노출되지 않습니다.</i>
                   </div>
@@ -418,7 +415,10 @@
               </tr>           
             <!-- 상품 태그 관리 -->
               <tr>
-                <th>상품 태그 관리</th>
+                <th>
+                    상품 태그 관리
+                    <i class="xi-pen" />
+                </th>
                 <td>
                   <div class="box">
                     <b-form-tags
@@ -878,7 +878,6 @@ export default {
   },
   methods: {
     test01: function() {
-      if (confirm("상품을 등록 하시겠습니까?") == true){
       axios
         .post(
           `${JA_URL}/product`,
@@ -910,7 +909,7 @@ export default {
           },
           {
             headers: {
-              Authorization: localStorage.Authorization
+              Authorization: localStorage.token
             }
           }
         )
@@ -918,13 +917,8 @@ export default {
           console.log(response);
         })
         .catch(error => {
-          if (error.response.data.message === "SUCCESS") {
-              alert("상품이 등록되었습니다");
-            }
-          else
-          alert("입력을 확인 해 주십시오")
-          
-        });}
+          console.log(error.response.data.message);
+        });
     },
     inputTag: function() {
       let index = (this.tag.length-1);
@@ -1017,7 +1011,7 @@ export default {
     //   // axios
     //   //   .get(`${YE_URL}/product-options`, {
     //   //     headers: {
-    //   //       Authorization: localStorage.token
+    //   //       Authorization: localStorage.Authorization
     //   //     }
     //   //   })
     //   //   .then(response => {
@@ -1101,7 +1095,7 @@ export default {
     searchSellerList: function(e) {
       this.searchSeller = e;
       axios
-        .get(`${JA_URL}/product/seller-name?seller_name=${this.searchSeller}`, {
+        .get(`${JA_URL}/product/seller?seller_name=${this.searchSeller}`, {
           headers: {
             Authorization: localStorage.Authorization
           }
