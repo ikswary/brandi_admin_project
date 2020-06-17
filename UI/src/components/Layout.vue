@@ -1,7 +1,6 @@
 <template>
   <div class="main-container">
     <v-navigation-drawer
-      v-model="drawer"
       clipped
       app
       dark
@@ -21,9 +20,7 @@
             <!-- More 버튼 생성 -->
             <template v-slot:activator>
               <v-list-item-content>
-                <v-list-item-title style="font-size: 14px;font-weight: 400;">{{
-                  item.text
-                }}</v-list-item-title>
+                <v-list-item-title style="font-size: 14px;font-weight: 400;">{{item.text}}</v-list-item-title>
               </v-list-item-content>
             </template>
 
@@ -36,68 +33,54 @@
             >
               <v-list-item-title
                 style="padding-left : 14px;font-size: 14px;font-weight: 400;"
-                >{{ child.text }}</v-list-item-title
-              >
+              >{{child.text}}</v-list-item-title>
             </v-list-item>
           </v-list-group>
         </template>
       </v-list>
     </v-navigation-drawer>
-    <div :class="mainPageLayout">
+    <!-- 보여지는 페이지 공간 -->
+    <div class="about">
       <slot></slot>
     </div>
   </div>
 </template>
 
 <script>
-import { items } from '../config/Items';
+import { items } from "../config/Items";
+
 export default {
   data() {
     return {
-      drawer: true,
-      items: items,
-      right: false,
-      miniVariant: false,
+      items: items
     };
-  },
-  computed: {
-    mainPageLayout() {
-      return this.drawer ? 'about' : 'non';
-    },
   },
   methods: {
     detailPage(path) {
       this.$router.push(`/main/${path}`);
-    },
-  },
+    }
+  }
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .main-container {
   height: 100%;
   padding-top: 45px;
-  display: flex !important;
+  display: flex;
   .about {
-    width: 100% !important;
-    transition: all 0.3s ease-in-out;
+    min-height: 100vh !important;
+    width: calc(100vw - 256px);
     color: black;
     background: white;
     .container {
-      width: 100% !important;
+      width: unset !important;
       overflow: hidden;
       margin: 0 0 50px 0 !important;
-      max-width: unset !important;
+      max-width: unset;
     }
   }
-  .non {
-    height: calc(100vh - 48px);
-    width: 100%;
-    margin-top: 48px;
-    margin-left: 0;
-    color: black;
-    background: white;
-  }
+
   .v-icon {
     font-size: 18px;
     color: gray;
