@@ -15,6 +15,7 @@ user_dao = UserDao()
 
 def sign_up_service(db, data):
     try:
+        # 이력관리를 위해 나누어놓은 테이블에 차례대로 insert
         user_id = user_dao.insert_users(db, SELLER_ROLE_ID, data['account'])  # root user 레코드 생성
         user_dao.insert_user_details_first(db, user_id=user_id, **data)  # user details 레코드 생성
         manager_id = user_dao.insert_managers_first(db, data['manager_phone'])  # managers 레코드 생성
@@ -122,7 +123,9 @@ def user_detail_modify_service(db, user_id, modifier_id, details):
             current_detail['user_id'] = user_id
             current_detail['modifier_id'] = modifier_id
             current_detail['startdate'] = current_time
+            # 선분 이력 관리를 위해 현재 선분을 끝냄
             user_dao.update_detail(db, user_id, current_time)
+            # 선분 이력 관리를 위 새로운 선분을 시작
             user_dao.insert_user_details(db, current_detail)
 
     except Exception as e:
@@ -241,7 +244,7 @@ def get_seller_list_service(db, filter_options):
 
 
 def user_status_update_service(db, user_id, modifier_id, action):
-    # 액션버튼이 눌림에 따라 바뀌는 셀러 상태의 맵핑
+    # 액션버튼이 눌림에 라 바뀌는 셀러 상태의 맵핑
     action_status_mapping = {
         1: 2,  # 입점 승인 -> 입점 상태
         2: 5,  # 입점 거절 -> 퇴점 상태
@@ -270,6 +273,7 @@ def user_status_update_service(db, user_id, modifier_id, action):
 
 def user_status_update_validate_service(db, action, user_id):
     try:
+        # 키값 확인
         validation_object = {
             "user_id": user_id,
             "action": int(action)
@@ -278,7 +282,7 @@ def user_status_update_validate_service(db, action, user_id):
 
         # user의 id값으로 user의 status id를 조회한다
         status_id = user_dao.get_user_status_id(db, user_id)
-        # 위 조회값이 없으면 ERROR를 raise한다
+        # 위 조회값이 없거나 퇴점 유저라 ERROR를 raise한다
         if status_id == 5 or status_id is None:
             raise UserNotExistError
 

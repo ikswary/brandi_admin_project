@@ -601,8 +601,6 @@ export default {
     },
     // 수정버튼을 누르면 백엔드로 인풋에 입력된 모든 내용을 보냅니다.
     putInfoDatas: function() {
-      console.log(this.tableCount)
-      console.log(this.detailInfo.managers)
       if (confirm("셀러정보를 수정 하시겠습니까?") == true) {
         axios
           .put(

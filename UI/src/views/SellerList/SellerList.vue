@@ -324,7 +324,8 @@ export default {
       if (
         action.name === "휴점 신청" ||
         action.name === "퇴점 철회 처리" ||
-        action.name === "퇴점신청 처리"
+        action.name === "퇴점신청 처리" ||
+        action.name === "퇴점 확정 처리"
       ) {
         if (
           confirm(

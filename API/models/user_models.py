@@ -140,7 +140,8 @@ class UserDao:
         except Exception as e:
             raise e
 
-    def get_id_role_password_status_from_account(self, db, account):
+    @staticmethod
+    def get_id_role_password_status_from_account(db, account):
         try:
             with db.cursor(pymysql.cursors.DictCursor) as cursor:
                 query = """
@@ -154,13 +155,14 @@ class UserDao:
                 AND status.enddate = 99991231235959)
                 WHERE users.account = %s AND users.is_deleted = 0
                 """
-
+                
                 affected_row = cursor.execute(query, account)
+                # SELECT 구문이므로 영향받은 Row가 -1일 경우 error
                 if affected_row == -1:
                     raise Exception('EXECUTE_FAILED')
                 if affected_row:
                     return cursor.fetchone()
-
+                # 회원가입 하지 않은 유저일 경우 row가 0일 수 있으므로 None 리턴
                 return None
 
         except Exception as e:

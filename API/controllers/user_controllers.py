@@ -71,17 +71,21 @@ class User(MethodView):
 
         db = None
         try:
+            # JSON SCHEMA를 이용한 Validation
             validate(request.json, SIGN_UP_SCHEMA)
             data = request.json
 
+            # DB 커넥터 정의 및 에러 핸들
             db = get_db_connector()
             if db is None:
                 return jsonify(message="DATABASE_INIT_ERROR"), 500
 
+            # 입력받은 acount로 중복된 유저인지 조회
             user_id = user_dao.get_id_from_account(db, data['account'])
             if user_id:
                 return jsonify(message="ACCOUNT_DUPLICATED"), 409
 
+            # bcrypt 라이브러리를 이용하여 비밀번호를 SHA256으로 해
             data['password'] = bcrypt.hashpw(data['password'].encode('utf-8'),
                                              bcrypt.gensalt()).decode('utf-8')
 
@@ -323,19 +327,25 @@ def sign_in():
 
     db = None
     try:
-        db = get_db_connector()
-
+        # JSON SCHEMA를 이용한 Validation
         validate(request.json, SIGN_IN_SCHEMA)
         data = request.json
 
+        # DB 정의 및 에러 핸들
+        db = get_db_connector()
         if db is None:
             return jsonify(message="DATABASE_INIT_ERROR"), 500
 
+        # 액세스 토큰에 담을 role_id, user_id와 비밀번호, 셀러 권한을 페치한다
         result = user_dao.get_id_role_password_status_from_account(db, data['account'])
+
+        # account가 존재하지 않아 아무것도 페치되지 않았을 경우 핸들
         if not result:
             return jsonify(message="ACCOUNT_DOES_NOT_EXIST"), 400
+        # hash된 password가 일치하지 않을 때 사용
         if not bcrypt.checkpw(data['password'].encode('utf-8'), result['password'].encode('utf-8')):
             return jsonify(message="PASSWORD_MISMATCH"), 400
+        # 유저의 role이 셀러이며 status가 입점대기일 때 403 에러 발생
         if (result['role_id'] == User.SELLER_ROLE_ID
                 and result['status_id'] == User.BASIC_STATUS_ID):
             return jsonify(message="NOT_AUTHORIZED_USER"), 403
@@ -345,7 +355,7 @@ def sign_in():
             {
                 'role_id': result['role_id'],
                 'user_id': result['id'],
-                'exp': datetime.utcnow() + timedelta(hours=12)
+                'exp': datetime.utcnow() + timedelta(hours=1)
             },
             SERCRET,
             HASH_ALGORITHM
@@ -490,8 +500,10 @@ def user_status(**kwargs):
             return jsonify(message="DATABASE_INIT_ERROR"), 500
 
         # 마스터 권한 전용 메뉴이므로 마스터 토큰이 아닐 경우 요청 drop
-        if kwargs['role_id'] == USER_DATA_MODIFY_SELLER:
+        if not kwargs['role_id'] == User.MASTER_ROLE_ID:
             return jsonify(message="NOT_AUTHORIZED_USER"), 403
+
+        # 해당 유저에게 유효한 액션인지 확인
         user_status_update_validate_service(db,
                                             request.json['action'],
                                             kwargs['target_id'])
