@@ -177,7 +177,7 @@
                       v-model="firstCateSelected"
                       @change="getSecondCategory(firstCateSelected)"
                     >
-                      <option value="0">1차 카테고리를 선택해 주세요.</option>
+                      <option value="">1차 카테고리를 선택해주세요.</option>
                       <option
                         :value="index"
                         v-for="(list,index) in firstCate"
@@ -185,14 +185,14 @@
                       >{{list.name}}</option>
                     </select>
                   </td>
-                </tr>
+                </tr>ㄴ
                 <tr>
-                  <th>2차 카테고리를 선택해 주세요.</th>
+                  <th>2차 카테고리</th>
                   <td>
                     <select 
                     v-model="secondCateId"
                     >
-                      <option>2차 카테고리</option>
+                      <option value="">1차 카테고리를 먼저 선택해 주세요.</option>
                       <option
                         :value="list.id"
                         v-for="list in secondCate"
@@ -203,16 +203,13 @@
                 </tr>
               </td>
             </tr>
-
-            <!-- 상품 정보 고시 -->
-
             <!-- 상품 정보 고시 -->
             <tr>
               <th>
                 상품 정보 고시
                 <i class="xi-pen" />
               </th>
-             <td class="onSaleBox">
+              <td class="onSaleBox">
                 <div>
                   <input
                     v-model="productDatas.is_detail_reference"
@@ -274,7 +271,7 @@
               </th>
               <td>
                 <div class="box">
-                  <input type="text" v-model="productDatas.name" style="width:950px"/>
+                  <input type="text" v-model="productDatas.name"/>
                   <div>
                     <i class="xi-info">미진열 선택시 앱에서 노출되지 않습니다.</i>
                   </div>
@@ -287,7 +284,7 @@
             <tr>
               <th>한줄 상품 설명</th>
               <td>
-                <input type="text" v-model="productDatas.simple_description" style="width:950px" />
+                <input type="text" v-model="productDatas.simple_description" />
               </td>
             </tr>
             <!-- 이미지 등록 -->
@@ -329,12 +326,12 @@
               <td class="onSaleBox">
                 <div style="width: 100%">
                   <input
-                    
+                    v-model="colorModal"
                     :value="0"
                     type="radio"
                     id="unuse"
                     name="colorFilter"
-                    checked="checked"
+                    checked
                   />
                   <label for="unuse">사용안함</label>
                   <input
@@ -372,7 +369,6 @@
                       type="radio"
                       id="displayed"
                       @click="styleFilter()"
-                      checked="checked"
                     />
                     
                     <label for="displayed">선택안함</label>
@@ -419,7 +415,10 @@
               </tr>           
             <!-- 상품 태그 관리 -->
               <tr>
-                <th>상품 태그 관리</th>
+                <th>
+                    상품 태그 관리
+                    <i class="xi-pen" />
+                </th>
                 <td>
                   <div class="box">
                     <b-form-tags
@@ -686,7 +685,7 @@
                     <tr>
                       <th>할인기간</th>
                       <th>
-              <td class="onSaleBox" style="border:none">
+              <td class="onSaleBox">
                 <div>
                   <input
                     v-model="productDatas.is_detail_reference_2"
@@ -708,14 +707,21 @@
                   <div v-if="productDatas.is_detail_reference_2 === 0" class="detailBox"
                   >
                     <div class="inputBox">
-                      <b-form-datepicker id="example-datepicker" v-model="discount_start" class="mb-2"    
-                        local="kr" placeholder="클릭해주세요" style="width:200px"></b-form-datepicker>
-
+                        <div class="inputTitle"></div>
+                            <b-form-datepicker
+                              id="datepicker-placeholder2"
+                              v-model="discount_start"
+                              placeholder="클릭해주세요"
+                              local="kr"
+                              ></b-form-datepicker>
                             <span class="span-input-group"> ~ </span>
-                          
-                             <b-form-datepicker id="example-datepicker1"  v-model="discount_end"
-                              class="mb-2"    local="kr"  placeholder="클릭해주세요" style="width:200px">
-                          </b-form-datepicker>
+                            <b-form-datepicker
+                              id="datepicker-placeholder3"
+                              v-model="discount_end"
+                              placeholder="클릭해주세요"
+                              local="kr"
+                              >
+                            </b-form-datepicker>                        
                     </div>
                   </div>
                 </div>
@@ -768,26 +774,21 @@
     <!-- 판매정보 시작 -->
 
     <!-- 등록 취소 버튼 -->
- <div id="app">
-  <v-app id="inspire">
     <v-col class="text-center">
       <div class="my-2">
         <v-btn
           class="enroll-button"
           @click="test01()"
-          color="success"
           >등록</v-btn>
       </div>
       <div class="my-2">
-        <v-btn class="cancle-button"
-                  color="error"
->취소</v-btn>
+        <v-btn class="cancle-button">취소</v-btn>
       </div>
     </v-col>
-  </v-app>
- </div>
   </div>
 </template>
+
+
 
 <script>
 import axios from "axios";
@@ -864,7 +865,6 @@ export default {
         wholesale_price: "",
         price: "",
         dismax_sales_unitcount_rate: "",
-        isHidden : false,
         // discount_start: "2020-06-01 08:30:00",
         // discount_end: "2020-06-03 23:59:59",
         // max_sales_unit: "",
@@ -1013,7 +1013,7 @@ export default {
     //   // axios
     //   //   .get(`${YE_URL}/product-options`, {
     //   //     headers: {
-    //   //       Authorization: localStorage.token
+    //   //       Authorization: localStorage.Authorization
     //   //     }
     //   //   })
     //   //   .then(response => {
@@ -1047,7 +1047,7 @@ export default {
       axios
         .get(`${JA_URL}/product/information`, {
           headers: {
-            Authorization: localStorage.token
+            Authorization: localStorage.Authorization
           }
         })
         .then(response => {
@@ -1058,7 +1058,7 @@ export default {
       axios
         .get(`${JA_URL}/product/information`, {
           headers: {
-            Authorization: localStorage.token
+            Authorization: localStorage.Authorization
           }
         })
         .then(response => {
@@ -1086,7 +1086,7 @@ export default {
       axios
         .get(`${JA_URL}/product/category?seller_id=${id}`, {
           headers: {
-            Authorization: localStorage.token
+            Authorization: localStorage.Authorization
           }
         })
         .then(response => {
@@ -1097,9 +1097,9 @@ export default {
     searchSellerList: function(e) {
       this.searchSeller = e;
       axios
-        .get(`${JA_URL}/product/seller-name?seller_name=${this.searchSeller}`, {
+        .get(`${JA_URL}/product/seller?seller_name=${this.searchSeller}`, {
           headers: {
-            Authorization: localStorage.token
+            Authorization: localStorage.Authorization
           }
         })
         .then(response => {
@@ -1114,7 +1114,7 @@ export default {
       axios
         .get(`${JA_URL}/product?code=${this.code}`, {
           headers: {
-            Authorization: localStorage.token
+            Authorization: localStorage.Authorization
           }
         })
         .then(response => {
@@ -1413,7 +1413,6 @@ export default {
   }
 
   .onSaleBox {
-    //  border : none !important;
     display: flex;
     flex-direction: column;
     div:first-child {
@@ -1434,7 +1433,6 @@ export default {
     .colorInput {
       width: 30%;
     }
-  
   }
 
   .detailBox {
@@ -1723,10 +1721,6 @@ export default {
 
   * {
     // border: 1px solid red;
-  }
-  .text-center {
-    display : flex;
-    justify-content: center;
   }
 }
 </style>
