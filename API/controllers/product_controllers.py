@@ -392,7 +392,7 @@ def get_product_information(**kwargs):
         if db is None:
             return jsonify(message="DATABASE_INIT_ERROR"), 500
 
-        product_code=request.args.get('code')
+        product_code=request.args.get('product_code')
         data = product_dao.find_product(db, product_code)
 
         first_category_id = data['first_category_id']
