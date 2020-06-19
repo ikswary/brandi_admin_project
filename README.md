@@ -3,6 +3,9 @@
 ## Introduction
 - [Brandi Admin website](http://admin.brandi.co.kr/) clone.
 - Develop Member (1 Front-End , 2 Back-End) 
+  - 김광민
+  - 손진현
+  - 최진아
 - develop period : '20.05.25. ~ '20.06.18.
 
 ## DataBase Modeling
