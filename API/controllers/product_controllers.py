@@ -34,6 +34,9 @@ def product_category(**kwargs):
         API 작성:
             최진아
 
+        Header:
+            Authorizaion: jwt
+
         Args:
              user_id: 접속 아이디,
              seller_id : 셀러 아이디,
@@ -105,6 +108,9 @@ def product_information(**kwargs):
     """상품 등록시 옵션 및 필터 정보 전달 API
         API 작성:
             최진아
+
+        Header:
+            Authorizaion: jwt
 
         Returns:
              {data : information_data}, http status code
@@ -178,6 +184,9 @@ def save_product(**kwargs):
         API 작성:
             최진아
 
+        Header:
+            Authorizaion: jwt
+
         Args:
            "seller_id": 판매자 id,
            "on_sale": 판매여부,
@@ -196,7 +205,7 @@ def save_product(**kwargs):
            "style_filter_id": 스타일필터,름
            "description_detail": 상세 상품 정보,
            "option": {
-                        "color_name": 옵션 색상 이,
+                        "color_name": 름,
                         "size_name": 옵션 size 이름,
                         "stock": 재고 수량
                      }
@@ -356,6 +365,9 @@ def get_product_information(**kwargs):
         API 작성:
             최진아
 
+        Header:
+            Authorizaion: jwt
+
         URL params:
             <string:product_code>: 상품 코드
 
@@ -420,6 +432,9 @@ def change_product_information(**kwargs):
     """상품 수정 API
         API 작성:
             최진아
+
+        Header:
+            Authorizaion: jwt
 
         Args:
             "product_code": 상품코드,
@@ -600,6 +615,9 @@ def history(**kwargs):
         API 작성:
             최진아
 
+        Header:
+            Authorizaion: jwt
+
         Args:
              code : 상품 코드
 
@@ -687,6 +705,8 @@ def product_list(**kwargs):
             on_sale : 판매여부
             on_list: 진열여부
             discount: 할인여부
+            limit : pagination
+            offset : pagination
 
         Returns:
             {data = product_list}, http status code
@@ -785,7 +805,7 @@ def product_list(**kwargs):
                 "on_sale": product['on_sale'],
                 "on_list": product['on_list'],
     	        "discount": 0 if product['discount_rate'] == 0 else 1
-                        } for product in products_data]}
+                    } for product in products_data]}
 
         return jsonify(data = product_list), 200
 
@@ -817,6 +837,9 @@ def change_product_status(**kwargs):
     """상품 상태 변경 API
         API 작성:
             최진아
+
+        Header:
+            Authorizaion: jwt
 
         Args:
             code : 상품 코드
@@ -934,6 +957,9 @@ def find_seller_name(**kwargs):
     """ 셀러 리스트 목록 찾는 API
     API 작성:
         최진아
+
+    Header:
+        Authorizaion: jwt
 
     Args:
         seller_name : 셀러 한글 이름
