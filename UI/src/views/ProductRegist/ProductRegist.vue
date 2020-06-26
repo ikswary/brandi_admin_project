@@ -148,7 +148,7 @@
                   />
                   <label for="displayed">진열</label>
                   <input
-                    v-model="produgitctDatas.on_list"
+                    v-model="productDatas.on_list"
                     type="radio"
                     id="nodisplayed"
                     :value="0"
@@ -185,7 +185,7 @@
                       >{{list.name}}</option>
                     </select>
                   </td>
-                </tr>ㄴ
+                </tr>
                 <tr>
                   <th>2차 카테고리</th>
                   <td>

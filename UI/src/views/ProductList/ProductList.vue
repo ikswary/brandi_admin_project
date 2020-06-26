@@ -13,9 +13,9 @@
     <div class="filterBox">
       <div class="filterDiv">
         <div>조회 기간</div>
-        <b-form-datepicker v-model="searchPeriod[0].value" id="datepicker-placeholder" placeholder="클릭해주세요" local="kr" style="width:180px"></b-form-datepicker>
+        <b-form-datepicker v-model="searchPeriod[0].value" id="datepicker-placeholder" placeholder="클릭해주세요" local="kr" style="width:200px; font-size:14px" ></b-form-datepicker>
           <span class="span-input-group"> ~ </span>
-        <b-form-datepicker v-model="searchPeriod[1].value" id="datepicker-placeholder2" placeholder="클릭해주세요" local="kr" style="width:180px"></b-form-datepicker>
+        <b-form-datepicker v-model="searchPeriod[1].value" id="datepicker-placeholder2" placeholder="클릭해주세요" local="kr" style="width:200px; font-size:14px"></b-form-datepicker>
 
       </div>
       <div class="filterDiv">
@@ -572,13 +572,12 @@ export default {
     .resetBtn {
       color: black;
       background-color: white;
-      border-color: #333;
+      border-color: lightgray;
       &:hover {
         background-color: #eee;
       }
     }
   }
-
   .tableBox {
     .tableIn {
       width: calc(100vw - 335px);
@@ -593,20 +592,35 @@ export default {
         margin-left: 5px;
       }
     }
+    tr {
+      display: flex;
+      width: 100%;
+      }
+    }
+    thead {
+      display: block;
+      width: 100%;
+    }
     th,
     td {
-      text-align: left;
+      display: flex;
+      width: 8.33%;
+      justify-content: center;
       height: 39px !important;
       padding: 12px 8px 8px 8px;
       border: 1px solid #ddd;
       border-left-width: 0 !important;
       border-bottom-width: 0 !important;
+      margin:-1px 0px 0 0 ;
     }
     th {
       font-weight: 600;
       color: black !important;
       font-size: 13px !important;
       background-color: #eee;
+      &:last-child {
+        width: 8.55%;
+        margin: -1px -1px 0 0 ;
     }
   }
 }
