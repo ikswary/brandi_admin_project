@@ -273,7 +273,7 @@
                 <div class="box">
                   <input type="text" style="width:100%" v-model="productDatas.name"/>
                   <div>
-                    <i class="xi-info">미진열 선택시 앱에서 노출되지 않습니다.</i>
+                    <i class="xi-info">상품명에는 쌍따옴표(") 또는 홑따옴표(')를 포함할 수 없습니다.</i>
                   </div>
                 </div>
               </td>
@@ -368,6 +368,7 @@
                       v-model="productDatas.style_filter_id"
                       type="radio"
                       id="displayed"
+                      value=null
                       @click="styleFilter()"
                     />
                     
@@ -685,7 +686,7 @@
                     <tr>
                       <th>할인기간</th>
                       <th>
-              <td class="onSaleBox">
+              <td class="onSaleBox" style="border-top: 0px solid lightgray">
                 <div>
                   <input
                     v-model="productDatas.is_detail_reference_2"
@@ -707,16 +708,18 @@
                   <div v-if="productDatas.is_detail_reference_2 === 0" class="detailBox"
                   >
                     <div class="inputBox">
-                        <div class="inputTitle"></div>
+                        <div class="inputTitle" style="width:10px"></div>
                             <b-form-datepicker
                               id="datepicker-placeholder2"
+                              style="width:200px; font-size:14px"
                               v-model="discount_start"
                               placeholder="클릭해주세요"
                               local="kr"
                               ></b-form-datepicker>
-                            <span class="span-input-group"> ~ </span>
+                            <span class="span-input-group" style="color:#555555"> ~ </span>
                             <b-form-datepicker
                               id="datepicker-placeholder3"
+                              style="width:200px; font-size:14px"
                               v-model="discount_end"
                               placeholder="클릭해주세요"
                               local="kr"
@@ -857,7 +860,7 @@ export default {
         name: "",
         description_short: "",
         color_filter_id: 0,
-        style_filter_id: "",
+        style_filter_id: null,
         description_detail: "",
         options: this.makingOptionsData,
         wholesale_price: "",
@@ -1678,13 +1681,13 @@ export default {
     }
     .wonBox {
       width: 40px;
-      height: 34px;
+      height: 40%;
       background-color: #e5e5e5;
       border-top-right-radius: 3px;
       border-bottom-right-radius: 3px;
 
       text-align: center;
-      padding: 8px;
+      padding: 11px 10px 9px 10px;
     }
     .xi-info {
       padding-left: 20px;
@@ -1716,6 +1719,17 @@ export default {
       cursor: pointer;
     }
   }
+    .span-input-group {
+    width: 39px;
+    background-color: #e5e5e5;
+    color: #555555;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    font-weight: 500;
+    }
 
   .text-center {
     display: inline-block;

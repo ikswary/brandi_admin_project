@@ -14,7 +14,7 @@
       <div class="filterDiv">
         <div>조회 기간</div>
         <b-form-datepicker v-model="searchPeriod[0].value" id="datepicker-placeholder" placeholder="클릭해주세요" local="kr" style="width:200px; font-size:14px" ></b-form-datepicker>
-          <span class="span-input-group"> ~ </span>
+          <span class="span-input-group" style="font-weight:500"> ~ </span>
         <b-form-datepicker v-model="searchPeriod[1].value" id="datepicker-placeholder2" placeholder="클릭해주세요" local="kr" style="width:200px; font-size:14px"></b-form-datepicker>
 
       </div>
@@ -505,7 +505,7 @@ export default {
     justify-content: center;
     align-items: center;
     font-size: 20px;
-    font-weight: bold;
+    font-weight: 500;
     }
   }
 
