@@ -271,7 +271,7 @@
               </th>
               <td>
                 <div class="box">
-                  <input type="text" v-model="productDatas.name"/>
+                  <input type="text" style="width:100%" v-model="productDatas.name"/>
                   <div>
                     <i class="xi-info">미진열 선택시 앱에서 노출되지 않습니다.</i>
                   </div>
@@ -284,7 +284,7 @@
             <tr>
               <th>한줄 상품 설명</th>
               <td>
-                <input type="text" v-model="productDatas.simple_description" />
+                <input type="text"style="width:100%" v-model="productDatas.simple_description" />
               </td>
             </tr>
             <!-- 이미지 등록 -->
@@ -775,15 +775,15 @@
 
     <!-- 등록 취소 버튼 -->
     <v-col class="text-center">
-      <div class="my-2">
+      <span class="my-2">
         <v-btn
           class="enroll-button"
-          @click="test01()"
+          @click="test01()" style="margin:0 8px 0 0; background-color:#5cb85c; border-color:#4cae4c; color:#fff"
           >등록</v-btn>
-      </div>
-      <div class="my-2">
-        <v-btn class="cancle-button">취소</v-btn>
-      </div>
+      </span>
+      <span class="my-2">
+        <v-btn style="margin:0 8px 0 0; background-color:#d9534f; border-color:#d43f3a; color:#fff" class="cancle-button">취소</v-btn>
+      </span>
     </v-col>
   </div>
 </template>
@@ -1717,6 +1717,9 @@ export default {
     }
   }
 
+  .text-center {
+    display: inline-block;
+  }
   * {
     // border: 1px solid red;
   }
