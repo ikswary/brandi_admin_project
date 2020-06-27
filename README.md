@@ -9,7 +9,7 @@
 - develop period : '20.05.25. ~ '20.06.18.
 
 ## DataBase Modeling
-![DB](ttps://images.velog.io/images/2cong/post/adae00fb-7ef4-4356-bfa9-d0040cb2f5fd/image.png)
+![DB](https://images.velog.io/images/2cong/post/1acf1e65-a4ec-4302-a49d-2a72e5ae33de/image.png)
 - [Aquery link](https://aquerytool.com:443/aquerymain/index/?rurl=71143bb1-1bb3-4e9d-8dd3-af295f580a33&)
 - Aquery read-only key: j52576
 
