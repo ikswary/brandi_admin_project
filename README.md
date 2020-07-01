@@ -4,9 +4,11 @@
 - [Brandi Admin website](http://admin.brandi.co.kr/) clone.
 - Develop Member (1 Front-End , 2 Back-End) 
   - 김광민
-  - 손진현
-  - 최진아
+  - [손진현] (https://github.com/ikswary)
+  - [최진아](https://github.com/2cong)
 - develop period : '20.05.25. ~ '20.06.18.
+
+## Demo
 
 ## DataBase Modeling
 ![DB](https://images.velog.io/images/2cong/post/1acf1e65-a4ec-4302-a49d-2a72e5ae33de/image.png)
