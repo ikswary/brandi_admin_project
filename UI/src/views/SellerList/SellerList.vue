@@ -47,7 +47,7 @@
           </select>
           <span>records | Found total {{usersData}} records</span>
         </div>
-
+        <loading-screen ref="loadingScreen">
         <!-- 테이블 시작 부분입니다. -->
         <template>
           <v-simple-table>
@@ -218,10 +218,17 @@
                     </td>
                   </tr>
                 </tbody>
-              </div>
+                <transition name="component-fade">
+                    <div v-if="loading" class="loading">
+                      <div class="message">{{loadingText}}</div>
+                    </div>
+                  </transition>
+                </div>
             </template>
           </v-simple-table>
         </template>
+      </loading-screen>
+
         <div class="pageContainer">
           <span>Page</span>
           <button @click="pageBackward">
@@ -254,12 +261,18 @@
 
 <script>
 import axios from "axios";
+import LoadingScreen from "vue-loading-screen";
 import { sellerListHeaders } from "../../config/SellerListDatas";
 import { URL, JH_URL, YE_URL } from "../../config/urlConfig";
 
 export default {
+  components: {
+    LoadingScreen
+  },
   data() {
     return {
+      loading: false,
+      loadingText: "Brandi",
       headers: sellerListHeaders,
       infoDatas: [],
       usersData: null,
@@ -285,6 +298,24 @@ export default {
   },
 
   methods: {
+    refresh() {
+      const p = new Promise(success => {
+        setTimeout(success, 1000);
+      });
+      this.$refs.loadingScreen.load(p);
+      p.then(() => {
+        this.objects = [];
+      });
+    },
+    load(promise) {
+      this.loading = true;
+      const loadingFalse = () => {
+        this.loading = false;
+      };
+      promise.then(loadingFalse, loadingFalse);
+      return promise;
+    },
+
     lengthCheck: function(index) {
       this.searchDatas[index].key.length == 0
         ? (this.searchDatas[index].state = false)
@@ -609,6 +640,26 @@ export default {
     border: 1px solid red;
     width: 50%;
     height: 50%;
+  }
+  .loading {
+    position: absolute;
+    z-index: 1001;
+    top: 0;
+    left: 0;
+    background-color: rgba(230, 233, 236, 0.8);
+    cursor: wait;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .loading .message {
+    background-color: #f4f4f4;
+    border-radius: 4px;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.15);
+    border: solid 1px #bbb;
+    padding: 10px 20px;
   }
 }
 </style>
