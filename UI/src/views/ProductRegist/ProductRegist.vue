@@ -87,7 +87,7 @@
             <!-- 테이블 시작 영역 -->
             <!-- 셀러 상태 테이블 -->
 
-            <tr class="sellerSelect">
+            <tr class="sellerSelect" v-if="this.$route.params.code === 'productregist'">
               <th>
                 셀러 선택
                 <i class="xi-pen" />
@@ -241,7 +241,7 @@
                             v-model="productDatas.manufacture.manufacture_date"
                             placeholder="클릭해주세요"
                             local="kr"
-                            style="width:250px">
+                            style="width:250px; font-size:14px">
                             </b-form-datepicker>
                     </div>
                     <div class="inputBox">
@@ -320,30 +320,33 @@
           <template>
             <tr>
               <th>
-                색상필터(썸네일 이미지)
+                색상필터 (썸네일 이미지)
                 <i class="xi-pen" />
               </th>
               <td class="onSaleBox">
                 <div style="width: 100%">
                   <input
-                    v-model="colorModal"
-                    :value="0"
+                    @click="deleteColor()"
                     type="radio"
                     id="unuse"
                     name="colorFilter"
-                    checked
+                    :checked="!productDatas.color_filter_id"
                   />
-                  <label for="unuse">사용안함</label>
+                  <label @click="deleteColor()" for="unuse">사용안함</label>
                   <input
                     @click="getColors()"
-                    v-model="colorModal"
-                    :value="1"
                     type="radio"
                     id="using"
                     name="colorFilter"
+                    :checked="productDatas.color_filter_id"
                   />
                   <label @click="getColors()" for="using">사용</label>
-                  <input class="colorInput" type="text" disabled :value="selectedColor[2]" />
+                  <input
+                    class="colorInput"
+                    type="text"
+                    disabled
+                    :value="productDatas.color_filter_id ? selectedColor[2] : ''"
+                  />
                   <div>
                     <i
                       class="xi-info"
@@ -927,6 +930,11 @@ export default {
       let index = (this.tag.length-1);
       this.postTag.push({name:this.tag[index]})
     },
+    deleteColor: function() {
+      this.colorModal = 0;
+      this.productDatas.color_filter_id = 0;
+      this.selectedColor = [];
+    },
     styleFilter: function() {
       this.productDatas.style_filter_id = null
     },
@@ -1055,7 +1063,8 @@ export default {
           this.informs = response.data.data;
         });
     },  
-    getColors: function() {
+    getColors: function(modal, index) {
+      modal === 2 ? (this.colorModal = 0) : (this.colorModal = 1);
       axios
         .get(`${JA_URL}/product/information`, {
           headers: {
@@ -1064,6 +1073,12 @@ export default {
         })
         .then(response => {
           this.colors = response.data.data[0].color_filter;
+          index &&
+            this.selectedColor.push(
+              response.data.color_filters[index - 1].id,
+              response.data.color_filters[index - 1].image,
+              response.data.color_filters[index - 1].name
+            );
         });
     },
 
@@ -1113,7 +1128,7 @@ export default {
     //상품 수정페이지로 진입시, 기존의 상품 정보들을 받아옵니다.
     getListDatas: function() {
       axios
-        .get(`${JA_URL}/product?code=${this.code}`, {
+        .get(`${JA_URL}/product?code=${this.$route.params.code}`, {
           headers: {
             Authorization: localStorage.Authorization
           }
@@ -1264,7 +1279,7 @@ export default {
     top: 20%;
     left: 40%;
     width: 500px;
-    height: 500px;
+    height: 550px;
     background-color: white;
     padding: 40px;
     z-index: 10;

@@ -68,10 +68,6 @@ export const items = [
     model: false,
     children: [
       {
-        text: '셀러 정보 관리',
-        path: 'seller/sellerregist'
-      },
-      {
         text: '셀러 계정 관리',
         path: 'seller/sellerlist'
       },
