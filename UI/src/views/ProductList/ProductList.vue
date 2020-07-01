@@ -173,9 +173,9 @@
                   <td>{{info.product_id}}</td>
                   <td>{{info.seller_attribute}}</td>
                   <td>{{info.seller_name}}</td>
-                  <td>{{info.price}}</td>
+                  <td>{{new Intl.NumberFormat().format(info.price)}}</td>
                   <td>
-                    {{info.discount_price}}
+                    {{new Intl.NumberFormat().format(info.discount_price)}}
                     <div class="discount">{{info.discount_rate ? `(${info.discount_rate}%)` : ""}}</div>
                   </td>
                   <td>{{info.on_sale ? "판매" : "미판매"}}</td>
@@ -601,6 +601,10 @@ export default {
       display: block;
       width: 100%;
     }
+    tbody{
+      display: block;
+      width: 100%;
+    }      
     th,
     td {
       display: flex;

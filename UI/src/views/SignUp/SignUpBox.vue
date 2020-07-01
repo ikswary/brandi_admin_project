@@ -207,8 +207,13 @@ export default {
               this.$router.push("/");
             }
           })
-          .catch(error => console.log(error.response.data.message));
-
+          // .catch(error => console.log(error.response.data.message));
+          .catch(error => {
+          if (error.response.data.message === "ACCOUNT_DUPLICATED") {
+          alert("이미 가입된 아이디입니다.");
+          }
+        }
+      )
         // .catch(err => {
         //   alert("입력 내용을 확인해 주시기 바랍니다. 감사합니다.");
         //   console.log(err);
