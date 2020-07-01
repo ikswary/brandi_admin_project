@@ -148,6 +148,7 @@
         <v-simple-table>
           <template v-slot:default>
             <div class="tableIn">
+              <loading-screen ref="loadingScreen">
               <thead>
                 <tr>
                   <th class="text-left">등록일</th>
@@ -183,6 +184,7 @@
                   <td>{{info.discount ? "할인" : "미할인"}}</td>
                 </tr>
               </tbody>
+            </loading-screen>  
             </div>
           </template>
         </v-simple-table>
@@ -206,8 +208,12 @@
 
 <script>
 import axios from "axios";
+import LoadingScreen from "vue-loading-screen";
 import { JH_URL } from "../../config/urlConfig";
 export default {
+  components: {
+    LoadingScreen
+  },
   data() {
     return {
       infoDatas: {
@@ -261,6 +267,19 @@ export default {
     this.getListDatas();
   },
   methods: {
+    refresh() {
+      const p = new Promise(success => {
+        setTimeout(success, 1000);
+      });
+      this.$refs.loadingScreen.load(p);
+      p.then(() => {
+        this.objects = [
+          { id: 1, name: "Foo" },
+          { id: 2, name: "Bar" }
+        ];
+      });
+    }, 
+    
     search: function() {
       let queryString = [];
 
