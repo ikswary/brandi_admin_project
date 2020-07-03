@@ -1218,11 +1218,6 @@ export default {
           this.is_detail_reference_2 = 0
         }
     },
-    postTagtoTag: function(postTag) {
-      for(var i=0; i<postTag.len; i++) {
-        this.tags.push(postTag[i]);
-      }
-    },
     //상품 수정페이지로 진입시, 기존의 상품 정보들을 받아옵니다.
     getListDatas: function() {
       axios
@@ -1247,7 +1242,7 @@ export default {
           this.discount_start = response.data.data.discount_start;
           this.discount_end = response.data.data.discount_end;
           this.isDetail2(response.data.data.discount_end);
-          this.tag = postTagtoTag(this.postTag);
+          this.tag = this.postTag.map((data)=>data.name);
         });
     },
     optionFilter: function(option) {
