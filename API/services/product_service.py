@@ -48,9 +48,10 @@ def product_save_service(db, data, seller_id, user_id, code, tag_data, image_dat
         raise e
 
 
-def product_data_service(db, product_code, data, category_data, images_data, options_data, tags_data):
+def product_data_service(db, seller_id, product_code, data, category_data, images_data, options_data, tags_data):
     try:
         return {
+                 "seller_id" : seller_id,
                  "product_code": product_code,
                  "on_sale": data['on_sale'],
                  "on_list": data['on_list'],
@@ -63,7 +64,7 @@ def product_data_service(db, product_code, data, category_data, images_data, opt
                      "name": category_data['second_categories.name']
                                      },
                      "manufacturer": data['manufacturer'],
-                 "manufacturer_date": data['manufacture_date'],
+                 "manufacture_date": data['manufacture_date'],
                  "manufacture_country": {
                      "id": data['manufacture_country_id'],
                      "name": product_dao.find_country_data(db, data['manufacture_country_id']) if data['manufacture_country_id'] else None
@@ -74,10 +75,10 @@ def product_data_service(db, product_code, data, category_data, images_data, opt
                      "url": image['large_url'],
                      "order": image['list_order']
                              } for image in images_data],
-                 "color_filter": data['color_filter_id'],
-                 "style_filter": data['style_filter_id'],
+                 "color_filter_id": data['color_filter_id'],
+                 "style_filter_id": data['style_filter_id'],
                  "description_detail": data['description_detail'],
-                 "option": [{
+                 "options": [{
                      "code": option['code'],
                      "color_id": option['color_id'],
                      "color_name": option['name'],
