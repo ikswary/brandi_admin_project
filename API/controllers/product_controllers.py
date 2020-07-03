@@ -392,9 +392,10 @@ def get_product_information(**kwargs):
         if db is None:
             return jsonify(message="DATABASE_INIT_ERROR"), 500
 
-        product_code=request.args.get('product_code')
+        product_code=request.args.get('code')
         data = product_dao.find_product(db, product_code)
 
+        seller_id = product_dao.get_seller_from_code(db, product_code)
         first_category_id = data['first_category_id']
         second_category_id = data['second_category_id']
         product_detail_id = data['id']
@@ -404,7 +405,7 @@ def get_product_information(**kwargs):
         options_data = product_dao.find_options(db, product_detail_id)
         tags_data = product_dao.find_product_tags(db, product_detail_id)
 
-        product_data = product_data_service(db, product_code, data, category_data, images_data, options_data, tags_data)
+        product_data = product_data_service(db, seller_id, product_code, data, category_data, images_data, options_data, tags_data)
         return jsonify(data=product_data), 200
 
     except pymysql.err.InternalError:
@@ -437,6 +438,7 @@ def change_product_information(**kwargs):
             Authorizaion: jwt
 
         Args:
+            "seller_id" : 셀러 아이디,
             "product_code": 상품코드,
             "on_sale": 판매여부,
             "on_list": 진열여부,
@@ -521,8 +523,8 @@ def change_product_information(**kwargs):
         # 기존의 옵션 코드에 저장된 내용과 현재 옵션값으로 받아온 정보가 다른 경우 체크
         for option in option_data:
             if option['code']:
-                option_details=product_dao.find_option_code(db, option['code'])
-                if (option_details['size_id'],option_details['color_id']) !=  (product_dao.get_option_size_id(db,option['size_id']),product_dao.get_option_color_id(db, option['color_id'])):
+                option_details=product_dao.find_option_code(db, int(option['code']))
+                if (option_details['size_id'],option_details['color_id']) != (product_dao.get_option_size_id(db,option['size_id']),product_dao.get_option_color_id(db, option['color_id'])):
                     return jsonify(message = "DATA_ERROR"), 400
 
         # 최소 판매 수량이 20개를 초과한 경우 에러

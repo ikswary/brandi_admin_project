@@ -837,3 +837,21 @@ class ProductDao:
                 return cursor.fetchone()['id']
         except Exception as e:
             raise e
+
+    def get_seller_from_code(self, db, code):
+        try:
+            with db.cursor(pymysql.cursors.DictCursor) as cursor:
+                query = """
+                SELECT user_id FROM products
+                WHERE code = %s
+                """
+
+                affected_row = cursor.execute(query, code)
+                if affected_row == -1:
+                    raise Exception('EXECUTE_FAILED')
+                if affected_row == 0:
+                    return Exception('DATA_DOES_NOT_EXIST')
+
+            return cursor.fetchone()['user_id']
+        except Exception as e:
+            raise e

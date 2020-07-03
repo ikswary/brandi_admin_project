@@ -10,6 +10,9 @@ class JsonCustomEncoder(json.JSONEncoder):
         if isinstance(obj, datetime.datetime):
             return obj.strftime("%Y-%m-%d %H:%M:%S")
 
+        if isinstance(obj, datetime.date):
+            return obj.strftime("%Y-%m-%d")
+
         if isinstance(obj, datetime.timedelta):
             hours, remainder = divmod(obj.seconds, 3600)
             minutes, seconds = divmod(remainder, 60)

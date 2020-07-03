@@ -1779,7 +1779,8 @@ CHANGE_PRODUCT_SCHEMA = {
                                 "$id": "#/properties/option/items/anyOf/0/properties/id",
                                 "type": [
                                     "integer",
-                                    "null"
+                                    "null",
+                                    "string"
                                 ],
                                 "title": "The id schema",
                                 "description": "An explanation about the purpose of this instance.",
@@ -1812,7 +1813,8 @@ CHANGE_PRODUCT_SCHEMA = {
                                 "$id": "#/properties/option/items/anyOf/0/properties/stock",
                                 "type": [
                                     "string",
-                                    "null"
+                                    "null",
+                                    "integer"
                                 ],
                                 "title": "The stock schema",
                                 "description": "An explanation about the purpose of this instance.",
