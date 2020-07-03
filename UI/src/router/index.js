@@ -38,8 +38,9 @@ const routes = [
             component: ProductList,
           },
           {
-            path: 'productRegist',
+            path: ':code',
             component: ProductRegist,
+            name: 'productregist'
           },
         ]
       },
@@ -54,7 +55,7 @@ const routes = [
             name: 'sellerlist'
           },
           {
-            path: ':id',
+            path: ':code',
             component: SellerRegist,
             name: 'sellerregist'
           },

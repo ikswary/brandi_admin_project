@@ -169,7 +169,7 @@
                 <tr v-for="info in infoDatas.product" :key="info.id">
                   <td>{{info.created_at}}</td>
                   <td></td>
-                  <td>{{info.product_name}}</td>
+                  <td @click="() => idClick(info.product_code)">{{info.product_name}}</td>
                   <td>{{info.product_code}}</td>
                   <td>{{info.product_id}}</td>
                   <td>{{info.seller_attribute}}</td>
@@ -278,8 +278,10 @@ export default {
           { id: 2, name: "Bar" }
         ];
       });
-    }, 
-    
+    },
+    idClick: function(code) {
+      this.$router.push({ name: "productregist", params: { code: code } });
+    },
     search: function() {
       let queryString = [];
 

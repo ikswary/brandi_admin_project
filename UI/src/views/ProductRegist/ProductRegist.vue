@@ -2,7 +2,11 @@
   <div class="prWrap">
     <div v-if="colorModal" class="wrap"></div>
     <div v-if="sellersModal" class="wrap"></div>
-    <div class="slTitleBox">
+    <div v-if="this.$route.params.code != 'productregist'" class="slTitleBox">
+      <div class="slTitle">상품 수정</div>
+      <div class="slSubTitle">상품 정보 수정</div>
+    </div>
+    <div v-if="this.$route.params.code === 'productregist'" class="slTitleBox">
       <div class="slTitle">상품 등록</div>
       <div class="slSubTitle">상품 정보 등록</div>
     </div>
@@ -10,7 +14,8 @@
       <i class="xi-home">
         상품 관리
         <i class="xi-angle-right-min">상품 관리</i>
-        <i class="xi-angle-right-min">상품 등록</i>
+        <i v-if="this.$route.params.code != 'productregist'" class="xi-angle-right-min">상품 수정</i>
+        <i v-if="this.$route.params.code === 'productregist'" class="xi-angle-right-min">상품 등록</i>
       </i>
     </div>
     <div class="cmpWrap">
@@ -86,8 +91,8 @@
           <template>
             <!-- 테이블 시작 영역 -->
             <!-- 셀러 상태 테이블 -->
-
-            <tr class="sellerSelect" v-if="this.$route.params.code === 'productregist'">
+            <!-- <tr class="sellerSelect"> -->
+            <tr class="sellerSelect" v-if="this.$route.params.code === 'productregist'"> 
               <th>
                 셀러 선택
                 <i class="xi-pen" />
@@ -212,7 +217,7 @@
               <td class="onSaleBox">
                 <div>
                   <input
-                    v-model="productDatas.is_detail_reference"
+                    v-model="is_detail_reference"
                     type="radio"
                     id="detailInfo"
                     :value="1"
@@ -221,24 +226,24 @@
                   />
                   <label for="detailInfo">상품상세 참조</label>
                   <input
-                    v-model="productDatas.is_detail_reference"
+                    v-model="is_detail_reference"
                     type="radio"
                     id="writeInfo"
                     :value="0"
                     name="infoState"
                   />
                   <label for="writeInfo">직접입력</label>
-                  <div v-if="productDatas.is_detail_reference === 0" class="detailBox">
+                  <div v-if="is_detail_reference === 0" class="detailBox">
                     <div class="inputBox">
                       <div class="inputTitle">제조사(수입사):</div>
-                      <input v-model="productDatas.manufacture.manufacturer" type="text" />
+                      <input v-model="productDatas.manufacturer" type="text" />
                     </div>
                     <div class="inputBox">
                       <div class="inputTitle">제조일자:</div>
                       <!-- <input v-model="productDatas.manufacture.manufacture_date" type="text" /> -->
                           <b-form-datepicker
                             id="datepicker-placeholder"
-                            v-model="productDatas.manufacture.manufacture_date"
+                            v-model="productDatas.manufacture_date"
                             placeholder="클릭해주세요"
                             local="kr"
                             style="width:250px; font-size:14px">
@@ -284,7 +289,7 @@
             <tr>
               <th>한줄 상품 설명</th>
               <td>
-                <input type="text"style="width:100%" v-model="productDatas.simple_description" />
+                <input type="text"style="width:100%" v-model="productDatas.description_short" />
               </td>
             </tr>
             <!-- 이미지 등록 -->
@@ -608,13 +613,13 @@
                             <th>{{option.color_name}}</th>
                             <th>{{option.size_name}}</th>
                             <th class="invenControl">
-                              <input :name="`inven${index}`" id="noInven" type="radio" />
+                              <input v-model="makingOptionsData[index].stock" :value="null" :name="`inven${index}`" id="noInven" type="radio" />
                               <label :for="`inven${index}`">재고관리 안함</label>
 
                               <input :name=" `inven${index}`" id="inven" type="radio" />
 
                               <label :for="`inven${index}`">
-                                <input v-model="makingOptionsData[index].stock" type="text" />개
+                                <input v-model="makingOptionsData[index].stock" :value="makingOptionsData[index].stock"  :type="text" />개
                               </label>
                             </th>
                             <th class="optionMinusBox">
@@ -650,7 +655,7 @@
                 <i class="xi-pen" />
               </th>
               <td>
-                <input v-model="productDatas.price" type="text" />
+                <input v-model="productDatas.price" type="text" /> 
                 <div class="wonBox">원</div>
               </td>
               <div>
@@ -692,23 +697,23 @@
               <td class="onSaleBox" style="border-top: 0px solid lightgray">
                 <div>
                   <input
-                    v-model="productDatas.is_detail_reference_2"
+                    v-model="is_detail_reference_2"
                     type="radio"
-                    id="detailInfo"
+                    id="detailInfo2"
                     :value="1"
-                    name="infoState"
+                    name="infoState2"
                     @click="discountDateClick()"
                   />
-                  <label for="detailInfo">무기한</label>
+                  <label for="detailInfo2">무기한</label>
                   <input
-                    v-model="productDatas.is_detail_reference_2"
+                    v-model="is_detail_reference_2"
                     type="radio"
-                    id="writeInfo"
+                    id="writeInfo2"
                     :value="0"
-                    name="infoState"
+                    name="infoState2"
                   />
-                  <label for="writeInfo">기간설정</label>
-                  <div v-if="productDatas.is_detail_reference_2 === 0" class="detailBox"
+                  <label for="writeInfo2">기간설정</label>
+                  <div v-if="is_detail_reference_2 === 0" class="detailBox"
                   >
                     <div class="inputBox">
                         <div class="inputTitle" style="width:10px"></div>
@@ -748,13 +753,13 @@
               </div>
             </tr>
             <tr class="originPriceTable test">
-              <th>최소 판매 수량</th>      
+              <th>최소 판매 수량</th>             
               <td>
-                <input v-model="min_sales_unit" name="minQuantity" class="radioBtn" :value ="1" type="radio"/>
+                <input v-model="productDatas.min_sales_unit" name="minQuantity" class="radioBtn" :value ="1" type="radio"/>
                 <label class="radioLabel">1개 이상</label>
                 <input class="radioBtn" name="minQuantity" type="radio" />
                 <label class="radioLabel">
-                  <input v-model="min_sales_unit" type="text" class="radioInput" /> 
+                  <input v-model="productDatas.min_sales_unit" type="text" class="radioInput" /> 
                   개 이상</label>
                 <span>(20개를 초과하여 설정하실 수 없습니다)</span>
               </td>
@@ -762,11 +767,11 @@
             <tr class="originPriceTable test">
               <th>최대 판매 수량</th>
               <td>
-                <input v-model="max_sales_unit" class="radioBtn" name="maxQuantity" :value="20" type="radio">
+                <input v-model="productDatas.max_sales_unit" class="radioBtn" name="maxQuantity" :value="20" type="radio">
                 <label class="radioLabel">20개</label>
                 <input class="radioBtn" name="maxQuantity" type="radio" />
                 <label class="radioLabel">
-                  <input v-model="max_sales_unit" class="radioInput" type="text" />
+                  <input v-model="productDatas.max_sales_unit" class="radioInput" type="text" />
                   개 이하</label>
                 <span>(20개를 초과하여 설정하실 수 없습니다)</span>
               </td>
@@ -783,12 +788,18 @@
     <v-col class="text-center">
       <span class="my-2">
         <v-btn
+          v-if="this.$route.params.code === 'productregist'"
           class="enroll-button"
-          @click="test01()" style="margin:0 8px 0 0; background-color:#5cb85c; border-color:#4cae4c; color:#fff"
+          @click="sumbitClick()" style="margin:0 8px 0 0; background-color:#5cb85c; border-color:#4cae4c; color:#fff"
           >등록</v-btn>
+          <v-btn
+          v-if="this.$route.params.code != 'productregist'"
+          class="editButton"
+          @click="editClick()" style="margin:0 8px 0 0; background-color:#5cb85c; border-color:#4cae4c; color:#fff"
+        >수정</v-btn>
       </span>
       <span class="my-2">
-        <v-btn style="margin:0 8px 0 0; background-color:#d9534f; border-color:#d43f3a; color:#fff" class="cancle-button">취소</v-btn>
+        <v-btn @click="cancelClick()" style="margin:0 8px 0 0; background-color:#d9534f; border-color:#d43f3a; color:#fff" class="cancle-button">취소</v-btn>
       </span>
     </v-col>
   </div>
@@ -805,6 +816,7 @@ export default {
   },
   data() {
     return {
+      localId: "",
       infoDatas: [],
       content: "",
 
@@ -837,38 +849,36 @@ export default {
       makingOptionsData: [],
       invenState: null,
       test: 0,
+      noInven:0,
 
       discountPrice: "",
       changedPrice: "",
+      is_detail_reference: 1,
+      is_detail_reference_2: 1,
 
       manufacture_country_id: null,
 
       max_sales_unittag: [],
       postTag: [],
-      min_sales_unit: "",
-      max_sales_unit: "",
+      tags:[],
       discount_start : "",
       discount_end : "",
       productDatas: {
         seller_id: "",
         on_sale: 1,
         on_list: 1,
-        first_category_id: "0",
-        second_category_id: "",
-        is_detail_reference: 1,
-        manufacture: {
-          manufacturer: null,
-          manufacture_date: null
-        },
+        manufacturer: null,
+        manufacture_date: null,
         name: "",
         description_short: "",
         color_filter_id: 0,
         style_filter_id: null,
         description_detail: "",
         options: this.makingOptionsData,
-        wholesale_price: "",
         price: "",
         dismax_sales_unitcount_rate: "",
+        min_sales_unit: 1,
+        max_sales_unit: 20,
         // discount_start: "2020-06-01 08:30:00",
         // discount_end: "2020-06-03 23:59:59",
         // max_sales_unit: "",
@@ -878,12 +888,16 @@ export default {
     };
   },
   mounted: function() {
-    // this.getListDatas();
-    // this.getOptionColors();
+    if (
+      localStorage.id === "master") {
+      this.localId = localStorage.id;
+    }
+    this.getListDatas();  
     this.getInformations();
   },
   methods: {
-    test01: function() {
+    sumbitClick: function() {
+      if (confirm("상품등록을 하시겠습니까?") === true) {
       axios
         .post(
           `${JA_URL}/product`,
@@ -893,8 +907,8 @@ export default {
             on_list: this.productDatas.on_list,
             first_category_id: Number(this.firstCateId),
             second_category_id: Number(this.secondCateId),
-            manufacturer: this.productDatas.manufacture.manufacturer,
-            manufacture_date: this.productDatas.manufacture.manufacture_date,
+            manufacturer: this.productDatas.manufacturer,
+            manufacture_date: this.productDatas.manufacture_date,
             manufacture_country_id: this.manufacture_country_id,
             name: this.productDatas.name,
             images: [{
@@ -909,26 +923,85 @@ export default {
             discount_rate : Number(this.productDatas.discount_rate),
             discount_start: this.discount_start,
             discount_end: this.discount_end,
-            max_sales_unit: this.max_sales_unit,
-            min_sales_unit: this.min_sales_unit,
+            max_sales_unit: this.productDatas.max_sales_unit,
+            min_sales_unit: this.productDatas.min_sales_unit,
             tag: this.postTag
           },
           {
             headers: {
-              Authorization: localStorage.token
+              Authorization: localStorage.Authorization
             }
           }
         )
-        .then(response => {
-          console.log(response);
+        .then(res => {
+          if (res.status === 200) {
+              alert("상품정보가 정상적으로 등록되었습니다.");
+              window.location.reload();
+            }
         })
         .catch(error => {
-          console.log(error.response.data.message);
+          if (error.response.data.message === "NOT_AUTHORIZED_USER") {
+              alert("입력하지 않은 필수항목이 있습니다. 다시 확인해주세요.");
+            }
         });
+      }
+    },
+        editClick: function() {
+      if (confirm("상품수정을 하시겠습니까?") === true) {
+        axios
+          .put(
+            `${JA_URL}/product`,
+            {
+              product_code : this.$route.params.code,
+              on_sale: this.productDatas.on_sale,
+              on_list: this.productDatas.on_list,
+              first_category_id: Number(this.firstCateId),
+              second_category_id: Number(this.secondCateId),
+              manufacturer: this.productDatas.manufacturer,
+              manufacture_date: this.productDatas.manufacture_date,
+              manufacture_country_id: this.manufacture_country_id,
+              name: this.productDatas.name,
+              images: [{
+                    "url": "url"}],
+              description_short: this.productDatas.description_short,
+              description_detail: this.productDatas.description_detail,
+              color_filter_id: this.productDatas.color_filter_id,
+              style_filter_id: this.productDatas.style_filter_id,              
+              option: this.makingOptionsData,
+              price: Number(this.productDatas.price),
+              discount_rate : Number(this.productDatas.discount_rate),
+              discount_start: this.discount_start,
+              discount_end: this.discount_end,
+              max_sales_unit: this.productDatas.max_sales_unit,
+              min_sales_unit: this.productDatas.min_sales_unit,
+              tag: this.postTag
+            },
+            {
+              headers: {
+                Authorization: localStorage.Authorization
+              }
+            }
+          )
+          .then(response => {
+            if (response) {
+              alert("수정이 완료되었습니다.");
+              this.$router.push("/main/product/productlist");
+            }
+          })
+          .catch(error => {
+            console.log(error.response.data.message);
+            alert("필수사항을 올바르게 입력해 주세요.");
+          });
+      }
     },
     inputTag: function() {
       let index = (this.tag.length-1);
       this.postTag.push({name:this.tag[index]})
+    },
+    cancelClick() {
+      if (confirm("확인을 누르시면 상품관리 페이지로 이동합니다.") === true) {
+        this.$router.push("/main/product/productlist");
+      }
     },
     deleteColor: function() {
       this.colorModal = 0;
@@ -943,9 +1016,9 @@ export default {
       this.discount_end = null
     },
     productInforClick: function() {
-      this.productDatas.manufacture.manufacturer = null,
-      this.productDatas.manufacture.manufacture_date = null,
-      this.manufacture_country_id = null
+      this.productDatas.manufacture.manufacturer = null;
+      this.productDatas.manufacture.manufacture_date = null;
+      this.manufacture_country_id = null;
     },
     discountClick: function() {
       this.discountPrice =
@@ -967,7 +1040,7 @@ export default {
           this.makingOptionsData.push({
             color_name: this.allOptions.color[i],
             size_name: this.allOptions.size[j],
-            stock: null
+            stock: null,
           });
         }
       }
@@ -1052,6 +1125,10 @@ export default {
       this.productDatas.color_filter_id = id;
       this.selectedColor.push(id, img, name);
     },
+    findFirstCateSelected: function(firstCateId) {
+       this.firstCateSelected = this.firstCate.map(data => data.id).indexOf(firstCateId);
+       this.getSecondCategory(this.firstCateSelected);
+    },
     getInformations: function() {
       axios
         .get(`${JA_URL}/product/information`, {
@@ -1094,7 +1171,6 @@ export default {
     getSecondCategory: function(index) {
       this.secondCate = this.firstCate[index].second_category;
       this.firstCateId = this.firstCate[index].id
-     
     },
     //셀러 검색 후, 선택된 셀러의 속성에 따라 1차카테고리 리스트가 달라지므로,
     //selectSeller함수에서 셀러 고유 id를 받아 1차 카테고리 리스트를 받아옵니다.
@@ -1107,6 +1183,7 @@ export default {
         })
         .then(response => {
           this.firstCate = response.data.data;
+          this.findFirstCateSelected(this.firstCateId);
         });
     },
     //셀러 검색창에 입력된 텍스트들을 실시간으로 받아, 해당 텍스트가 포함된 셀러 리스트를 받아옵니다.
@@ -1125,6 +1202,27 @@ export default {
           error.respons.status === 500 ? (this.sellerList = "") : "";
         });
     },
+    isDetail: function(manufacture_country_id) {
+    if (manufacture_country_id === null) {
+        this.is_detail_reference = 1
+      }
+    if (manufacture_country_id !== null) {
+          this.is_detail_reference = 0
+        }
+    },
+    isDetail2: function(discount_end) {
+    if (discount_end === null) {
+        this.is_detail_reference_2 = 1
+      }
+    if (discount_end !== null) {
+          this.is_detail_reference_2 = 0
+        }
+    },
+    postTagtoTag: function(postTag) {
+      for(var i=0; i<postTag.len; i++) {
+        this.tags.push(postTag[i]);
+      }
+    },
     //상품 수정페이지로 진입시, 기존의 상품 정보들을 받아옵니다.
     getListDatas: function() {
       axios
@@ -1134,11 +1232,40 @@ export default {
           }
         })
         .then(response => {
-          this.infoDatas = response.data.data;
+          this.productDatas = response.data.data;
+          this.firstCateId = response.data.data.first_category.id;
+          this.secondCateId = response.data.data.second_category.id;
+          this.getFirstCategory(response.data.data.seller_id);
+          this.getColors(2, response.data.data.color_filter_id);
+          this.makingOptionsData = response.data.data.options;
+          this.optionFilter(response.data.data.options);
+          this.manufacture_country_id = response.data.data.manufacture_country.id;
+          this.isDetail(response.data.data.manufacture_country.id);
+          this.discountPrice = response.data.data.discounted_price;
+          this.changedPrice = response.data.data.discount_price;
+          this.postTag = response.data.data.tag;
+          this.discount_start = response.data.data.discount_start;
+          this.discount_end = response.data.data.discount_end;
+          this.isDetail2(response.data.data.discount_end);
+          this.tag = postTagtoTag(this.postTag);
         });
-    }
+    },
+    optionFilter: function(option) {
+      option.map(option => {
+        if (!this.allOptions.color.includes(option.color_name)) {
+          this.allOptions.color.push(option.color_name);
+          this.invenColorsCount.push({});
+        }
+        if (!this.allOptions.size.includes(option.size_name)) {
+          this.allOptions.size.push(option.size_name);
+          this.invenSizesCount.push({});
+        }
+      });
+    },
+    
   }
 };
+
 </script>
 
 <style lang="scss" scoped>
