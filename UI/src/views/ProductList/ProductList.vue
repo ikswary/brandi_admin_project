@@ -152,7 +152,6 @@
               <thead>
                 <tr>
                   <th class="text-left">등록일</th>
-                  <th class="text-left">대표이미지</th>
                   <th class="text-left">상품명</th>
                   <th class="text-left">상품코드</th>
                   <th class="text-left">상품번호</th>
@@ -168,8 +167,8 @@
               <tbody>
                 <tr v-for="info in infoDatas.product" :key="info.id">
                   <td>{{info.created_at}}</td>
-                  <td></td>
-                  <td @click="() => idClick(info.product_code)">{{info.product_name}}</td>
+                  <td @click="() => idClick(info.product_code)"
+                    style="cursor:pointer">{{info.product_name}}</td>
                   <td>{{info.product_code}}</td>
                   <td>{{info.product_id}}</td>
                   <td>{{info.seller_attribute}}</td>
@@ -418,6 +417,10 @@ export default {
 * {
   // border: 1px solid red;
 }
+.code {
+  
+}
+
 .plWrap {
   padding-top: 35px;
 
@@ -601,7 +604,7 @@ export default {
   }
   .tableBox {
     .tableIn {
-      width: calc(100vw - 335px);
+      width: calc(100vw - 350px);
       overflow: auto;
       white-space: nowrap;
       margin: 10px;
@@ -629,7 +632,7 @@ export default {
     th,
     td {
       display: flex;
-      width: 8.33%;
+      width: 10%;
       justify-content: center;
       height: 39px !important;
       padding: 12px 8px 8px 8px;
@@ -637,16 +640,28 @@ export default {
       border-left-width: 0 !important;
       border-bottom-width: 0 !important;
       margin:-1px 0px 0 0 ;
+      &:nth-child(3){
+        width: 170px;
+      }
+      &:nth-child(4){
+        width: 60px;
+      }
     }
     th {
+      width:16%;
       font-weight: 600;
       color: black !important;
       font-size: 13px !important;
       background-color: #eee;
-      &:last-child {
-        width: 8.55%;
-        margin: -1px -1px 0 0 ;
-    }
+      &:nth-child(1){
+        width: 252px;
+      }
+      &:nth-child(3){
+        width: 287px;
+      }
+      &:nth-child(4){
+        width: 57px;
+      }
   }
 }
 </style>

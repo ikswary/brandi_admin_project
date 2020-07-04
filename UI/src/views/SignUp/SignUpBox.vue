@@ -72,7 +72,7 @@
         <v-radio label="디자이너 브랜드" value="4"></v-radio>
         <v-radio label="제너럴 브랜드" value="5"></v-radio>
         <v-radio label="네셔널 브랜드" value="6"></v-radio>
-        <v-radio label="기타" value="7"></v-radio>
+        <v-radio label="뷰티" value="7"></v-radio>
       </v-radio-group>
     </div>
 
