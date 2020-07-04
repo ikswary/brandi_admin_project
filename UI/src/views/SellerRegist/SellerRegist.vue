@@ -360,7 +360,7 @@
                     <th v-if="role ===1">변경 실행자</th>
                   </tr>
                 </tbody>
-                <td
+                <td 
                 v-for="history in detailInfo.seller_status_history"
                 :key="history.account" class="historyTr3"
                 >
@@ -373,7 +373,6 @@
                 <tr>
                     <td>{{history.account}}</td>
                 </tr>
-                </td>
               </td>
             </tbody>
           </template>
@@ -772,6 +771,7 @@ export default {
   }
   .historyBox {
     th, td {
+      text-align: center;
       border: 1px solid lightgray;
     }
     th {
@@ -794,6 +794,10 @@ export default {
  }
 
  .historyTr3 {
+   td {
+     width:150px;
+     border: 1px solid lightgray;
+   }
    padding: 0 0 0 8px !important;
  }
  .seller_att {
