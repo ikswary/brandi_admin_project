@@ -667,7 +667,7 @@
               <th>할인 정보</th>
 
               <td class="discountTable">
-                <v-simple-table>
+                <v-simple-table >
                   <template>
                     <tr>
                       <th>할인율</th>
@@ -755,25 +755,26 @@
             <tr class="originPriceTable test">
               <th>최소 판매 수량</th>             
               <td>
-                <input v-model="productDatas.min_sales_unit" name="minQuantity" class="radioBtn" :value ="1" type="radio"/>
+                <input @click="isMinClear()" v-model="is_min" name="minQuantity" :value="1" class="radioBtn" type="radio"/>
                 <label class="radioLabel">1개 이상</label>
-                <input class="radioBtn" name="minQuantity" type="radio" />
+                <input @click="isMinZero()" v-model="is_min" :value="0" class="radioBtn" name="minQuantity" type="radio" />
                 <label class="radioLabel">
-                  <input v-model="productDatas.min_sales_unit" type="text" class="radioInput" /> 
+                  <input v-model="min_sales_unit"
+                  type="text" class="radioInput" /> 
                   개 이상</label>
-                <span>(20개를 초과하여 설정하실 수 없습니다)</span>
+                <span style="font-size:12px">(20개를 초과하여 설정하실 수 없습니다.)</span>
               </td>
             </tr>
             <tr class="originPriceTable test">
               <th>최대 판매 수량</th>
               <td>
-                <input v-model="productDatas.max_sales_unit" class="radioBtn" name="maxQuantity" :value="20" type="radio">
+                <input @click="isMaxClear()" v-model="is_max" class="radioBtn" name="maxQuantity" :value="1" type="radio">
                 <label class="radioLabel">20개</label>
-                <input class="radioBtn" name="maxQuantity" type="radio" />
+                <input @click="isMaxZero()" v-model="is_max" :value="0" class="radioBtn" name="maxQuantity" type="radio" />
                 <label class="radioLabel">
-                  <input v-model="productDatas.max_sales_unit" class="radioInput" type="text" />
+                  <input v-model="max_sales_unit" class="radioInput" type="text" />
                   개 이하</label>
-                <span>(20개를 초과하여 설정하실 수 없습니다)</span>
+                <span style="font-size:12px">(20개를 초과하여 설정하실 수 없습니다.)</span>
               </td>
             </tr>
 
@@ -819,6 +820,8 @@ export default {
       localId: "",
       infoDatas: [],
       content: "",
+      is_min: 1,
+      is_max: 1,
 
       sellersModal: false,
       sellersInputModal: false,
@@ -857,6 +860,8 @@ export default {
       is_detail_reference_2: 1,
 
       manufacture_country_id: null,
+      min_sales_unit: null,
+      max_sales_unit: null,
 
       max_sales_unittag: [],
       postTag: [],
@@ -876,9 +881,7 @@ export default {
         description_detail: "",
         options: this.makingOptionsData,
         price: "",
-        dismax_sales_unitcount_rate: "",
-        min_sales_unit: 1,
-        max_sales_unit: 20,
+        dismax_sales_unitcount_rate: ""
         // discount_start: "2020-06-01 08:30:00",
         // discount_end: "2020-06-03 23:59:59",
         // max_sales_unit: "",
@@ -923,8 +926,8 @@ export default {
             discount_rate : Number(this.productDatas.discount_rate),
             discount_start: this.discount_start,
             discount_end: this.discount_end,
-            max_sales_unit: this.productDatas.max_sales_unit,
-            min_sales_unit: this.productDatas.min_sales_unit,
+            max_sales_unit: this.max_sales_unit === null ? null : Number(this.max_sales_unit),
+            min_sales_unit: this.min_sales_unit === null ? null : Number(this.min_sales_unit),
             tag: this.postTag
           },
           {
@@ -943,6 +946,7 @@ export default {
           if (error.response.data.message === "NOT_AUTHORIZED_USER") {
               alert("입력하지 않은 필수항목이 있습니다. 다시 확인해주세요.");
             }
+          console.log(error.response.data.message)
         });
       }
     },
@@ -972,8 +976,8 @@ export default {
               discount_rate : Number(this.productDatas.discount_rate),
               discount_start: this.discount_start,
               discount_end: this.discount_end,
-              max_sales_unit: this.productDatas.max_sales_unit,
-              min_sales_unit: this.productDatas.min_sales_unit,
+              max_sales_unit: this.max_sales_unit === null ? null : Number(this.max_sales_unit),
+              min_sales_unit: this.min_sales_unit === null ? null : Number(this.min_sales_unit),
               tag: this.postTag
             },
             {
@@ -994,6 +998,18 @@ export default {
           });
       }
     },
+    isMinClear: function() {
+      this.min_sales_unit = null
+    },
+    isMinZero: function() {
+      this.is_min = 0
+    },
+    isMaxClear: function() {
+      this.max_sales_unit = null
+    },
+    isMaxZero: function() {
+      this.is_max = 0
+    },   
     inputTag: function() {
       let index = (this.tag.length-1);
       this.postTag.push({name:this.tag[index]})
@@ -1218,6 +1234,24 @@ export default {
           this.is_detail_reference_2 = 0
         }
     },
+    isMin: function(min_sales_unit){
+      if (min_sales_unit === 1) {
+        this.is_min = 1
+        this.min_sales_unit = null
+      };
+      if (min_sales_unit !== 1) {
+        this.is_min = 0
+      }
+    },
+    isMax: function(max_sales_unit){
+      if (max_sales_unit === 20) {
+        this.is_max = 1
+        this.max_sales_unit = null
+      };
+      if (max_sales_unit !== 20) {
+        this.is_max = 0
+      }
+    },    
     //상품 수정페이지로 진입시, 기존의 상품 정보들을 받아옵니다.
     getListDatas: function() {
       axios
@@ -1243,6 +1277,10 @@ export default {
           this.discount_end = response.data.data.discount_end;
           this.isDetail2(response.data.data.discount_end);
           this.tag = this.postTag.map((data)=>data.name);
+          this.min_sales_unit = response.data.data.min_sales_unit;
+          this.max_sales_unit = response.data.data.max_sales_unit;
+          this.isMax(this.max_sales_unit);
+          this.isMin(this.min_sales_unit);
         });
     },
     optionFilter: function(option) {
@@ -1355,7 +1393,6 @@ export default {
     .v-data-table table {
       width: 100%;
     }
-
     .inputSelect {
       width: 240px;
       padding: 10px;
