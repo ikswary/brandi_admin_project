@@ -345,7 +345,7 @@
               >
                 <tbody>
                   <tr>
-                    <th>셀러상태 변경 적용일시</th>
+                    <th>셀러상태 변경 일시</th>
                   </tr>
               
                 </tbody>
@@ -357,7 +357,7 @@
                 </tbody>
                 <tbody>
                   <tr>
-                    <th>변경 실행자</th>
+                    <th v-if="role ===1">변경 실행자</th>
                   </tr>
                 </tbody>
                 <td
@@ -771,9 +771,7 @@ export default {
     }
   }
   .historyBox {
-    width: 100%;
-    th,
-    td {
+    th, td {
       border: 1px solid lightgray;
     }
     th {
