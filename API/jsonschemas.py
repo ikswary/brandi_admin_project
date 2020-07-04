@@ -561,7 +561,7 @@ PRODUCT_SCHEMA = {
         },
         "min_sales_unit": {
             "$id": "#/properties/min_sales_unit",
-            "type": "integer",
+            "type": ["integer", "null"],
             "title": "The min_sales_unit schema",
             "description": "An explanation about the purpose of this instance.",
             "default": 0,
@@ -571,7 +571,7 @@ PRODUCT_SCHEMA = {
         },
         "max_sales_unit": {
             "$id": "#/properties/max_sales_unit",
-            "type": "integer",
+            "type": ["integer", "null"],
             "title": "The max_sales_unit schema",
             "description": "An explanation about the purpose of this instance.",
             "default": 0,
@@ -1878,7 +1878,7 @@ CHANGE_PRODUCT_SCHEMA = {
         },
         "min_sales_unit": {
             "$id": "#/properties/min_sales_unit",
-            "type": "integer",
+            "type": ["integer","null"],
             "title": "The min_sales_unit schema",
             "description": "An explanation about the purpose of this instance.",
             "default": 0,
@@ -1888,7 +1888,7 @@ CHANGE_PRODUCT_SCHEMA = {
         },
         "max_sales_unit": {
             "$id": "#/properties/max_sales_unit",
-            "type": "integer",
+            "type": ["integer","null"],
             "title": "The max_sales_unit schema",
             "description": "An explanation about the purpose of this instance.",
             "default": 0,

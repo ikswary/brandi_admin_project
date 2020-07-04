@@ -238,6 +238,12 @@ def save_product(**kwargs):
         validate(request.json, PRODUCT_SCHEMA)
         data = request.json
 
+        if data['max_sales_unit'] is None:
+            data['max_sales_unit'] = 20
+
+        if data['min_sales_unit'] is None:
+            data['min_sales_unit'] = 1
+
         db = get_db_connector()
         if db is None:
             return jsonify(message="DATABASE_INIT_ERROR"), 500
@@ -489,6 +495,12 @@ def change_product_information(**kwargs):
     try:
         validate(request.json, CHANGE_PRODUCT_SCHEMA)
         data = request.json
+
+        if data['max_sales_unit'] is None:
+            data['max_sales_unit'] = 20
+
+        if data['min_sales_unit'] is None:
+            data['min_sales_unit'] = 1
 
         db = get_db_connector()
         if db is None:
