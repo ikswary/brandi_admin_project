@@ -153,7 +153,7 @@
                 <tr>
                   <th class="text-left">등록일</th>
                   <th class="text-left">상품명</th>
-                  <th class="text-left">상품코드</th>
+                  <th class="text-left" >상품코드</th>
                   <th class="text-left">상품번호</th>
                   <th class="text-left">셀러속성</th>
                   <th class="text-left">셀러명</th>
@@ -174,7 +174,7 @@
                   <td>{{info.seller_attribute}}</td>
                   <td>{{info.seller_name}}</td>
                   <td>{{new Intl.NumberFormat().format(info.price)}}</td>
-                  <td>
+                  <td style="display:flex; flex-direction:column; align-items:center">
                     {{new Intl.NumberFormat().format(info.discount_price)}}
                     <div class="discount">{{info.discount_rate ? `(${info.discount_rate}%)` : ""}}</div>
                   </td>
