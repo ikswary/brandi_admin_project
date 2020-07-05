@@ -350,7 +350,7 @@
                     class="colorInput"
                     type="text"
                     disabled
-                    :value="productDatas.color_filter_id ? selectedColor[2] : ''"
+                    :value="productDatas.color_filter_id ? informs[0].color_filter[productDatas.color_filter_id-1].name : ''"
                   />
                   <div>
                     <i
@@ -1319,7 +1319,7 @@ export default {
     top: -100px;
     left: 0;
     width: 100vw;
-    height: 200vh;
+    height: 380vh;
     opacity: 50%;
     background-color: gray;
     z-index: 5;
@@ -1869,11 +1869,23 @@ export default {
   }
   .discountTable {
     text-align: left;
+    height: auto;
+    .v-data-table {
+    width: 100%;
+    }
+    .v-data-table{
+      width: 100%;
+      :first-child{
+        overflow-x: unset !important;
+        overflow-y: unset !important;
+      }
+    }
+
     .discountInput {
       width: 40% !important;
+          width: 70%;
     }
     .v-data-table {
-      width: 70%;
       border-left: 1px solid lightgray;
       border-bottom: 1px solid lightgray;
     }
